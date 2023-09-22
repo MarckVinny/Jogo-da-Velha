@@ -8,6 +8,7 @@ ___
 - [Configuração do Projeto](#configuração-do-projeto)
 - [Criando o Novo Projeto Front-end](#criando-o-novo-projeto-front-end)
 - [Criando o Projeto Core](#criando-o-projeto-core)
+- [Criando o Diretório Compartilhado](#criando-o-diretório-compartilhado)
 
 ___
 
@@ -456,3 +457,51 @@ Snapshots:   0 total
 Time:        4.201 s, estimated 7 s
 Ran all test suites.
 ```
+
+[^ Sumário ^](#sumário)
+
+## Criando o Diretório Compartilhado
+
+Agora iremos entrar na pasta `/src` dentro da pasta `/core` e vamos criar um novo Diretório/Pasta chamado `/shared` que significa Compartilhado, é aqui que iremos salvar todos os Elementos que serão utilizados em todo o Core.  
+
+> O ***enum*** é um dos tipos do TypeScript que nos permite declarar um conjunto de ***valores/constantes*** pré-definidos.
+
+Com isso, iremos criar a Classe que irá definir o Tipo do Jogador, se será "X" ou "O", então, crie um arquivo chamado `PlayerType.ts`, dentro iremos exportar `export` uma enumeração `enum` chamado `PlayerType {` contendo dois tipo de Jogadores "X" `X = 'X',` e "O" `O = 'O' }`.
+
+```ts
+// PlayerType.ts
+
+export enum PlayerType {
+    X = 'X',
+    O = 'O'
+}
+```
+
+***Elementos do Jogo da Velha***
+
+- O elemento principal é a Classe Game, que conterá os outros elementos do Jogo como o Tabuleiro e o Jogador;
+- A Classe Player, será responsável pelas ações do Jogador;
+- A Classe Board, conterá os 9 elementos Cell para formar o Tabuleiro;
+- A Classe Cell, é cada elemento do Tabuleiro;
+- E outras diversas Classes para calcular os diferentes resultados em cada jogada;
+- Cor primária representada pela cor do Jogador X;
+- Cor secundária representada pela cor do Jogador O;
+- Cor light representada pelo botão reiniciar e Card empate;
+- Cor dark representada pelo fundo e as Células do Tabuleiro;
+- Card que mostra o jogador atual;
+- Botão que reinicia a jogada e troca a vez do jogador;
+- Células do Tabuleiro;
+- Card que mostra o Jogador e sua pontuação;
+- Card que mostra a pontuação de empate.
+
+![jogoDaVelha](./imagens/01.png)
+
+***Representa quando uma Jogada é encerrada***
+
+![rodadaGanha](./imagens/02.png)
+
+Então, teremos essas e outras Classes que não foram citadas no Projeto, essa lógica daria para fazer em um único arquivo, isso iria deixar um pouco mais complicado caso a aplicação precisasse crescer pois estaria muito amarrada para poder separar.  
+
+A ideia principal fazer uma ***Modelagem Rica*** para facilitar a evolução da aplicação.  
+
+
