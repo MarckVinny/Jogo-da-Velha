@@ -7,7 +7,7 @@ export default class Player {
     readonly score: number = 0
   ) {}
 
-  addScore(score: number){
+  addScore(score: number): Player{
     if(score === 0) return this
     return new Player(
         this.name,
