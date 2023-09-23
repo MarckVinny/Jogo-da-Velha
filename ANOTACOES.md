@@ -9,6 +9,7 @@ ___
 - [Criando o Novo Projeto Front-end](#criando-o-novo-projeto-front-end)
 - [Criando o Projeto Core](#criando-o-projeto-core)
 - [Criando o Diretório Compartilhado](#criando-o-diretório-compartilhado)
+- [Criando a Classe Player](#criando-a-classe-player)
 
 ___
 
@@ -504,4 +505,63 @@ Então, teremos essas e outras Classes que não foram citadas no Projeto, essa l
 
 A ideia principal fazer uma ***Modelagem Rica*** para facilitar a evolução da aplicação.  
 
+[^ Sumário ^](#sumário)
 
+## Criando a Classe Player
+
+Dentro do Diretório/Pasta `/src` crie o Diretório/Pasta chamado `/player`, agora dentro desta pasta, crie o Classe chamada `Player.ts`.  
+
+Usaremos a Modelagem Rica na construção da Classe Player, basicamente ele conterá o Nome do jogador, o Tipo do Jogador e a pontuação do Jogador.  
+
+A principio não estamos deixando uma forma de digitar o nome do Jogador, mas poderia ter um campo de texto onde o usuário digitaria seu nome.  
+
+Então começamos importando `import` a Classe `{ PayerType }` de `from '../shared/PlayerType'`, depois exportamos por padrão `export default` a Classe Player `class Player` contendo `{` um construtor `constructor(` com atributos imutáveis "somente leitura" `readonly name: string, readonly type: PlayerType, score: number = 0) {}`.  
+
+```ts
+// Player.ts
+
+import { PlayerType } from '../../shared/PlayerType'
+
+export default class Player {
+  constructor(
+    readonly name: string,
+    readonly type: PlayerType,
+    readonly score: number = 0
+  ) {}
+...
+```
+
+> ***Aqui, temos um Objeto Imutável, onde, não conseguimos mexer no Objeto Player, o único estado que temos quando o Jogo termina, é a pontuação do Jogador, o Score.***
+
+Trabalhar com Objetos Imutáveis é um conceito da Programação Funcional que está sendo utilizado agora em uma Modelagem Orientada a Objetos, onde todos os Atributos são "somente leitura" e sempre que precisarmos mexer no Estado do Objeto, esse comportamento retornará uma nova instância.  
+
+Ainda dentro da Classe Player, crie um Método chamado `addScore(` que recebe como parâmetro o Score `score: number)` que irá adicionar a Pontuação ao jogador `Player` então, `{` Se `if` o Score for estritamente igual a ZERO `(score === 0)` retorne este Jogador `return this` retorne um Novo Jogador `return new Player(` com o mesmo nome `this.name,` o mesmo tipo `this.type,` contendo sua pontuação + o que foi recebido por parâmetro pela variável Score `this.score + score) }`.
+
+```ts
+// Player.ts
+
+...
+  addScore(score: number){
+    if(score === 0) return this
+    return new Player(
+        this.name,
+        this.type,
+        this.score + score
+    )
+  }
+...
+```
+
+Outro comportamento Rico que teremos será quando quisermos Limpar a Pontuação, ainda dentro da Classe Player, crie um Método chamado `clear():` crie uma instancia Jogador `Player` então `{` retorne `return` um Novo Jogador `new Player(` com o mesmo nome `this.name,` o mesmo tipo `this.type,` e com o Score ZERADO `0)} }`, que é o que acontecerá assim que terminar a partida, quando clicar no botão `zerar`.  
+
+Com isso, temos um Objeto que já possui o comportamento de ZERAR a pontuação e podemos utilizar este comportamento.
+
+```ts
+// Player.ts
+
+...
+  clear(): Player {
+    return new Player(this.name, this.type, 0)
+  }
+}
+```
