@@ -10,6 +10,7 @@ ___
 - [Criando o Projeto Core](#criando-o-projeto-core)
 - [Criando o Diretório Compartilhado](#criando-o-diretório-compartilhado)
 - [Criando a Classe Player](#criando-a-classe-player)
+- [Criando os Testes Unitários para o Player](#criando-os-testes-unitários-para-o-player)
 
 ___
 
@@ -564,4 +565,144 @@ Com isso, temos um Objeto que já possui o comportamento de ZERAR a pontuação 
     return new Player(this.name, this.type, 0)
   }
 }
+```
+
+[^ Sumário ^](#sumário)
+
+## Criando os Testes Unitários para o Player
+
+Antes de qualquer coisa, precisamos abrir o arquivo `index.ts` que se encontra na Raiz da Pasta `/src` e importar as Classes Player e PlayerType e depois exporta-las para que possamos utiliza-las em nosso teste e posteriormente no Projeto Frontend.
+
+```ts
+// index.ts
+
+import { PlayerType } from '../shared/PlayerType'
+import Player from './player/Player'
+
+export { PlayerType, Player }
+
+```
+
+Para que possamos executar os Testes Unitários para a Classe Player, antes precisamos entrar na Pasta `/test` que fica dentro da Pasta `/core` e criar o Diretório/Pasta chamado `/player`, depois, crie o arquivo chamado `player.test.ts` para que possamos definir os testes dentro dele.  
+
+Agora importe o Player e o PlayerType que estão no Diretório/Pasta `/src`.
+
+```ts
+// player.test.ts
+
+import { Player, PlayerType } from "../../src";
+...
+```
+
+Agora iremos adicionar o primeiro Teste de Unidade refere ao nosso caso de uso `if (score === 0) return this`, crie o teste`test(` que `"Deve retornar a mesma instância quando quando adicionar 0 pontos.",` crie uma Arrow Function Anônima `() =>` então `{` defina uma constante `const` chamada `player` que receberá `=` um Novo jogador `new Player(` chamado `'P1',` recebendo o Tipo "O" `PlayerType.O)` esperando que o retorno seja a própria Instância `expect(player.addScore(0) === player)` seja verdadeiro `.toBeTruthy()})`, assim como foi dito acima.
+
+```ts
+// player.test.ts
+
+...
+test ('Deve retornar a mesma instância quando quando adicionar 0 pontos.', () => {
+    const player = new Player('P1', PlayerType.O)
+    expect(player.addScore(0) === player).toBeTruthy()
+})
+...
+```
+
+Executando o comando `npm test` no Terminal, iremo ter o seguinte resultado:
+
+```zsh
+// Terminal
+
+$ npm test
+
+ PASS  test/player/player.test.ts
+  √ Deve retornar a mesma instância quando quando adicionar 0 pontos. (12 ms)
+
+------------|---------|----------|---------|---------|-------------------
+File        | % Stmts | % Branch | % Funcs | % Lines | Uncovered Line #s 
+------------|---------|----------|---------|---------|-------------------
+All files   |   83.33 |      100 |      75 |      80 |                   
+ src        |     100 |      100 |     100 |     100 |                   
+  index.ts  |     100 |      100 |     100 |     100 |                   
+ src/player |      75 |      100 |   66.66 |   71.42 |                   
+  Player.ts |      75 |      100 |   66.66 |   71.42 | 12-16             
+------------|---------|----------|---------|---------|-------------------
+Test Suites: 1 passed, 1 total
+Tests:       1 passed, 1 total
+Snapshots:   0 total
+Time:        4.267 s
+Ran all test suites.
+```
+
+Como podemos ver, o teste está passando mas a Classe Player não está totalmente coberta pelos testes, precisando realizar mais testes.
+
+Agora iremos adicionar nosso segundo Teste Unitário (retorne uma Instancia Diferente), crie o teste`test(` que `"Deve mudar de Jogador quando adicionar ponto ao Jogador Atual.",` crie uma Arrow Function Anônima `() =>` então `{` defina uma constante `const` chamada `player` que receberá `=` um Novo jogador `new Player(` chamado `'P1',` recebendo o Tipo "O" `PlayerType.O)` esperando que o retorno seja a própria Instância `expect(player.addScore(1) === player)` seja falso `.toBeFalsy()})`.
+
+```ts
+// player.test.ts
+
+...
+test('Deve mudar de Jogador quando adicionar ponto ao Jogador Atual.', () => {
+  const player = new Player('P1', PlayerType.O)
+  expect(player.addScore(1) === player).toBeFalsy()
+})
+...
+```
+
+O próximo Teste Unitário, será para adicionar 10 pontos ao jogador, então, crie um teste `test(` adicione a mensagem do teste `'Deve adicionar 10 pontos ao jogador.',` defina uma Arrow Function onde conterá a lógica do teste `() => {` crie uma constante `const player` recebendo `=` uma instância de um Novo Jogador `new Player(` chamado `'P1',` do Tipo "O" `PlayerType.O)` recebendo 10 pontos `.addScore(10)` esperando que o Nome `expect(player.name)` seja "P1" `.toBe('P1')` esperando que o Tipo `expect(player.type)` seja "O" `.toBe(PlayerType.O)` esperando que a Pontuação `expect(player.score)` seja "10" `.toBe(10)})`.
+
+```ts
+// player.test.ts
+
+...
+test('Deve adicionar 10 pontos ao Jogador!', () => {
+  const player = new Player('P1', PlayerType.O).addScore(10)
+  expect(player.name).toBe('P1')
+  expect(player.type).toBe(PlayerType.O)
+  expect(player.score).toBe(10)
+})
+...
+```
+
+Agora iremos realizar o teste para limpar a pontuação do Jogador, crie um teste `test(` informe a mensagem sobre o teste `'Deve limpar a Pontuação existente dos Jogadores.',` defina uma Arrow Function onde conterá a lógica do teste `() => {` crie uma constante `const player` recebendo `=` uma instância de um Novo Jogador `new Player(` chamado `'P1',` do Tipo "O" `PlayerType.O,` que possui 100 pontos `100)` limpa a Pontuação `.clear()` espera que o Nome `expect(player.name)` seja "P1" `.toBe('P1')` espera que o Tipo `expect(player.type)` seja "O" `.toBe(PlayerType.O)` espera que a Pontuação `expect(player.score)` seja "0" `.toBe(0)})`.
+
+```ts
+// player.test.ts
+
+...
+test('Deve limpar a Pontuação existente dos Jogadores.', () => {
+  const player = new Player('P1', PlayerType.O, 100).clear()
+  expect(player.name).toBe('P1')
+  expect(player.type).toBe(PlayerType.O)
+  expect(player.score).toBe(0)
+})
+...
+```
+
+Com esse último teste, finalizamos a Classe Player com 100% de cobertura de testes.
+
+```zsh
+// Terminal
+
+$ npm test
+
+ PASS  test/player/player.test.ts
+  √ Deve retornar a mesma instância quando quando adicionar 0 pontos. (9 ms)
+  √ Deve mudar de Jogador quando adicionar ponto ao Jogador Atual.
+  √ Deve adicionar 10 pontos ao Jogador!
+  √ Deve limpar a Pontuação existente dos Jogadores.
+
+------------|---------|----------|---------|---------|-------------------
+File        | % Stmts | % Branch | % Funcs | % Lines | Uncovered Line #s
+------------|---------|----------|---------|---------|-------------------
+All files   |     100 |      100 |     100 |     100 |
+ src        |     100 |      100 |     100 |     100 |
+  index.ts  |     100 |      100 |     100 |     100 |
+ src/player |     100 |      100 |     100 |     100 |
+  Player.ts |     100 |      100 |     100 |     100 |
+------------|---------|----------|---------|---------|-------------------
+Test Suites: 1 passed, 1 total
+Tests:       4 passed, 4 total
+Snapshots:   0 total
+Time:        4.782 s, estimated 5 s
+Ran all test suites.
 ```
