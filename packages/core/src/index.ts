@@ -1,4 +1,4 @@
+import { PlayerType } from '../shared/PlayerType'
+import Player from './player/Player'
 
-export function somar(a: number, b: number){
-    return a + b
-}
+export { PlayerType, Player }
