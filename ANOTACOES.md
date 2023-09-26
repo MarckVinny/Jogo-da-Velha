@@ -888,3 +888,33 @@ Terenos quatro casos de teste:
       })
       ...
       ```
+
+Com isso, temos 100% de cobertura nos Testes Unitários da Classe Cell, abaixo temos o resultado dos testes.  
+
+```zsh
+// Terminal
+
+$ npm test
+
+> core@1.0.0 test
+> jest --watchAll --collectCoverage
+ PASS  test/shared/cell.test.ts
+ PASS  test/player/player.test.ts
+----------------|---------|----------|---------|---------|-------------------
+File            | % Stmts | % Branch | % Funcs | % Lines | Uncovered Line #s
+----------------|---------|----------|---------|---------|-------------------
+All files       |     100 |      100 |     100 |     100 |
+ src            |     100 |      100 |     100 |     100 |
+  index.ts      |     100 |      100 |     100 |     100 |
+ src/player     |     100 |      100 |     100 |     100 |
+  Player.ts     |     100 |      100 |     100 |     100 |
+ src/shared     |     100 |      100 |     100 |     100 |
+  Cell.ts       |     100 |      100 |     100 |     100 |
+  PlayerType.ts |     100 |      100 |     100 |     100 |
+----------------|---------|----------|---------|---------|-------------------
+
+Test Suites: 2 passed, 2 total
+Tests:       8 passed, 8 total
+Snapshots:   0 total
+Time:        4.869 s, estimated 6 s
+```
