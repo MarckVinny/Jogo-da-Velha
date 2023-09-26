@@ -11,6 +11,9 @@ ___
 - [Criando o Diretório Compartilhado](#criando-o-diretório-compartilhado)
 - [Criando a Classe Player](#criando-a-classe-player)
 - [Criando os Testes Unitários para o Player](#criando-os-testes-unitários-para-o-player)
+- [Criando a Classe Cell](#criando-a-classe-cell)
+- [Criando os Testes Unitários da Classe Cell](#criando-os-testes-unitários-da-classe-cell
+)
 
 ___
 
@@ -731,7 +734,7 @@ export default class Cell {
 ...
 ```
 
-Agora iremos criar Comportamentos Ricos, que irão ajudar a trabalhar com a Célula, o primeiro comportamento será um Método que irá marcar com um Tipo *("X" ou "O")* `markWith(` recebendo como parâmetro o Tipo `type: PlayerType):` crie uma Instância da Célula `Cell` então `{` verifique Se `if(` a Célula tem um Tipo ou Não `this.type === null)` Se já estiver marcada, retorne a mesma instancia *(Jogador Atual)* `return this` Se não estiver marcado, crie uma Nova Célula `return new Cell(` com a Linha Atual `this.row,` com a Coluna Atual `this.col,` e com o Tipo passado por parâmetro `type)} }`
+Agora iremos criar Comportamentos Ricos, que irão ajudar a trabalhar com a Célula, o primeiro comportamento será um Método que irá marcar com um Tipo *("X" ou "O")* `markWith(` recebendo como parâmetro o Tipo `type: PlayerType):` crie uma Instância da Célula `Cell` então `{` verifique Se `if(` a Célula tem um Tipo ou Não `this.type !== null)` Se já estiver marcada, retorne a mesma instancia *(Jogador Atual)* `return this` Se não estiver marcado, crie uma Nova Célula `return new Cell(` com a Linha Atual `this.row,` com a Coluna Atual `this.col,` e com o Tipo passado por parâmetro `type)} }`
 
 ```ts
 // Cell.ts
@@ -739,7 +742,7 @@ Agora iremos criar Comportamentos Ricos, que irão ajudar a trabalhar com a Cél
 ...
   //? Marca com o Tipo do Jogador "X" ou "O"
   markWith(type: PlayerType): Cell {
-    if (this.type === null) return this //* Se estiver ocupado, retorne o Jogador Atual
+    if (this.type !== null) return this //* Se estiver ocupado, retorne o Jogador Atual
     return new Cell( //* Retorna uma Nova Instância da Célula
       this.row, //* na mesma linha
       this.col, //* na mesma coluna
@@ -776,3 +779,112 @@ Agora, para verificar se a Célula está ocupada, crie o Método `isNotEmpty():`
   }
 ...
 ```
+
+[^ Sumário ^](#sumário)
+
+## Criando os Testes Unitários da Classe Cell
+
+Primeiro, precisamos entrar no Diretório/Pasta `/test` para que possamos executar os Testes Unitário para a Classe Cell, e precisamos criar um Diretório/Pasta chamado `/shared` e dentro dele, crie uma aquivo chamado `cell.test.ts` e dentro deste arquivo, vamos definir nosso Testes Unitários.  
+
+Antes de tudo, precisamos atualizar o arquivo `index.ts` que se encontra dentro de `/src/shared` e importar a Classe Cell e depois exporta-la para que possamos utilizar no teste e em outras partes da aplicação.  
+
+```ts
+// index.ts
+
+import { PlayerType } from './shared/PlayerType'
+import Cell from './shared/Cell'
+import Player from './player/Player'
+
+export { Cell, PlayerType, Player }
+```
+
+Terenos quatro casos de teste:  
+
+1. Defina um Teste que cria uma Célula preenchida.  
+
+    - `test(` defina a mensagem `'Deve criar uma Célula preenchida.',` defina uma Arrow Function `() => {`
+    - defina uma constante `const` chamada `cell` que recebe `=` uma Nova Instância da Célula `new Cell(` na Linha `0,` e na Coluna `2,` preenchida com o Jogador "X" `PlayerType.X)`
+    - espera-se que `expect(` a Linha `cell.row)` seja o valor ZERO `.toBe(0)`
+    - espera-se que `export(` a Coluna `cell.col)` seja o valor DOIS `.toBe(2)`
+    - espera-se que `expect(` o Tipo `type)` seja `.toBe(PlayerType.X)`
+    - espera-se que `expect(` que o Método `isEmpty())` seja FALSO `.toBeFalsy()`
+    - espera-se `expect(` que o Método `isNotEmpty())` seja VERDADEIRO `.toBeTruthy()})`.  
+
+      ```ts
+      // cell.test.ts
+
+      test('Deve criar uma Célula preenchida com o Jogador X.', () => {
+          const cell = new Cell (0, 2, PlayerType.X) //* Cria uma Célula preenchida na Posição (0,2)
+          expect(cell.row).toBe(0) //* verifica se é a Linha 0
+          expect(cell.col).toBe(2) //* verifica se é a coluna 2
+          expect(cell.type).toBe(PlayerType.X) //* verifica se é o Jogador X
+          expect(cell.isEmpty()).toBeFalsy() //* verifica se está vazio FALSO
+          expect(cell.isNotEmpty()).toBeTruthy() //* verifica se está preenchido VERDADEIRO
+      })
+      ...
+      ```
+
+2. Defina um Teste que cria uma Célula Vazia.
+
+    - `test(` defina a mensagem `'Deve criar uma Célula Vazia.',` defina uma Arrow Function `() => {`
+    - defina uma constante `const` chamada `cell` recebendo `=` uma Nova Instancia da Célula `new Cell(` na Linha `0,` na Coluna `2)`
+    - espera-se que `expect(` a Linha `cell.row)` seja o valor ZERO `.toBe(0)`
+    - espera-se que `expect(` a Coluna `cell.col)` seja o valor DOIS `.toBe(2)`
+    - espera-se que `expect(` o Tipo `cell.type)` seja NULO `,toBeNull()`
+    - espera-se que `expect(` que o Método `isEmpty())` seja VERDADEIRO `.toBeTruthy()`
+    - espera-se que `expect(` que o Método `isNotEmpty())` seja FALSO `.toBeFalsy()})`.
+
+      ```ts
+      // cell.test.ts
+
+      ...
+      test('Deve criar uma Célula Vazia.', () => {
+        const cell = new Cell(0, 2) //*Cria uma Célula Vazia na Posição (0,2)
+        expect(cell.row).toBe(0) //* verifica se é a Linha 0
+        expect(cell.col).toBe(2) //*verifica se é a coluna 2
+        expect(cell.type).toBeNull() //* verifica se é um Jogador
+        expect(cell.isEmpty()).toBeTruthy() //*verifica se está vazio "VERDADEIRO"
+        expect(cell.isNotEmpty()).toBeFalsy() //* verifica se está preenchido "FALSO"
+      })
+      ...
+      ```
+
+3. Defina um Teste, que cria uma Célula Vazia e transformar em uma Célula Preenchida.
+
+    - `test(` defina a mensagem `'Deve Criar uma Célula Vazia e transformar em uma Célula Preenchida.',` defina uma Arrow Function `() => {`
+    - defina uma constante `const` chamada `emptyCell` recebendo `=` uma Nova Instância da Célula `new Cell(` na Linha `0,` na Coluna `2)`
+    - espera-se que `expect(` o Tipo da Célula Vazia `emptyCell.type)` seja NULO `.toBeNull()`
+    - defina uma constante `const` chamada `cell` recebendo `=` a constante `emptyCell` marque a Célula como Preenchida `.markWith(` com o Jogador X `PlayerType.X)})`.
+
+      ```ts
+      // cell.test.ts
+
+      ...
+      test('Deve criar uma Célula Vazia e transformar em uma Célula Preenchida.', () => {
+        const emptyCell = new Cell(0, 2)
+        expect(emptyCell.type).toBeNull()
+
+        const cell = emptyCell.markWith(PlayerType.O)
+        expect(cell.type).toBe(PlayerType.O)
+      })
+      ...
+      ```
+
+4. Defina um Teste, que ignore uma marcação em uma Célula Preenchida.
+
+    - `teste(` defina a mensagem `'Deve ignorar uma marcação em uma Célula já Preenchida.', () => {`
+    - defina uma constante `const` chamada `cell` recebendo `=` uma Nova Instância da Célula `new Cell(` na Linha `0,` na Coluna `2)` marque a Célula como Preenchida `.markWith(` com o Jogador X `PlayerType.O)`
+    - defina uma constante `const` chamada `sameCell` recebendo `=` a marcação `cell.markWith(` com o Jogador X`PlayerType.X)`
+    - espera-se que `expect(` a Célula Preenchida `cell` é estritamente igual `===` a Célula Preenchida `sameCell)` seja VERDADEIRO `.toBeTruthy()})`.
+
+      ```ts
+      // cell.test.ts
+
+      ...
+      test('Deve ignorar uma marcação em uma Célula já Preenchida.', () => {
+        const cell = new Cell(0, 2).markWith(PlayerType.O) //* Marcar a Posição (0, 2) com Jogador O
+        const sameCell = cell.markWith(PlayerType.X) //* Se tentar marcar a mesma Célula com o Jogador X
+        expect(cell === sameCell).toBeTruthy() //* Se as Duas Células estão Preenchidas, não deve fazer nada.
+      })
+      ...
+      ```
