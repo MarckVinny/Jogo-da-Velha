@@ -706,3 +706,73 @@ Snapshots:   0 total
 Time:        4.782 s, estimated 5 s
 Ran all test suites.
 ```
+
+[^ Sumário ^](#sumário)
+
+## Criando a Classe Cell
+
+Quando pensamos em Jogo da Velha, a célula "Cell" é o Elemento Base do jogo.  
+É o Elemento que possui diversos Estados podendo estar *(vazio, preenchido com 'X', preenchido com 'O')*, ela será usada não só no jogo como também na Interface, por esse motivo, esta Classe será criada no Diretório/Pasta Compartilhada `/shared`.  
+
+Então, entre no Diretório/Pasta `/shared` e crie uma Classe chamada `Cell.ts` e dentro do arquivo iremos definir a Classe com Atributos Imutáveis (readonly - somente leitura), esporte por padrão `export default` a Classe Cell `class Cell {` defina o Construtor `constructor(` defina uma Linha `readonly row: number,` defina uma Coluna `readonly col: number,` e defina um Tipo de Jogador que marcou a Célula `readonly type: PlayerType` e pode estar NULO/vazio `| null = null){}`.  
+
+```ts
+// Cell.ts
+
+import { PlayerType } from './PlayerType'
+
+//? Classe Imutável "somente leitura - readonly"
+export default class Cell {
+  constructor(
+    readonly row: number,
+    readonly col: number,
+    readonly type: PlayerType | null = null
+  ) {}
+...
+```
+
+Agora iremos criar Comportamentos Ricos, que irão ajudar a trabalhar com a Célula, o primeiro comportamento será um Método que irá marcar com um Tipo *("X" ou "O")* `markWith(` recebendo como parâmetro o Tipo `type: PlayerType):` crie uma Instância da Célula `Cell` então `{` verifique Se `if(` a Célula tem um Tipo ou Não `this.type === null)` Se já estiver marcada, retorne a mesma instancia *(Jogador Atual)* `return this` Se não estiver marcado, crie uma Nova Célula `return new Cell(` com a Linha Atual `this.row,` com a Coluna Atual `this.col,` e com o Tipo passado por parâmetro `type)} }`
+
+```ts
+// Cell.ts
+
+...
+  //? Marca com o Tipo do Jogador "X" ou "O"
+  markWith(type: PlayerType): Cell {
+    if (this.type === null) return this //* Se estiver ocupado, retorne o Jogador Atual
+    return new Cell( //* Retorna uma Nova Instância da Célula
+      this.row, //* na mesma linha
+      this.col, //* na mesma coluna
+      type //* contendo o mesmo tipo recebido por parâmetro
+    )
+  }
+...
+```
+
+Agora, iremos criar mais dois Métodos para verificar se a Célula está vazia ou não.  
+
+Crie o Método chamado `isEmpty():` que irá verificar se é Falso ou Verdadeiro `boolean` então `{` irá retornar `return` Verdadeiro se a Célula estiver Vazia `this.type === null}`.  
+
+```ts
+// Cell.ts
+
+...
+  //? Verdadeiro se a Célula estiver Vazia
+  isEmpty(): boolean{
+    return this.type === null
+  }
+...
+```
+
+Agora, para verificar se a Célula está ocupada, crie o Método `isNotEmpty():` que irá verificar se é Falso ou Verdadeiro `boolean` então `{` retorne `return` e usar a Negação Lógica `!` neste `this` Método `.isEmpty()`.
+
+```ts
+// Cell.ts
+
+...
+  //? Verdadeiro se a Célula estiver Ocupada
+  isNotEmpty(): boolean {
+    return !this.isEmpty()
+  }
+...
+```
