@@ -1,4 +1,4 @@
-import { PlayerType } from '../../shared/PlayerType'
+import { PlayerType } from '../shared/PlayerType'
 
 export default class Player {
   constructor(
