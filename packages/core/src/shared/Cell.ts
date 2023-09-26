@@ -10,7 +10,7 @@ export default class Cell {
 
   //? Marca com o Tipo do Jogador "X" ou "O"
   markWith(type: PlayerType): Cell {
-    if (this.type === null) return this //* Se estiver ocupado, retorne o Jogador Atual
+    if (this.type !== null) return this //* Se estiver ocupado, retorne o Jogador Atual
     return new Cell( //* Retorna uma Nova Instância da Célula
       this.row, //* na mesma linha
       this.col, //* na mesma coluna
