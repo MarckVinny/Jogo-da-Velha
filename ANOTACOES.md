@@ -556,7 +556,7 @@ Ainda dentro da Classe Player, crie um Método chamado `addScore(` que recebe co
 ...
 ```
 
-Outro comportamento Rico que teremos será quando quisermos Limpar a Pontuação, ainda dentro da Classe Player, crie um Método chamado `clear():` crie uma instancia Jogador `Player` então `{` retorne `return` um Novo Jogador `new Player(` com o mesmo nome `this.name,` o mesmo tipo `this.type,` e com o Score ZERADO `0)} }`, que é o que acontecerá assim que terminar a partida, quando clicar no botão `zerar`.  
+Outro comportamento Rico que teremos será quando quisermos Limpar a Pontuação, ainda dentro da Classe Player, crie um Método chamado `clear()` que retorna `:` uma instancia Jogador `Player` então `{` retorne `return` um Novo Jogador `new Player(` com o mesmo nome `this.name,` o mesmo tipo `this.type,` e com o Score ZERADO `0)} }`, que é o que acontecerá assim que terminar a partida, quando clicar no botão `zerar`.  
 
 Com isso, temos um Objeto que já possui o comportamento de ZERAR a pontuação e podemos utilizar este comportamento.
 
@@ -734,7 +734,7 @@ export default class Cell {
 ...
 ```
 
-Agora iremos criar Comportamentos Ricos, que irão ajudar a trabalhar com a Célula, o primeiro comportamento será um Método que irá marcar com um Tipo *("X" ou "O")* `markWith(` recebendo como parâmetro o Tipo `type: PlayerType):` crie uma Instância da Célula `Cell` então `{` verifique Se `if(` a Célula tem um Tipo ou Não `this.type !== null)` Se já estiver marcada, retorne a mesma instancia *(Jogador Atual)* `return this` Se não estiver marcado, crie uma Nova Célula `return new Cell(` com a Linha Atual `this.row,` com a Coluna Atual `this.col,` e com o Tipo passado por parâmetro `type)} }`
+Agora iremos criar Comportamentos Ricos, que irão ajudar a trabalhar com a Célula, o primeiro comportamento será um Método que irá marcar com um Tipo *("X" ou "O")* `markWith(` recebendo como parâmetro o Tipo `type: PlayerType)` que retorna `:` uma Instância da Célula `Cell` então `{` verifique Se `if(` a Célula tem um Tipo ou Não `this.type !== null)` Se já estiver marcada, retorne a mesma instancia *(Jogador Atual)* `return this` Se não estiver marcado, crie uma Nova Célula `return new Cell(` com a Linha Atual `this.row,` com a Coluna Atual `this.col,` e com o Tipo passado por parâmetro `type)} }`
 
 ```ts
 // Cell.ts
@@ -754,7 +754,7 @@ Agora iremos criar Comportamentos Ricos, que irão ajudar a trabalhar com a Cél
 
 Agora, iremos criar mais dois Métodos para verificar se a Célula está vazia ou não.  
 
-Crie o Método chamado `isEmpty():` que irá verificar se é Falso ou Verdadeiro `boolean` então `{` irá retornar `return` Verdadeiro se a Célula estiver Vazia `this.type === null}`.  
+Crie o Método chamado `isEmpty()` que retorna `:` Falso ou Verdadeiro `boolean` então `{` irá retornar `return` Verdadeiro se a Célula estiver Vazia `this.type === null}`.  
 
 ```ts
 // Cell.ts
@@ -767,7 +767,7 @@ Crie o Método chamado `isEmpty():` que irá verificar se é Falso ou Verdadeiro
 ...
 ```
 
-Agora, para verificar se a Célula está ocupada, crie o Método `isNotEmpty():` que irá verificar se é Falso ou Verdadeiro `boolean` então `{` retorne `return` e usar a Negação Lógica `!` neste `this` Método `.isEmpty()`.
+Agora, para verificar se a Célula está ocupada, crie o Método `isNotEmpty()` que retorna `:` Falso ou Verdadeiro `boolean` então `{` retorne `return` e usar a Negação Lógica `!` neste `this` Método `.isEmpty()`.
 
 ```ts
 // Cell.ts
@@ -918,3 +918,208 @@ Tests:       8 passed, 8 total
 Snapshots:   0 total
 Time:        4.869 s, estimated 6 s
 ```
+
+[^ Sumário ^](#sumário)
+
+## Criando a Classe Board
+
+A Classe Board, será responsável gerar o Tabuleiro, ele depende da Célula e do Jogador.  
+
+Então, dentro do Diretório/Pasta `/src`, crie um Diretório/Pasta chamado `/game` e dentro desta pasta, crie o arquivo chamado `Board.ts` que será nossa Classe do Tabuleiro.  
+
+A Classe Board é uma Classe Rica que irá gerenciar uma Matriz de Células através de seu atributo interno.  
+
+Estaremos definindo o Construtor de forma privada, para que somente possa ser criado uma Instância através do Método Estático `empty()`.  
+
+Então, dentro do arquivo `Board.ts`, esporte por padrão `export default` a Classe `class` chamada `Board` então `{` defina um Construtor Privado `private constructor(` defina um Atributo somente leitura `readonly` chamado `state:` que será uma Matriz de Células `Cell [][]) {}`
+
+```ts
+// Board.ts
+
+import Cell from '../shared/Cell'
+
+export default class Board {
+  private constructor(readonly state: Cell[][]) {}
+  
+  ...
+```
+
+Defina um Método Estático `static` Vazio `empty()` que retorna `:` uma Instância de Tabuleiro `Board` 3x3 Vazio, então, `{`  
+retorne `return` um Novo Tabuleiro `new Board(`contendo uma Matriz de Células `[`  
+defina a primeira Linha do Tabuleiro `[` crie uma Nova instância da Célula `new Cell(` na Linha `0,` na Coluna `0),` crie uma Nova Célula `new Cell(` na Linha `0,` na Coluna `1),` crie uma Nova Célula `new Cell(` na Linha `0,` na Coluna `2)],`  
+defina a segunda Linha do Tabuleiro `[` crie uma Nova instância da Célula `new Cell(` na Linha `1,` na Coluna `0),` crie uma Nova Célula `new Cell(` na Linha `1,` na Coluna `1),` crie uma Nova Célula `new Cell(` na Linha `1,` na Coluna `2)],`  
+defina a terceira Linha do Tabuleiro `[` crie uma Nova instância da Célula `new Cell(` na Linha `2,` na Coluna `0),` crie uma Nova Célula `new Cell(` na Linha `2,` na Coluna `1),` crie uma Nova Célula `new Cell(` na Linha `2,` na Coluna `2)], ]) }`
+
+> ***Observação:***  
+Como a Célula já é definida com o valor padrão Tipo `type` sendo Nulo `null = null` na Classe Cell, não será preciso definir seu tipo na criação das Células no Tabuleiro.
+
+```ts
+// Board.ts
+
+  ...
+  static empty(): Board {
+    return new Board([
+      [new Cell(0, 0), new Cell(0, 1), new Cell(0, 2)],
+      [new Cell(1, 0), new Cell(1, 1), new Cell(1, 2)],
+      [new Cell(2, 0), new Cell(2, 1), new Cell(2, 2)]
+    ])
+  }
+...
+```
+
+Agora, iremos definir dois Comportamentos para que possamos saber, quantas Linhas `rows()` e quantas Colunas `cols()` tem dentro do Tabuleiro `Board([][])`, sendo que a quantidade de Linhas `this.state.length`, é primeiro Array `Board([]...)` e a quantidade de Colunas `this.state[0].length` é o Array mais externo `Board(...[])`.
+
+Então, crie um Método que pega `get` a Linha `rows()` e retorna um número `: number` então`{` retorne o numero de Linhas deste Tabuleiro `return this.state.length} }`
+
+```ts
+// Board.ts
+
+  ...
+  //? Pega quantidade de Linhas do Tabuleiro
+  get rows(): number {
+    return this.state.length
+  }
+  ...
+```
+
+Então, crie um Método que pega `get` a Linha `cols()` e retorna um número `: number` então`{` retorne o numero de colunas deste Tabuleiro `return this.state[0].length}`
+
+```ts
+// Board.ts
+
+  ...
+  //? Pega quantidade de Colunas do Tabuleiro
+  get cols(): number {
+    return this.state[0].length
+  }
+  ...
+```
+
+Agora iremos criar um Método que irá pegar todos os Itens teste Array de Arrays, e de uma forma linear, colocar em um único Array para que possa ser percorrido através de um Laço For.  
+
+Então, crie um Método que pega `get` os Itens `items()` que retorna `:` um Array de Células `Cell []` então, `{` retorne `return` o Estado interno Tabuleiro `this.state` chamando o Método `.flat() }` que irá retirar todos os elementos dos Arrays internos e transformará em um único Array.  
+
+```ts
+// Board.ts
+
+  ...
+  //? Pega todos os Itens do Array de Arrays
+  //? e transforma em um único Array
+  get items(): Cell[] {
+    return this.state.flat()
+  }
+  ...
+```
+
+Também iremos definir Método `get()` que irá pegar um Elemento Célula `Cell()` a partir de uma posição Linha `row: number` e Coluna `col: number`, assim, se for passado uma posição (row, col) que não existe, ele não retornará nada `null`, mas, caso encontre irá retornar uma Célula `Cell()`.  
+
+Então, crie o Método `get(` que recebe como parâmetro um Linha `row: number,` e uma Coluna `col: number)` que retorna `:` uma Célula `Cell` ou `|` um valor NULO `null` então, `{`  
+retorne `return` o estado deste Tabuleiro `this.state`Se existir a posição `[row]?.[col]` no tabuleiro, Senão `??` retorne NULO `null }`  
+
+```ts
+// Board.ts
+
+  ...
+  //? Pega a posição de uma Célula
+  get(row: number, col: number): Cell | null {
+    return this.state[row]?.[col] ?? null
+  }
+  ...
+```
+
+Agora, iremos definir o Método `isEmpty()` que irá verificar a Célula que acabamos de pegar com o Método `get()` está ou não Vazia.  
+
+Então, crie o Método chamado `isEmpty(` que recebe como parâmetro uma Linha `row: number,` e uma Colune `col: number)` que retorna `:` VERDADEIRO ou FALSO `boolean` então, `{`  
+retorne `return` a posição desta Célula possivelmente NULA `this.get(row, col)` Se não for NULO `?`, chama o Método `.isEmpty()` Senão `??` retorne VERDADEIRO `true }`  
+
+> ***DICA:***  
+`?? true:` O operador `??` é o operador de ***coalescência nula*** *(nullish coalescing operator)*.  
+Ele retorna o valor à esquerda se não for nulo ou indefinido, caso contrário, retorna o valor à direita.  
+Neste caso, se a chamada `this.get(row, col)?.isEmpty()` retornar nulo *(ou indefinido)*, a expressão inteira será avaliada como `true`.
+>
+> Portanto, a função `isEmpty` faz o seguinte:
+>
+> Ela chama o método `get` com as coordenadas `row` e `col`.  
+Se o objeto retornado por `get` não for nulo, ela tenta chamar o método `isEmpty` nesse objeto.
+Se o objeto retornado por `get` for nulo ou o método `isEmpty` não existir, a função retorna `true` *(assumindo que a célula está vazia, pois não há informação contrária disponível)*.
+
+```ts
+// Board.ts
+
+  ...
+  //? Verifica se a Célula está Vazia
+  isEmpty(row: number, col: number): boolean {
+    return this.get(row, col)?.isEmpty() ?? true
+  }
+  ...
+```
+
+Agora, iremos fazer a verificação contrária `isNotEmpty()`, ou seja, verificar se a Célula está Preenchida.
+
+Então, crie o Método chamado `isNotEmpty(` que recebe como parâmetro uma Linha `row: number,` e uma Colune `col: number)` que retorna `:` VERDADEIRO `boolean {`  
+`return` Se a posição desta Célula Não `!` estiver Vazia `this.isEmpty(row, col)`  
+
+```ts
+// Board.ts
+
+  ...
+  //? Inverte a verificação de Vazio (está Preenchida)
+  isNotEmpty(row: number, col: number): boolean {
+    return !this.isEmpty(row, col)
+  }
+  ...
+```
+
+Agora, iremos definir o Método que irá verificar se o Tabuleiro está completo `isFull()`, com todas as Células preenchidas, pois, isso será importante para verificar se houve Empate, pois, se o Tabuleiro estiver completo e não houve um vencedor, significa que houve empate.
+
+Então, crie um Método chamado `isFull()` retornando `:` VERDADEIRO `boolean {`
+`return` Se todos os Itens desta `this.items.every((` Célula `cell)` tiver `=>` o Tipo da Célula `cell.type` estritamente diferente`!==` de NULO `null) }`
+
+```ts
+// Board.ts
+
+  ...
+  //? Verifica se o Tabuleiro está todo Preenchido
+  isFull(): boolean {
+    return this.items.every((cell) => cell.type !== null)
+  }
+  ...
+```
+
+Até aqui, nenhum Método criado muda o Estado do Tabuleiro, mas, o Método que irá efetivamente modificar o Estado do Tabuleiro, será o Método `set()`.  
+
+Então, crie o Método chamado `set(` passando por parâmetro u número da Linha `row: number,` o número da Coluna `col: number,` e o Tipo do Jogador `type: PlayerType)` retornando `:` uma nova Instancia do Tabuleiro `Board` com o Estado alterado, então,`{`  
+defina uma constante `const` chamada `cell` que recebe `=` esta posição `this.get(` da Linha `row,` e da Coluna `col)`  
+Se `if(` a Célula Não existe `!cell` ou `||` a Célula Não está Vazia `cell.isNotEmpty())` retorne a própria Instância `return this`, ou seja, retorna o mesmo Tabuleiro
+
+```ts
+// Board.ts
+
+  ...
+  set(row: number, col: number, type: PlayerType): Board{
+    const cell = this.get(row, col)
+    if(!cell || cell.isNotEmpty()) return this
+
+    ...
+```
+
+Mas, se Não está Vazia significa que irá pegar um Estado Clonado e a partir deste Estado, alteramos o Elemento que está sendo setado, para marcar com o Tipo recebido por parâmetro e no final gera um novo Tabuleiro com o Estado alterado.  
+
+Então, crie uma constante `const` chamada `state` recebendo `=` o Estado Atual deste Tabuleiro `this.state` criando uma nova matriz com o Método `.map(`recebendo como parâmetro da Função Callback uma Linha `(row) =>`criando um clone da linha atual usando o operador de propagação (...)`[...row])`  
+
+Isso é feito para garantir que não estamos modificando diretamente o estado atual, seguindo o princípio de imutabilidade.  
+A partir do Estado Clonado `state` pegamos a posição da Célula `[row][coll]` recebendo `=` a posição Atualizada `state[row][col]` e marcando com o Tipo do Jogador `.markWith(type)`  
+Para finalizar, retornamos `return` uma Nova Instância do Tabuleiro `new Board(` com o Estado Atualizado `state) } }`
+
+```ts
+// Board.ts
+
+    ...
+    const state = this.state.map((row) => [...row])
+    state[row][col] = state[row][col].markWith(type)
+    return new Board(state)
+  }
+}
+```
+
+Com isso finalizamos a Classe Board, onde criamos uma Classe com Atributos imutáveis e com diversos comportamentos onde somente o Método `set()` tem a possibilidade de realizar alterações na Célula, marcando ela com o Tipo do Jogador.
