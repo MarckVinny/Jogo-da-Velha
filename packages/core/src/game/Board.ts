@@ -49,6 +49,7 @@ export default class Board {
     return this.items.every((cell) => cell.type !== null)
   }
 
+  //? Marca a Célula com uma Jogada
   set(row: number, col: number, type: PlayerType): Board{
     const cell = this.get(row, col)
     if(!cell || cell.isNotEmpty()) return this
