@@ -14,6 +14,7 @@ ___
 - [Criando a Classe Cell](#criando-a-classe-cell)
 - [Criando os Testes Unitários da Classe Cell](#criando-os-testes-unitários-da-classe-cell
 )
+- [Criando Testes Unitários da Classe Board](#criando-testes-unitários-da-classe-board)
 
 ___
 
@@ -1123,3 +1124,133 @@ Para finalizar, retornamos `return` uma Nova Instância do Tabuleiro `new Board(
 ```
 
 Com isso finalizamos a Classe Board, onde criamos uma Classe com Atributos imutáveis e com diversos comportamentos onde somente o Método `set()` tem a possibilidade de realizar alterações na Célula, marcando ela com o Tipo do Jogador.
+
+[^ Sumário ^](#sumário)
+
+## Criando Testes Unitários da Classe Board
+
+Então, dentro do Diretório/Pasta `/src/test`, crie uma pasta chamada `/game` e dentro, crie um arquivo chamado `Board.test.ts` e em seguida crie os seguintes testes:  
+
+1. Crie um Teste que cria um Tabuleiro Vazio;  
+`test(`mensagem do teste`'Deve criar um Tabuleiro Vazio.',` crie uma Arrow Function `() => {`  
+crie uma constante `const` chamada `board` recebendo `=` um Tabuleiro Vazio `Board.empty()`  
+espera-se `expect(`que a quantidade de Linhas `board.row)` seja 3`.toBe(3)`  
+espera-se `expect(`que a quantidade de Colunas `board.col)`seja 3`.toBe(3)`  
+espera-se `expect(`que o Tabuleiro Preenchido `board.isFull())`seja FALSO `.toBeFalsy()})`
+
+    ```ts
+    // Board.test.ts
+
+    import { PlayerType } from '../../src'
+    import Board from '../../src/game/Board'
+
+    test('Deve criar um Tabuleiro Vazio.', () => {
+      const board = Board.empty() //* Cria um Tabuleiro Vazio
+      expect(board.rows).toBe(3) //* Verifica se tem 3 Linas
+      expect(board.cols).toBe(3) //* Verifica se tem 3 Colunas
+      expect(board.isFull()).toBeFalsy() //* Verifica se o Tabuleiro está Preenchido "FALSO"
+    })
+    ...
+    ```
+
+2. Crie um Teste contendo todos os Itens do Tabuleiro:  
+`test(`mensagem do teste`'Deve retornar todas as Células do Tabuleiro.',` crie uma Arrow Function `() => {`  
+crie uma constante `const` chamada `board` recebendo `=` um Tabuleiro Vazio `Board.empty()`  
+espera-se `expect(`que a quantidade de Itens do Tabuleiro `board.items.length)` seja 9`.toBe(9) })`  
+
+    ```ts
+    // Board.test.ts
+
+    ...
+    test('Deve retornar todas a Células do Tabuleiro', () => {
+      const board = Board.empty() //* Cria um Tabuleiro Vazio
+      expect(board.items.length).toBe(9) //* Verifica a quantidade de Itens do Tabuleiro "9"
+    })
+
+    ...
+    ```
+
+3. Crie um Teste para marcar a Posição de uma Jogada:  
+`test(`mensagem do teste`'Deve marcar a Posição de uma Jogada (linha, coluna), com o Jogador X.',` crie uma Arrow Function `() => {`  
+crie uma constante `const` chamada `board` recebendo `=` um Tabuleiro Vazio `Board.empty()` marque a Jogada `.set(` na Posição Linha `1,` Coluna `1,` com o Jogador X `PlayerType.X)`  
+espera-se `expect(`que o Tabuleiro Não esteja Vazio `board.isNotEmpty(`na Posição Linha`1,` Coluna `1,))`seja VERDADEIRO`.toBeTruthy()`  
+espera-se `expect(`que o Tabuleiro esteja Vazio `board.isEmpty(`na Posição Linha`1,` Coluna `1,))`seja FALSO`.toBeFalsy() })`  
+
+    ```ts
+    // Board.test.ts
+
+    ...
+    test('Deve marcar a Posição de uma Jogada (linha, coluna), com o Jogador X', () => {
+      const board = Board.empty().set(1, 1, PlayerType.X) //* Cria um Tabuleiro Vazio e marca a Jogada (1, 1) com o Jogador X
+      expect(board.isNotEmpty(1, 1)).toBeTruthy() //* Verifica se a Célula na Posição (1, 1) está marcada "VERDADEIRO"
+      expect(board.isEmpty(1, 1)).toBeFalsy() //* Verifica se a Célula na Posição (1, 1) está vazia "FALSO"
+    })
+    ...
+    ```
+
+4. Crie um Teste que verifique se a Posição da Célula existe no Tabuleiro:  
+`test(`mensagem do teste`'Deve verificar se a Posição da Célula existe no Tabuleiro.',` crie uma Arrow Function `() => {`  
+crie uma constante `const` chamada `board` recebendo `=` um Tabuleiro Vazio `Board.empty()`  
+espera-se `expect(`que o Tabuleiro esteja Vazio `board.isEmpty(`na Posição Linha`10,` Coluna `1,))`seja VERDADEIRO`.toBeTruthy()`  
+espera-se `expect(`que o Tabuleiro Não esteja Vazio `board.isNotEmpty(`na Posição Linha`10,` Coluna `1,))`seja FALSO`.toBeFalsy() })`
+
+    ```ts
+    // Board.test.ts
+
+    ...
+    test('Deve verificar se a Posição da Célula existe no Tabuleiro.', () => {
+      const board = Board.empty() //* Cria um Tabuleiro Vazio
+      expect(board.isEmpty(10, 1)).toBeTruthy() //* Verifica se a Célula na Posição (10, 1) está Vazia "VERDADEIRO", pois a Célula não existe no tabuleiro
+      expect(board.isNotEmpty(10, 1)).toBeFalsy() //* Verifica se a Célula na Posição (10, 1) Não está vazia "FALSO", pois a Célula não existe no tabuleiro
+    })
+    ...
+    ```
+
+5. Crie um Teste que não marca a Jogada se a Posição da Célula existe no Tabuleiro:  
+`test(`mensagem do teste`'Deve ignorar se a Posição da Célula Não existe no Tabuleiro.',` crie uma Arrow Function `() => {`  
+crie uma constante `const` chamada `board` recebendo `=` um Tabuleiro Vazio `Board.empty()`  
+crie uma constante `const` chamada Mesmo Tabuleiro `sameBoard` recebendo `=` uma Jogada Inexistente `Board.set(10, 1, PlayerType.X)`
+espera-se `expect(`que o Tabuleiro esteja Vazio `board` e estritamente igual `===` a Jogada Inexistente `sameBoard)` seja VERDADEIRO`.toBeTruthy()`  
+
+    ```ts
+    // Board.test.ts
+
+    ...
+    test('Deve ignorar se a Posição da Célula Não existe no Tabuleiro', () => {
+      const board = Board.empty() //* Cria um Tabuleiro Vazio
+      const sameBoard = board.set(10, 1, PlayerType.X) //* Cria uma Jogada em uma Posição Inexistente
+      expect(board === sameBoard).toBeTruthy() //* Verifica se o Tabuleiro Vazio e a Jogada Inexistente são estritamente iguais "VERDADEIRO"
+    })
+    ...
+    ```
+
+Com isso, temos 100% de cobertura nos Testes Unitários da Classe Board e podemos conferir na saída do Terminal logo abaixo, executando o comando `npm test` no Terminal, dentro da pasta `/packages/core`.  
+
+```zsh
+// Terminal
+
+$ npm test
+
+ PASS  test/player/player.test.ts
+ PASS  test/shared/cell.test.ts
+ PASS  test/game/Board.test.ts
+----------------|---------|----------|---------|---------|-------------------
+File            | % Stmts | % Branch | % Funcs | % Lines | Uncovered Line #s
+----------------|---------|----------|---------|---------|-------------------
+All files       |     100 |      100 |     100 |     100 |
+ src            |     100 |      100 |     100 |     100 |
+  index.ts      |     100 |      100 |     100 |     100 |
+ src/game       |     100 |      100 |     100 |     100 |
+  Board.ts      |     100 |      100 |     100 |     100 |
+ src/player     |     100 |      100 |     100 |     100 |
+  Player.ts     |     100 |      100 |     100 |     100 |
+ src/shared     |     100 |      100 |     100 |     100 |
+  Cell.ts       |     100 |      100 |     100 |     100 |
+  PlayerType.ts |     100 |      100 |     100 |     100 |
+----------------|---------|----------|---------|---------|-------------------
+
+Test Suites: 3 passed, 3 total
+Tests:       13 passed, 13 total
+Snapshots:   0 total
+Time:        5.835 s, estimated 6 s
+```
