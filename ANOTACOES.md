@@ -15,6 +15,12 @@ ___
 - [Criando os Testes Unitários da Classe Cell](#criando-os-testes-unitários-da-classe-cell
 )
 - [Criando Testes Unitários da Classe Board](#criando-testes-unitários-da-classe-board)
+- [Criando a Classe Game Result](#criando-a-classe-gameresult)
+  - [Verificando se o "Jogador X" Venceu](#verificando-se-o-jogador-x-venceu)
+  - [Verificando se o "Jogador O" Venceu](#verificando-se-o-jogador-o-venceu)
+  - [Verificando se houve Empate](#verificando-se-houve-empate)
+  - [Verificando se o Jogo está em progresso](#verificando-se-o-jogo-está-em-progresso)
+  - [Verificando se a Célula tem a Jogada Vencedora](#verificando-se-a-célula-tem-a-jogada-vencedora)
 
 ___
 
@@ -1254,3 +1260,261 @@ Tests:       13 passed, 13 total
 Snapshots:   0 total
 Time:        5.835 s, estimated 6 s
 ```
+
+[^ Sumário ^](#sumário)
+
+## Criando a Classe GameResult
+
+A Classe GameResult é responsável por gerenciar os Resultados do Jogo, é nela teremos algumas informações importantes, como: as Células que geraram o movimento vencedor, quem ganhou, se houve empate, etc.  
+
+Então, entre no Diretório/Pasta `/packages/core/src` e crie um novo Diretório/Pasta chamado `/result`, dentro, crie um arquivo chamado `GameResult.ts`.  
+
+Importe os Módulos que serão necessários:
+
+```ts
+// GameResult.ts
+
+import Cell from '../shared/Cell'
+import { PlayerType } from '../shared/PlayerType'
+...
+```
+
+Então, exporte por padrão `export default` uma Classe chamada Resultado do Jogo `class GameResult{`  
+Crie o Construtor da Classe `constructor(`  
+Crie o Atributo somente leitura `readonly` chamado Jogada Vencedora `winningMove:` passando todas a Células que representam a Jogada `Cell[] = []`  
+E caso esteja Vazio, será preciso saber se houve Empate, então, crie um Atributo Privado `private` chamado Empate `_tied:` com um valor padrão FALSO`boolean = false){}`
+
+```ts
+// GameResult.ts
+
+...
+export default class GameResult {
+  constructor(
+    readonly winningMove: Cell[] = [],
+    private _tied: boolean = false
+  ) {}
+...
+```
+
+[^ Sumário ^](#sumário)
+
+### Verificando se o "Jogador X" Venceu
+
+Agora iremos verificar se o Jogador X foi o Vencedor, então, crie um Método Getter `get` chamado `xWins()` retornando `:` VERDADEIRO se o Jogador X Venceu `boolean` então,`{`  
+retorne `return` verificando Se o Tipo da primeira Célula na Jogada Vencedora `this.winningMove[0]?.type` seja estritamente igual `===` ao Tipo do Jogador X `PlayerType.X}`
+
+```ts
+// GameResult.ts
+
+...
+  //? Verifica se o Jogador X Venceu
+  get xWins(): boolean {
+    return this.winningMove[0]?.type === PlayerType.X
+  }}
+...
+```
+
+Outra forma que podemos fazer essa verificação é verificando se todas as Células na Jogada Vencedora pertencem ao Jogador X, não apenas a primeira.  
+
+Esta será a forma que iremos utilizar, verificando todas as Células.  
+
+Então, crie um Método Getter `get` chamado `xWins()` retornando `:` VERDADEIRO se o Jogador X Venceu `boolean` então,`{`  
+Verifique inicialmente Se `if(` o tamanho desta Jogada Vencedora `this.winningMove.length` é estritamente igual a ZERO `=== 0)`então,`{`
+retorne FALSO `return false }` com isso, garantimos que há pelo menos uma Célula na Jogada Vencedora.  
+
+```ts
+// GameResult.ts
+
+...
+  //? Verifica se o Jogador X Venceu
+  get xWins(): boolean {
+    //* Verifica se há pelo menos uma Célula na Jogada Vencedora
+    if (this.winningMove.length === 0) {
+      return false
+    }
+    ...
+```
+
+Agora, crie uma constante `const` chamada `playerTypeX` recebendo `=` o Tipo do Jogador X `PlayerType.X`
+
+```ts
+// GameResult.ts
+
+    ...
+    //* Obtém o Tipo do Jogador X
+    const playerTypeX = PlayerType.X
+    ...
+```
+
+Por fim, retorne `return` esta Jogada Vencedora `this.winningMove` teste todos os Elementos do Array `.every(` Se para cada Célula da Jogada Vencedora `cell` verifique `=>` se o Tipo da Célula `cell.type` é estritamente igual `===` ao Tipo do Jogador X `playerTypeX) }`  
+
+```ts
+// GameResult.ts
+
+    ...
+    //* Verifica se todas as células na Jogada Vencedora são do Jogador X
+    return this.winningMove.every((cell) => cell.type === playerTypeX)
+  }
+```
+
+Então, o resultado do Método `.every()` é retornado. Isso significa que a expressão `cell.type === playerTypeX` deve ser VERDADEIRA para todas as Células em `winningMove` para que a expressão completa retorne `true`. Se pelo menos uma Célula tiver um Tipo diferente, a expressão retornará `false`.  
+
+[^ Sumário ^](#sumário)
+
+### Verificando se o "Jogador O" Venceu
+
+Basicamente iremos repetir tudo que fizemos para o Jogador X, sendo que renomeando para Jogador O.  
+
+Iremos verificar se o Jogador O foi o Vencedor, então, crie um Método Getter `get` chamado `oWins()` retornando `:` VERDADEIRO se o Jogador O Venceu `boolean` então,`{`  
+retorne `return` verificando Se o Tipo da primeira Célula na Jogada Vencedora `this.winningMove[0]?.type` seja estritamente igual `===` ao Tipo do Jogador O `PlayerType.O}`
+
+```ts
+// GameResult.ts
+
+...
+  //? Verifica se o Jogador O Venceu
+  get oWins(): boolean {
+    return this.winningMove[0]?.type === PlayerType.O
+  }}
+...
+```
+
+Outra forma que podemos fazer essa verificação é verificando se todas as Células na Jogada Vencedora pertencem ao Jogador O, não apenas a primeira.  
+
+Esta será a forma que iremos utilizar, verificando todas as Células.  
+
+Então, crie um Método Getter `get` chamado `oWins()` retornando `:` VERDADEIRO se o Jogador O Venceu `boolean` então,`{`  
+Verifique inicialmente Se `if(` o tamanho desta Jogada Vencedora `this.winningMove.length` é estritamente igual a ZERO `=== 0)`então,`{`
+retorne FALSO `return false }` com isso, garantimos que há pelo menos uma Célula na Jogada Vencedora.  
+
+```ts
+// GameResult.ts
+
+...
+  //? Verifica se o Jogador O Venceu
+  get oWins(): boolean {
+    //* Verifica se há pelo menos uma Célula na Jogada Vencedora
+    if (this.winningMove.length === 0) {
+      return false
+    }
+    ...
+```
+
+Agora, crie uma constante `const` chamada `playerTypeO` recebendo `=` o Tipo do Jogador O `PlayerType.O`
+
+```ts
+// GameResult.ts
+
+    ...
+    //* Obtém o Tipo do Jogador O
+    const playerTypeO = PlayerType.O
+    ...
+```
+
+Por fim, retorne `return` esta Jogada Vencedora `this.winningMove` teste todos os Elementos do Array `.every(` Se para cada Célula da Jogada Vencedora `cell` verifique `=>` se o Tipo da Célula `cell.type` é estritamente igual `===` ao Tipo do Jogador O `playerTypeO) }`  
+
+```ts
+// GameResult.ts
+
+    ...
+    //* Verifica se todas as células na Jogada Vencedora são do Jogador O
+    return this.winningMove.every((cell) => cell.type === playerTypeO)
+  }
+```
+
+Então, o resultado do Método `.every()` é retornado. Isso significa que a expressão `cell.type === playerTypeO` deve ser VERDADEIRA para todas as Células em `winningMove` para que a expressão completa retorne `true`. Se pelo menos uma Célula tiver um Tipo diferente, a expressão retornará `false`.  
+
+[^ Sumário ^](#sumário)
+
+### Verificando se houve Empate
+
+Iremos verifica se houve um empate quando: não houver vitória do Jogador X `xWins()` e `&&` não houver vitória do Jogador O `oWins()` e a variável empate `_tied` for verdadeiro `true`.  
+
+Então, crie o Método Getter `get` chamado `tied()` retornando `:` VERDADEIRO ou FALSO `boolean` então, `{`  
+retorne `return` Se este Jogador X Não Venceu`!this.xWins` e `&&`  este Jogador O Não Venceu `!this.oWins` e `&&` a variável Empate receber o valor VERDADEIRO `this._tied }`  
+
+```ts
+// GameResult.ts
+
+    ...
+  //? Verifica de Houve Empate
+  get tied(): boolean {
+    //* Retorna Verdadeiro "true" 
+    //* se, xWins Não for Vencedor 
+    //* E oWins Não for Vencedor 
+    //* E _tied receber o valor Verdadeiro "true"
+    return !this.xWins && !this.oWins && this._tied
+  }
+```
+
+[^ Sumário ^](#sumário)
+
+### Verificando se o Jogo está em progresso
+
+Iremos verifica se o Jogo está em progresso quando: o tamanho da Jogada Vencedora for igual a ZERO e Não houver comunicação de Empate.  
+
+Então, crie o Método Getter `get` chamado `inProgress()` retornando `:` VERDADEIRO ou FALSO `boolean` então, `{`  
+retorne `return` Se o tamanho desta Jogada Vencedora `this.winningMove.length` for estritamente igual a ZERO `=== 0` e `&&` a variável Empate receber o valor FALSO `!this._tied }`, significa que o Jogo ainda está acontecendo.  
+
+```ts
+// GameResult.ts
+
+  ...
+  //? Verifica se o Jogo está em Progresso
+  get inProgress(): boolean {
+    //* Retorna Verdadeiro "true"
+    //* Se o tamanho da Jogada Vencedora for igual a ZERO
+    //* E Não houver comunicação de Empate 
+    return this.winningMove.length === 0 && !this._tied
+  }
+```
+
+[^ Sumário ^](#sumário)
+
+### Verificando se o Jogo está Finalizado
+
+Iremos verifica se o Jogo está Finalizado quando: simplesmente verificando se o o Jogo Não está em Progresso.  
+
+Então, crie o Método Getter `get` chamado `finished()` retornando `:` VERDADEIRO ou FALSO `boolean` então, `{`  
+retorne `return` Se o Jogo não está em Progresso `!this.inProgress }`
+
+```ts
+// GameResult.ts
+
+  ...
+  //? Verifica se o Jogo está Finalizado
+  get finished(): boolean {
+    //* O retorno é "true" se o Jogo estiver Finalizado
+    //* e "false" se estiver em Progresso 
+    return !this.inProgress
+  }
+  ...
+```
+
+A Função `finished()` retorna o resultado da expressão `!this.inProgress`.  
+Portanto, se o Jogo estiver em progresso *(inProgress é true)* e a Função retornará `false`, indicando que o Jogo não está finalizado.  
+Se o Jogo não estiver em progresso *(inProgress é false)* e a Função retornará `true`, indicando que o Jogo está finalizado.  
+Em resumo, o retorno da Função `finished()` é `true` se o Jogo estiver finalizado e `false` se o Jogo estiver em progresso.
+
+[^ Sumário ^](#sumário)
+
+### Verificando se a Célula tem a Jogada Vencedora
+
+Neste último Método, iremos verificar se uma determinada Posição (linha, coluna), faz parte da Jogada Vencedora, ou seja, se aquele resultado tem a Jogada que contempla aquela Célula.  
+
+Isso será importante, quando tiver um resultado e quiser verificar se as Células serão ou não pintadas quando houver um vencedor.  
+
+Então, crie o Método chamado `hasCell(` recebendo um numero como parâmetro da Linha `row: number,` e um numero como parâmetro da Coluna `co: number)` retornando `:` VERDADEIRO ou FALSO `boolean` então, `{`  
+retorne `return` esta Jogada Vencedora `this.winningMove` procure todos os Elementos do Array`.find((` Se cada Célula da Jogada Vencedora `cell)` tiver `=>` a Linha da Célula `cell.row` estritamente igual `===` ao número da Linha passado por parâmetro `row)` e `&&` a Coluna da Célula `cell.col` estritamente igual `===` ao número da Coluna passado por parâmetro `col)`e for estritamente diferente `!==` de indefinido `undefined }`, isso  verifica se o resultado da busca não é `undefined`. Isso significa que a célula com as coordenadas especificadas foi encontrada na sequência de vitória.
+
+```ts
+// GameResult.ts
+
+  ...
+  hasCell(row: number, col: number): boolean {
+    //* Verifica se uma Célula com as coordenadas fornecidas está presente na Sequência de Células Vencedoras
+    return this.winningMove.find((cell) => cell.row === row && cell.col === col) !== undefined
+  }
+```
+
+Em resumo, o Método `hasCell()` verifica se uma célula com as coordenadas fornecidas está presente na sequência de Células Vencedoras *(winningMove)* e retorna `true` se estiver, ou `false` se não estiver.  
