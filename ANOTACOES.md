@@ -21,6 +21,7 @@ ___
   - [Verificando se houve Empate](#verificando-se-houve-empate)
   - [Verificando se o Jogo está em progresso](#verificando-se-o-jogo-está-em-progresso)
   - [Verificando se a Célula tem a Jogada Vencedora](#verificando-se-a-célula-tem-a-jogada-vencedora)
+- [Criando os Testes da Classe GameResult](#criando-os-testes-da-classe-gameresult)
 
 ___
 
@@ -1518,3 +1519,160 @@ retorne `return` esta Jogada Vencedora `this.winningMove` procure todos os Eleme
 ```
 
 Em resumo, o Método `hasCell()` verifica se uma célula com as coordenadas fornecidas está presente na sequência de Células Vencedoras *(winningMove)* e retorna `true` se estiver, ou `false` se não estiver.  
+
+[^ Sumário ^](#sumário)
+
+## Criando os Testes da Classe GameResult
+
+Então, dentro do Diretório/Pasta `/src/test`, crie uma pasta chamada `/result` e dentro, crie um arquivo chamado `GameResult.test.ts` e em seguida crie os seguintes testes:  
+
+Antes de tudo, precisamos adicionar a Classe GameResult no arquivo `index.ts` que se encontra em `packages/core/src`, para que possamos fazer o import do Módulo do local correto.
+
+```ts
+// index.ts
+
+...
+import GameResult from './result/GameResult'
+
+export { Cell, GameResult, PlayerType, Player }
+...
+```
+
+1. Crie um Teste que cria um Resultado Empatado:  
+`test(`mensagem do teste`'Deve criar um Resultado em Progresso.',` crie uma Arrow Function `() => {`  
+crie uma constante `const` chamada `gameResult` recebendo `=` uma Nova Instância Vazia de `GameResult()`  
+espera-se `expect(`que Finalizou `gameResult.finished)` seja FALSO`.toBeFalsy()`  
+espera-se `expect(`que está Empatado `gameResult.tied)`seja FALSO`.toBeFalsy()`  
+espera-se `expect(`que em Progresso `gameResult.inProgress)`seja VERDADEIRO `.toBeTruthy()})`  
+
+    ```ts
+    // GameResult.test.ts
+
+    import { Cell, GameResult, PlayerType } from '../../src'
+
+    test('Deve criar um Resultado em Progresso.', () => {
+      const gameResult = new GameResult() //* Cria um Resultado do Jogo Vazio
+      expect(gameResult.finished).toBeFalsy() //* O Resultado do Jogo finalizou? FALSO
+      expect(gameResult.tied).toBeFalsy() //* O Resultado do Jogo é um Empate? FALSO
+      expect(gameResult.inProgress).toBeTruthy() //* O Resultado do Jogo está em progresso? VERDADEIRO
+    })
+    ...
+    ```
+
+2. Crie um Teste que cria um Resultado Empatado:  
+`test(`mensagem do teste`'Deve criar um Resultado Empatado.',` crie uma Arrow Function `() => {`  
+crie uma constante `const` chamada `empatado` recebendo `=` uma Nova Instância de `GameResult(` que não possui uma Jogada Vencedora `[],` e o Empatado "tied" foi VERDADEIRO `true)`  
+espera-se `expect(`que Finalizou `empatado.finished)` seja VERDADEIRO`.toBeTruthy()`  
+espera-se `expect(`que está Empatado `empatado.tied)`seja VERDADEIRO`.toBeTruthy()`  
+espera-se `expect(`que em Progresso `empatado.inProgress)`seja FALSO `.toBeFalsy()})`  
+
+    ```ts
+    // GameResult.test.ts
+
+    ...
+    test('Deve criar um Resultado Empatado.', () => {
+      const empatado = new GameResult([], true) //* Cria um Resultado do Jogo sem uma Jogada Vencedora e um Empate "true"
+      expect(empatado.finished).toBeTruthy() //* O Resultado do Jogo finalizou? VERDADEIRO
+      expect(empatado.tied).toBeTruthy() //* O Resultado do Jogo é um Empate? VERDADEIRO
+      expect(empatado.inProgress).toBeFalsy() //* O Resultado do Jogo está em progresso? FALSO
+    })
+    ...
+    ```
+
+3. Crie um Teste que cria um Resultado com vitória do "Jogador X":  
+`test(`mensagem do teste`'Deve criar um Resultado com vitória do "Jogador X".',` crie uma Arrow Function `() => {`  
+crie uma constante `const` chamada `c1` recebendo `=` uma Nova Instância de `new Cell(` que possui uma Jogada na Linha `0,` e na Coluna `0,` do Tipo X `PlayerType.X)`  
+crie uma constante `const` chamada `c2` recebendo `=` uma Nova Instância de `new Cell(` que possui uma Jogada na Linha `0,` e na Coluna `1,` do Tipo X `PlayerType.X)`  
+crie uma constante `const` chamada `c3` recebendo `=` uma Nova Instância de `new Cell(` que possui uma Jogada na Linha `0,` e na Coluna `2,` do Tipo X `PlayerType.X)`  
+crie uma constante `const` chamada `victory` recebendo `=` uma Nova Instância de `new GameResult(` que possui as Jogadas `[c1, c2, c3])`  
+espera-se `expect(`que Finalizou `victory.finished)` seja VERDADEIRO`.toBeTruthy()`  
+espera-se `expect(`que está Empatado `victory.tied)`seja VERDADEIRO`.toBeFalsy()`  
+espera-se `expect(`que em Progresso `victory.inProgress)`seja FALSO `.toBeFalsy()`  
+espera-se `expect(` que tem a Célula `.hasCell(` na posição `0, 0)` seja VERDADEIRO `.toBeTruthy()`  
+espera-se `expect(` que tem a Célula `.hasCell(` na posição `1, 1)` seja FALSO `.toBeFalsy() })`  
+
+    ```ts
+    // GameResult.test.ts
+
+    ...
+    test('Deve criar um Resultado com vitória do "Jogador X"', () => {
+      const c1 = new Cell(0, 0, PlayerType.X) //* Faz uma Jogada na Posição (0,0) com o Jogador X
+      const c2 = new Cell(0, 1, PlayerType.X) //* Faz uma Jogada na Posição (0,1) com o Jogador X
+      const c3 = new Cell(0, 2, PlayerType.X) //* Faz uma Jogada na Posição (0,2) com o Jogador X
+      const victory = new GameResult([c1, c2, c3]) //* A Jogada Vencedora
+
+      expect(victory.finished).toBeTruthy() //* O Resultado do Jogo finalizou? VERDADEIRO
+      expect(victory.tied).toBeFalsy() //* O Resultado do Jogo é um Empate? FALSO
+      expect(victory.inProgress).toBeFalsy() //* O Resultado do Jogo está em progresso? FALSO
+      expect(victory.hasCell(0, 0)).toBeTruthy() //* Tem uma Jogada na posição (0,0)? VERDADEIRO
+      expect(victory.hasCell(1, 1)).toBeFalsy() //* Tem uma Jogada na posição (1,1)? FALSO
+    })
+    ...
+    ```
+
+4. Crie um Teste que cria um Resultado com vitória do "Jogador O":  
+`test(`mensagem do teste`'Deve criar um Resultado com vitória do "Jogador O".',` crie uma Arrow Function `() => {`  
+crie uma constante `const` chamada `c1` recebendo `=` uma Nova Instância de `new Cell(` que possui uma Jogada na Linha `0,` e na Coluna `0,` do Tipo X `PlayerType.O)`  
+crie uma constante `const` chamada `c2` recebendo `=` uma Nova Instância de `new Cell(` que possui uma Jogada na Linha `0,` e na Coluna `1,` do Tipo X `PlayerType.O)`  
+crie uma constante `const` chamada `c3` recebendo `=` uma Nova Instância de `new Cell(` que possui uma Jogada na Linha `0,` e na Coluna `2,` do Tipo X `PlayerType.O)`  
+crie uma constante `const` chamada `victory` recebendo `=` uma Nova Instância de `new GameResult(` que possui as Jogadas `[c1, c2, c3])`  
+espera-se `expect(`que Finalizou `victory.finished)` seja VERDADEIRO`.toBeTruthy()`  
+espera-se `expect(`que está Empatado `victory.tied)`seja VERDADEIRO`.toBeFalsy()`  
+espera-se `expect(`que em Progresso `victory.inProgress)`seja FALSO `.toBeFalsy()`  
+espera-se `expect(` que tem a Célula `.hasCell(` na posição `0, 0)` seja VERDADEIRO `.toBeTruthy()`  
+espera-se `expect(` que tem a Célula `.hasCell(` na posição `1, 1)` seja FALSO `.toBeFalsy() })`  
+
+    ```ts
+    // GameResult.test.ts
+
+    ...
+    test('Deve criar um Resultado com vitória do "Jogador O"', () => {
+      const c1 = new Cell(0, 0, PlayerType.O) //* Faz uma Jogada na Posição (0,0) com o Jogador O
+      const c2 = new Cell(1, 1, PlayerType.O) //* Faz uma Jogada na Posição (0,1) com o Jogador O
+      const c3 = new Cell(2, 2, PlayerType.O) //* Faz uma Jogada na Posição (0,2) com o Jogador O
+      const victory = new GameResult([c1, c2, c3]) //* A Jogada Vencedora
+
+      expect(victory.finished).toBeTruthy() //* O Resultado do Jogo finalizou? VERDADEIRO
+      expect(victory.tied).toBeFalsy() //* O Resultado do Jogo é um Empate? FALSO
+      expect(victory.inProgress).toBeFalsy() //* O Resultado do Jogo está em progresso? FALSO
+      expect(victory.hasCell(0, 0)).toBeTruthy() //* Tem uma Jogada na posição (0,0)? VERDADEIRO
+      expect(victory.hasCell(0, 1)).toBeFalsy() //* Tem uma Jogada na posição (0,1)? FALSO
+    })
+    ...
+    ```
+
+Com isso, temos 100% de cobertura nos Testes Unitários na Classe GameResult, como podemos conferir na saída do Terminal executando o comando `npm test` no caminho `/packages/core`.  
+
+```zsh
+// Terminal
+
+$ npm test
+
+> core@1.0.0 test
+> jest --watchAll --collectCoverage
+ PASS  test/game/Board.test.ts (6.082 s)
+ PASS  test/shared/cell.test.ts (6.121 s)
+ PASS  test/player/player.test.ts (6.134 s)
+ PASS  test/result/GameResult.test.ts (6.375 s)
+----------------|---------|----------|---------|---------|-------------------
+File            | % Stmts | % Branch | % Funcs | % Lines | Uncovered Line #s
+----------------|---------|----------|---------|---------|-------------------
+All files       |     100 |      100 |     100 |     100 |
+ src            |     100 |      100 |     100 |     100 |
+  index.ts      |     100 |      100 |     100 |     100 |
+ src/game       |     100 |      100 |     100 |     100 |
+  Board.ts      |     100 |      100 |     100 |     100 |
+ src/player     |     100 |      100 |     100 |     100 |
+  Player.ts     |     100 |      100 |     100 |     100 |
+ src/result     |     100 |      100 |     100 |     100 |
+  GameResult.ts |     100 |      100 |     100 |     100 |
+ src/shared     |     100 |      100 |     100 |     100 |
+  Cell.ts       |     100 |      100 |     100 |     100 |
+  PlayerType.ts |     100 |      100 |     100 |     100 |
+----------------|---------|----------|---------|---------|-------------------
+
+Test Suites: 4 passed, 4 total
+Tests:       17 passed, 17 total
+Snapshots:   0 total
+Time:        7.376 s
+```
