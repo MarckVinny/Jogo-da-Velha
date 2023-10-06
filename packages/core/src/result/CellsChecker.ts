@@ -3,7 +3,7 @@ import Cell from '../shared/Cell'
 import GameResult from './GameResult'
 import ResultChecker from './ResultChecker'
 
-export default class CellChecker implements ResultChecker {
+export default class CellsChecker implements ResultChecker {
   constructor(private readonly cells: [number, number][]) {}
 
   check(board: Board): GameResult {
