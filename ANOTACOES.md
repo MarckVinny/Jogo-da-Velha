@@ -22,6 +22,7 @@ ___
   - [Verificando se o Jogo está em progresso](#verificando-se-o-jogo-está-em-progresso)
   - [Verificando se a Célula tem a Jogada Vencedora](#verificando-se-a-célula-tem-a-jogada-vencedora)
 - [Criando os Testes da Classe GameResult](#criando-os-testes-da-classe-gameresult)
+- [Criando a Classe ResultChecker](#criando-a-classe-resultchecker)
 
 ___
 
@@ -1676,3 +1677,37 @@ Tests:       17 passed, 17 total
 Snapshots:   0 total
 Time:        7.376 s
 ```
+
+[^ Sumário ^](#sumário)
+
+## Criando a Classe ResultChecker
+
+Esta Classe será responsável por realizar as verificações dos resultados em cada uma das Células.  
+
+Basicamente, um Verificador de Resultados `ResultChecker()` é uma Interface `interface` que vai receber um Tabuleiro `Board()` como entrada vai nos retornar um Resultado do Jogo `GameResult`.  
+
+***Exemplo:***  
+Se for verificado um resultado horizontal (nas linhas), pode ser que seja informado que o Jogo está em progresso, pois, não foi encontrado nenhuma Jogada Vencedora, mas, pode ser que quando verificar na vertical, identifique que houve uma Jogada Vencedora.  
+
+Então, na hora de juntar esses resultados, será passado para várias lógicas diferentes e no final vai verificar se de fato teve algum resultado que ganhou.  
+
+Agora, iremos definir nossa Classe, dentro de `/packages/core/src/result` crie um arquivo chamado `ResultChecker.ts`, este arquivo é a nossa Classe Verificador de Resultados.  
+
+Dentro, exporte por padrão `export default` a Interface `interface` chamada `ResultChecker` então, `{`  
+crie uma Função chamada `check(` recebendo um Tabuleiro com o parâmetro de entrada `board: Board())` retornando `:` o Resultado do Jogo `GameResult }`
+
+```ts
+// ResultChecker.ts
+
+import Board from "../game/Board";
+import GameResult from "./GameResult";
+
+
+export default interface ResultChecker {
+    check(board: Board): GameResult
+}
+...
+```
+
+> ***Observação:***  
+*Basicamente, todas as verificações de resultado envolviam pegar um conjunto de Células e verificar se estavam preenchidas com o mesmo Jogador.*
