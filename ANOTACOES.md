@@ -23,6 +23,7 @@ ___
   - [Verificando se a Célula tem a Jogada Vencedora](#verificando-se-a-célula-tem-a-jogada-vencedora)
 - [Criando os Testes da Classe GameResult](#criando-os-testes-da-classe-gameresult)
 - [Criando a Classe ResultChecker](#criando-a-classe-resultchecker)
+- [Criando a Classe CellsChecker](#criando-a-classe-cellschecker)
 
 ___
 
@@ -1694,7 +1695,7 @@ Então, na hora de juntar esses resultados, será passado para várias lógicas 
 Agora, iremos definir nossa Classe, dentro de `/packages/core/src/result` crie um arquivo chamado `ResultChecker.ts`, este arquivo é a nossa Classe Verificador de Resultados.  
 
 Dentro, exporte por padrão `export default` a Interface `interface` chamada `ResultChecker` então, `{`  
-crie uma Função chamada `check(` recebendo um Tabuleiro com o parâmetro de entrada `board: Board())` retornando `:` o Resultado do Jogo `GameResult }`
+crie uma Função chamada `check(` recebendo um Tabuleiro com o parâmetro de entrada `board: Board)` retornando `:` o Resultado do Jogo `GameResult }`
 
 ```ts
 // ResultChecker.ts
@@ -1711,3 +1712,60 @@ export default interface ResultChecker {
 
 > ***Observação:***  
 *Basicamente, todas as verificações de resultado envolviam pegar um conjunto de Células e verificar se estavam preenchidas com o mesmo Jogador.*
+
+[^ Sumário ^](#sumário)
+
+## Criando a Classe CellsChecker
+
+A Classe `CellsChecker` irá ajudar na verificação das Células se estavam preenchidas com o mesmo Jogador, essa Classe, implementa `implements` a Classe `ResultChecker` passando via Construtor `constructor` um conjunto de Números `cells:` sendo o Array contendo a posição de cada Célula (linha, coluna).  
+
+Fazendo uma verificação logo em seguida, se todos os Elementos são do mesmo Tipo, sendo do mesmo Tipo, teremos um resultado com as Células ganhadoras.  
+
+Importe os Módulos que serão utilizados:
+
+```ts
+// CellChecker.ts
+
+import Board from '../game/Board'
+import Cell from '../shared/Cell'
+import GameResult from './GameResult'
+import ResultChecker from './ResultChecker'
+
+...
+```
+
+Então, exporte por padrão `export default` uma Classe `class` chamada `CellsChecker` que Implementa `implements` a Classe `ResultChecker` então, `{`  
+defina um Construtor `constructor(` defina um atributo privado `private` somente leitura `readonly` chamado `cells:` recebendo um Array de números `[number, number][]){}` que será a posição da Célula (linha, coluna).  
+
+```ts
+// CellChecker.ts
+
+...
+export default class CellChecker implements ResultChecker {
+  constructor(private readonly cells: [number, number][]) {}
+
+...
+```
+
+Implemente o Método `check(` recebendo um parâmetro `board:` do Tipo `Board)` retornando `:` um Objeto do Tipo `GameResult` então, `{`  
+defina uma constante `const` chamada `cells` recebendo `=` uma Lista de posição no Jogo `this.cells` usando o Método `.map(` para percorrer `(`cada posição `[row, col])` utilize uma Arrow Function `=>` para pegar as Células correspondentes no Tabuleiro `board.get(row, col))`  
+defina uma constante `const` chamada `type` recebendo `=` uma nova Lista de Células `cells.map((`para cada Célula `cell)`utilize uma Arrow Function `=>` para extrair o Tipo de cada Célula Não NULA "!" `cell!.type)`  
+retorne `return` verifique se todos os Tipos do Array `types.every((type)` são diferentes `!=` de NULO `null` e `&&` são estritamente iguais `===` ao primeiro Tipo `type[0])`, isso verifica se todas as Células são do mesmo Tipo.  
+Se for do mesmo Tipo `?` retorna um Novo Resultado do Jogo `new ResultGame(`contendo uma Jogada Vencedora `cells as Cell[])`  
+Senão `:` retorna um Novo Resultado Vazio `new ResultGame() } }` que é um resultado em progresso.
+
+```ts
+// CellChecker.ts
+
+  ...
+  check(board: Board): GameResult {
+    const cells = this.cells.map(([row, col]) => board.get(row, col))
+    const types = cells.map((cell) => cell!.type)
+    return types.every((type) => type != null && type === type[0])
+      ? new GameResult(cells as Cell[])
+      : new GameResult()
+  }
+}
+```
+
+Essa Classe irá nos auxiliar na construção de diversos outras Classes de Resultados como: horizontal, vertical e diagonal por exemplo.  
