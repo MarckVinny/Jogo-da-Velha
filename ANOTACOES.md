@@ -27,6 +27,7 @@ ___
 - [Criando a Classe HorizontalChecker](#criando-a-classe-horizontalchecker)
 - [Criando o Teste Unitário da Classe HorizontalChecker](#criando-o-teste-unitário-da-classe-horizontalchecker)
 - [Criando a Classe VerticalChecker](#criando-a-classe-verticalchecker)
+- [Criando o Teste Unitário da Classe VerticalChecker](#criando-o-teste-unitário-da-classe-verticalchecker)
 
 ___
 
@@ -1980,3 +1981,73 @@ Se pegamos o domínio do problema e trazemos para o domínio da solução, come�
 ***Resumindo:***  
 Dos três possíveis resultados `finalResult`, ele vai procurar `find((result) =>` algum que finalizou o Jogo `result.finished)`.  
 Se encontrou algum que finalizou o Jogo ele retorna o Resultado Final `return finalResult` Caso contrário retorna uma Nova Instância do Resultado do Jogo Vazio `?? new GameResult()`.
+
+[^ Sumário ^](#sumário)
+
+## Criando o Teste Unitário da Classe VerticalChecker
+
+Primeiro entre no Diretório/Pasta `/packages/core/test/result` e crie o arquivo de Teste `VerticalChecker.test.ts` e dentro defina os Testes Unitários:
+
+1. Crie um Teste que deve finalizar com a vitória do "Jogador X".  
+
+    - Defina uma Função de `test(`mensagem do Teste `'Deve finalizar com a Vitória do "Jogador X".',` defina uma Arrow Function Anônima `() =>` então, `{`  
+      - defina uma constante `const` chamada `board` recebendo `=` um Tabuleiro Vazio `Board.empty()`  
+        - marque a Célula `.set(` na posição `0, 0,` com o Jogador X `PlayerType.X)`  
+        - marque a Célula `.set(` na posição `1, 0,` com o Jogador X `PlayerType.X)`  
+        - marque a Célula `.set(` na posição `2, 0,` com o Jogador X `PlayerType.X)`  
+      - defina uma constante `const` chamada `result` recebendo `=` uma Nova Instância de `VerticalChecker()` verificando se houve Vencedor no Tabuleiro `.checker(board)`  
+      - espera-se `expect(` que o Resultado Finalizado `result.finished)` seja VERDADEIRO `.toBeTruthy()`  
+      - espera-se `expect(` que a vitória do Jogador X `result.xWins)` seja VERDADEIRA `.toBeTruthy()`  
+      - espera-se `expect(` que a vitória do Jogador O`result.oWins)` seja FALSA `.toBeFalsy() })`
+
+    ```ts
+    // VerticalChecker.test.ts
+
+    import { PlayerType } from '../../src'
+    import Board from '../../src/game/Board'
+    import VerticalChecker from '../../src/result/VerticalChecker'
+
+    test('Deve finalizar a Jogada com a Vitória do "Jogador X."', () => {
+      const board = Board.empty() //* Cria um Tabuleiro Vazio
+        .set(0, 0, PlayerType.X) //* Marca a Célula na posição 0,0 com o "Jogador X"
+        .set(1, 0, PlayerType.X) //* Marca a Célula na posição 1,0 com o "Jogador X"
+        .set(2, 0, PlayerType.X) //* Marca a Célula na posição 2,0 com o "Jogador X"
+      //* Cria uma Instância do Verificador Horizontal e verifica se houve vencedor no Tabuleiro.
+      const result = new VerticalChecker().check(board)
+      expect(result.finished).toBeTruthy() //* Espera-se que o Resultado Finalizado seja "VERDADEIRA"
+      expect(result.xWins).toBeTruthy() //* Espera-se que a Vitória do "Jogador X" seja "VERDADEIRA"
+      expect(result.oWins).toBeFalsy() //* Espera-se que a Vitória do "Jogador o" seja "FALSA"
+    })
+    ...
+    ```
+
+2. Crie um Teste que deve continuar em progresso:
+
+    - Defina uma Função `test(` mensagem do Teste`'Deve continuar em Progresso.',` defina uma Arrow Function Anônima `() =>` então, `{`  
+      - defina uma constante `const` chamada `board` recebendo `=` um Tabuleiro Vazio `Board.empty()`  
+        - marque a Célula `.set(` na posição `0,0,` com o "Jogador X" `PlayerType.X)`  
+        - marque a Célula `.set(` na posição `1,0,` com o "Jogador X" `PlayerType.X)`  
+        - marque a Célula `.set(` na posição `2,0,` com o "Jogador O" `PlayerType.O)`  
+      - defina uma constante `const` chamada `result` recebendo `=` uma Nova Instância `new VerticalChecker()` verificando se houve Vencedor no Tabuleiro`.check(board)`  
+      - espera-se `expect` que o Resultado em Progresso`result.inProgress` seja VERDADEIRO `.toBeTruthy()`  
+      - espera-se `expect` que o Resultado "Jogador X" Venceu `result.xWins` seja FALSO `.toBeFalsy()`  
+      - espera-se `expect` que o Resultado "Jogador O" Venceu `result.oWins` seja FALSO `.toBeFalsy() })`  
+
+    ```ts
+    // VerticalChecker.test.ts
+
+    ...
+    test('Deve continuar em Progresso.', () => {
+      const board = Board.empty()
+        .set(0, 0, PlayerType.X)
+        .set(1, 0, PlayerType.X)
+        .set(2, 0, PlayerType.O)
+      const result = new VerticalChecker().check(board)
+      expect(result.inProgress).toBeTruthy()
+      expect(result.xWins).toBeFalsy()
+      expect(result.oWins).toBeFalsy()
+    })
+    ...
+    ```
+
+Com isso, temos 100% de cobertura dos Testes Unitários da Classe VerticalChecker.
