@@ -26,6 +26,7 @@ ___
 - [Criando a Classe CellsChecker](#criando-a-classe-cellschecker)
 - [Criando a Classe HorizontalChecker](#criando-a-classe-horizontalchecker)
 - [Criando o Teste Unitário da Classe HorizontalChecker](#criando-o-teste-unitário-da-classe-horizontalchecker)
+- [Criando a Classe VerticalChecker](#criando-a-classe-verticalchecker)
 
 ___
 
@@ -1910,3 +1911,72 @@ Primeiro entre no Diretório/Pasta `/packages/core/test/result` e crie o arquivo
     ```
 
 Com isso, temos 100% de cobertura dos Testes Unitários da Classe HorizontalChecker.
+
+[^ Sumário ^](#sumário)
+
+## Criando a Classe VerticalChecker
+
+A Classe `VerticalChecker` irá ajudar na verificação das Células se estavam preenchidas em cada Coluna (1, 2 e 3) com o mesmo Jogador, essa Classe, implementa `implements` a Classe `ResultChecker` passando via Construtor `constructor` um conjunto de Números `cells:` sendo o Array contendo a posição de cada Célula (linha, coluna).  
+
+Em seguida, procurar algum resultado que finalizou o Jogo ele retorna o Resultado Final, caso contrário retorna um Resultado Vazio.  
+
+Importe os Módulos que serão utilizados:
+
+```ts
+// VerticalChecker.ts
+
+import Board from '../game/Board'
+import Cell from '../shared/Cell'
+import GameResult from './GameResult'
+import ResultChecker from './ResultChecker'
+
+...
+```
+
+Então, exporte por padrão `export default` uma Classe `class` chamada `VerticalChecker` que Implementa `implements` a Classe `ResultChecker` então, `{`  
+Implemente o Método `check(` recebendo um parâmetro `board:` do Tipo `Board)` retornando `:` um Objeto do Tipo `GameResult` então, `{`  
+defina uma constante `const` chamada `coluna0:` do Tipo `[number, number][]` recebendo `=` um Array de Posições `[[0, 0], [1, 0], [2, 0]]`  
+defina uma constante `const` chamada `coluna1:` do Tipo `[number, number][]` recebendo `=` um Array de Posições `[[0, 1], [1, 1], [2, 1]]`  
+defina uma constante `const` chamada `coluna2:` do Tipo `[number, number][]` recebendo `=` um Array de Posições `[[0, 2], [1, 2], [2, 2]]`  
+defina uma constante `const` chamada `finalResult` recebendo `=` um Array de Posições `[`  
+verifique as Células `new CellsChecker(` da Coluna `coluna0` se todas estão preenchidas com o mesmo Jogador`)` verifica se houve Vencedor nesta Coluna`.check(board),`  
+verifique as Células `new CellsChecker(` da Coluna `coluna1` se todas estão preenchidas com o mesmo Jogador`)` verifica se houve Vencedor nesta Coluna`.check(board),`  
+verifique as Células `new CellsChecker(` da Coluna `coluna2` se todas estão preenchidas com o mesmo Jogador`)` verifica se houve Vencedor nesta Coluna`.check(board)`  
+`]` procure `.find((` o resultado `result)` utilizando uma Arrow Function `=>` para extrair o resultado finalizado `result.finished)`  
+retorne `return` o resultado final `finalResult` senão `??` retorne um resultado vazio `new GameResult()`
+
+```ts
+// VerticalChecker.ts
+
+...
+export default class VerticalChecker implements ResultChecker {
+  check(board: Board): GameResult {
+    const coluna0: [number, number][] = [[0, 0], [1, 0], [2, 0]] //* posições da Coluna0
+    const coluna1: [number, number][] = [[0, 1], [1, 1], [2, 1]] //* posições da Coluna1
+    const coluna2: [number, number][] = [[0, 2], [1, 2], [2, 2]] //* posições da Coluna2
+    const finalResult = [
+      //* Verifica se todas as Células da Coluna estão preenchidas com o mesmo Jogador
+      //* depois o board verifica se houve alguma Jogada Vencedora na Coluna
+      new CellsChecker(coluna0).check(board),
+      new CellsChecker(coluna1).check(board),
+      new CellsChecker(coluna2).check(board),
+      //* Procura nos resultados se está finalizado
+    ].find((result) => result.finished)
+    return finalResult ?? new GameResult()
+  }
+}
+```
+
+Essa abordagem é a modelagem que foi escolhida pra esse projeto, poderia ter sido adotada outro tipo de abordagem, como criar uma matriz e fazer toda lógica através de interface.  
+
+Mas através desta abordagem podemos ver que é possível ter uma Modelagem Rica, possuindo divisões (Classes) e não só tendo uma Matriz e fazer tudo na interface.  
+
+Se fosse fazer somente um exemplo de Jogo da Velha, só para mostrar a Interface Gráfica, não me preocuparia em criar uma Modelagem Rica com vários elementos.  
+
+Mas quando olhamos para o Modelo, faz sentido pois o Jogo possui uma Célula, um Tabuleiro, formas diferentes de verificar e tudo isso está presente no Jogo.  
+
+Se pegamos o domínio do problema e trazemos para o domínio da solução, começamos perceber os Elementos e sua Iterações, boa parte do que será verificado, será passado um conjunto de Células *(Colunas)* para serem verificadas, por isso foi criado o Checador de Células ***CellChecker()*** para verificar se todas as Células tem o mesmo Jogador e se tiver, tem que retornar que ali teve uma Vitória.  
+
+***Resumindo:***  
+Dos três possíveis resultados `finalResult`, ele vai procurar `find((result) =>` algum que finalizou o Jogo `result.finished)`.  
+Se encontrou algum que finalizou o Jogo ele retorna o Resultado Final `return finalResult` Caso contrário retorna uma Nova Instância do Resultado do Jogo Vazio `?? new GameResult()`.
