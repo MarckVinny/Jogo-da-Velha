@@ -2065,10 +2065,10 @@ Importe os Módulos que serão utilizados:
 ```ts
 // DiagonalChecker.ts
 
-import Board from "../game/Board";
-import CellsChecker from "./CellsChecker";
-import GameResult from "./GameResult";
-import ResultChecker from "./ResultChecker";
+import Board from "../game/Board"
+import CellsChecker from "./CellsChecker"
+import GameResult from "./GameResult"
+import ResultChecker from "./ResultChecker"
 ...
 ```
 
@@ -2194,3 +2194,44 @@ Primeiro entre no Diretório/Pasta `/packages/core/test/result` e crie o arquivo
     ```
 
 Com isso, temos 100% de cobertura dos Testes Unitários da Classe DiagonalChecker.
+
+[^ Sumário ^](#sumário)
+
+## Criando a Classe TieChecker
+
+A Classe `TieChecker` irá verificar se houve Empate, essa Classe, implementa `implements` a Classe `ResultChecker`.  
+
+Em seguida, verifica se o Tabuleiro está todo preenchido `board.isFull()` (só faz essa verificação pois na Classe GameResult existe a prioridade para verificar se o "X" ou o "O" venceram) Se estiver cheio `?` retorna o Empate `new GameResult([], true)` Senão `:` retorna o Resultado do Jogo Vazio `new GameResult()`.  
+
+Então, entre no Diretório/Pasta `/packages/core/src/result`, dentro, crie um arquivo chamado `TieChecker.ts`.
+
+Importe os Módulos que serão utilizados:
+
+```ts
+// TieChecker.ts
+
+import Board from '../game/Board'
+import GameResult from './GameResult'
+import ResultChecker from './ResultChecker'
+...
+```
+
+Então, exporte por padrão `export default` uma Classe `class` chamada `TieChecker` que Implementa `implements` a Classe `ResultChecker` então, `{`  
+Implemente o Método `check(` recebendo um parâmetro `board:` do Tipo `Board)` retornando `:` um Objeto do Tipo `GameResult` então, `{`  
+retorne `return board.isFull()` Se estiver cheio `?` retorna o Empate `new GameResult([], true)` Senão `:` retorna o Resultado do Jogo Vazio `new GameResult()`
+
+```ts
+// TieChecker.ts
+
+...
+
+export default class TieChecker implements ResultChecker {
+  check(board: Board): GameResult {
+    return board.isFull() //* Verifica se o Tabuleiro está Preenchido
+    ? new GameResult([], true) //* Se estiver, retorna o Empate
+    : new GameResult() //* Senão, retorna o Resultado do Jogo Vazio
+  }
+}
+```
+
+Essa foi uma abordagem simples para se verificar se houve o empate, sem ter a necessidade desta lógica ir em todos os Elementos verificando se houve ou não vencedor.
