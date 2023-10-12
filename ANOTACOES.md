@@ -1968,16 +1968,6 @@ export default class VerticalChecker implements ResultChecker {
 }
 ```
 
-Essa abordagem é a modelagem que foi escolhida pra esse projeto, poderia ter sido adotada outro tipo de abordagem, como criar uma matriz e fazer toda lógica através de interface.  
-
-Mas através desta abordagem podemos ver que é possível ter uma Modelagem Rica, possuindo divisões (Classes) e não só tendo uma Matriz e fazer tudo na interface.  
-
-Se fosse fazer somente um exemplo de Jogo da Velha, só para mostrar a Interface Gráfica, não me preocuparia em criar uma Modelagem Rica com vários elementos.  
-
-Mas quando olhamos para o Modelo, faz sentido pois o Jogo possui uma Célula, um Tabuleiro, formas diferentes de verificar e tudo isso está presente no Jogo.  
-
-Se pegamos o domínio do problema e trazemos para o domínio da solução, começamos perceber os Elementos e sua Iterações, boa parte do que será verificado, será passado um conjunto de Células *(Colunas)* para serem verificadas, por isso foi criado o Checador de Células ***CellChecker()*** para verificar se todas as Células tem o mesmo Jogador e se tiver, tem que retornar que ali teve uma Vitória.  
-
 ***Resumindo:***  
 Dos três possíveis resultados `finalResult`, ele vai procurar `find((result) =>` algum que finalizou o Jogo `result.finished)`.  
 Se encontrou algum que finalizou o Jogo ele retorna o Resultado Final `return finalResult` Caso contrário retorna uma Nova Instância do Resultado do Jogo Vazio `?? new GameResult()`.
