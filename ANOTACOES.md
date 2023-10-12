@@ -28,6 +28,7 @@ ___
 - [Criando o Teste Unitário da Classe HorizontalChecker](#criando-o-teste-unitário-da-classe-horizontalchecker)
 - [Criando a Classe VerticalChecker](#criando-a-classe-verticalchecker)
 - [Criando o Teste Unitário da Classe VerticalChecker](#criando-o-teste-unitário-da-classe-verticalchecker)
+- [Criando a Classe DiagonalChecker](#criando-a-classe-diagonalchecker)
 
 ___
 
@@ -1511,7 +1512,7 @@ Neste último Método, iremos verificar se uma determinada Posição (linha, col
 
 Isso será importante, quando tiver um resultado e quiser verificar se as Células serão ou não pintadas quando houver um vencedor.  
 
-Então, crie o Método chamado `hasCell(` recebendo um numero como parâmetro da Linha `row: number,` e um numero como parâmetro da Coluna `co: number)` retornando `:` VERDADEIRO ou FALSO `boolean` então, `{`  
+Então, crie o Método chamado `hasCell(` recebendo um numero como parâmetro da Linha `row: number,` e um numero como parâmetro da Coluna `col: number)` retornando `:` VERDADEIRO ou FALSO `boolean` então, `{`  
 retorne `return` esta Jogada Vencedora `this.winningMove` procure todos os Elementos do Array`.find((` Se cada Célula da Jogada Vencedora `cell)` tiver `=>` a Linha da Célula `cell.row` estritamente igual `===` ao número da Linha passado por parâmetro `row)` e `&&` a Coluna da Célula `cell.col` estritamente igual `===` ao número da Coluna passado por parâmetro `col)`e for estritamente diferente `!==` de indefinido `undefined }`, isso  verifica se o resultado da busca não é `undefined`. Isso significa que a célula com as coordenadas especificadas foi encontrada na sequência de vitória.
 
 ```ts
@@ -1530,7 +1531,7 @@ Em resumo, o Método `hasCell()` verifica se uma célula com as coordenadas forn
 
 ## Criando os Testes da Classe GameResult
 
-Então, dentro do Diretório/Pasta `/src/test`, crie uma pasta chamada `/result` e dentro, crie um arquivo chamado `GameResult.test.ts` e em seguida crie os seguintes testes:  
+Então, dentro do Diretório/Pasta `packages/core/src/test`, crie uma pasta chamada `/result` e dentro, crie um arquivo chamado `GameResult.test.ts` e em seguida crie os seguintes testes:  
 
 Antes de tudo, precisamos adicionar a Classe GameResult no arquivo `index.ts` que se encontra em `packages/core/src`, para que possamos fazer o import do Módulo do local correto.
 
@@ -1725,6 +1726,8 @@ A Classe `CellsChecker` irá ajudar na verificação das Células se estavam pre
 
 Fazendo uma verificação logo em seguida, se todos os Elementos são do mesmo Tipo, sendo do mesmo Tipo, teremos um resultado com as Células ganhadoras.  
 
+Então, entre no Diretório/Pasta `/packages/core/src/result`, dentro, crie um arquivo chamado `CellsChecker.ts`.
+
 Importe os Módulos que serão utilizados:
 
 ```ts
@@ -1781,6 +1784,8 @@ Essa Classe irá nos auxiliar na construção de diversos outras Classes de Resu
 A Classe `HorizontalChecker` irá ajudar na verificação das Células se estavam preenchidas em cada Linha (1, 2 e 3) com o mesmo Jogador, essa Classe, implementa `implements` a Classe `ResultChecker` passando via Construtor `constructor` um conjunto de Números `cells:` sendo o Array contendo a posição de cada Célula (linha, coluna).  
 
 Em seguida, procurar algum resultado que finalizou o Jogo ele retorna o Resultado Final, caso contrário retorna um Resultado Vazio.  
+
+Então, entre no Diretório/Pasta `/packages/core/src/result`, dentro, crie um arquivo chamado `HorizontalChecker.ts`.
 
 Importe os Módulos que serão utilizados:
 
@@ -1921,6 +1926,8 @@ A Classe `VerticalChecker` irá ajudar na verificação das Células se estavam 
 
 Em seguida, procurar algum resultado que finalizou o Jogo ele retorna o Resultado Final, caso contrário retorna um Resultado Vazio.  
 
+Então, entre no Diretório/Pasta `/packages/core/src/result`, dentro, crie um arquivo chamado `VerticalChecker.ts`.
+
 Importe os Módulos que serão utilizados:
 
 ```ts
@@ -2041,3 +2048,49 @@ Primeiro entre no Diretório/Pasta `/packages/core/test/result` e crie o arquivo
     ```
 
 Com isso, temos 100% de cobertura dos Testes Unitários da Classe VerticalChecker.
+
+[^ Sumário ^](#sumário)
+
+## Criando a Classe DiagonalChecker
+
+A Classe `DiagonalChecker` irá ajudar na verificação das Células se estavam preenchidas em cada Diagonal *(d1 e d2)* com o mesmo Jogador, essa Classe, implementa `implements` a Classe `ResultChecker` passando duas diagonais d1 e d2.  
+
+Em seguida, a Diagonal `d1` finalizou o Jogo ele retorna o `d1`, caso contrário retorna o `d2`.  
+
+Então, entre no Diretório/Pasta `/packages/core/src/result`, dentro, crie um arquivo chamado `DiagonalChecker.ts`.
+
+Importe os Módulos que serão utilizados:
+
+```ts
+// DiagonalChecker.ts
+
+import Board from "../game/Board";
+import CellsChecker from "./CellsChecker";
+import GameResult from "./GameResult";
+import ResultChecker from "./ResultChecker";
+...
+```
+
+Então, exporte por padrão `export default` uma Classe `class` chamada `DiagonalChecker` que Implementa `implements` a Classe `ResultChecker` então, `{`  
+Implemente o Método `check(` recebendo um parâmetro `board:` do Tipo `Board)` retornando `:` um Objeto do Tipo `GameResult` então, `{`  
+defina uma constante `const` chamada `d1:` do Tipo `[number, number][]` recebendo `=` um Array de Posições `[[0, 0], [1, 1], [2, 2]]`  
+defina uma constante `const` chamada `d2:` do Tipo `[number, number][]` recebendo `=` um Array de Posições `[[0, 2], [1, 1], [2, 0]]`  
+defina uma constante `const` chamada `resultD1` que recebe `=` uma Nova Instancia do Verificador de Células `new CellsChecker(` da Diagonal `d1` se todas estão preenchidas com o mesmo Jogador`)` verifica se houve Vencedor nesta Diagonal`.check(board),`  
+defina uma constante `const` chamada `resultD2` que recebe `=` uma Nova Instancia do Verificador de Células `new CellsChecker(` da Diagonal `d2` se todas estão preenchidas com o mesmo Jogador`)` verifica se houve Vencedor nesta Diagonal`.check(board),`  
+retorne `return` Se o Resultado da Diagonal 1 Finalizou `resultD1.finished` então `?` retorne `resultD1` Senão `:` retorne `resultD2`.
+
+```ts
+// DiagonalChecker.ts
+
+...
+
+export default class DiagonalChecker implements ResultChecker{
+  check(board: Board): GameResult {
+    const d1: [number, number][] = [[0, 0], [1, 1], [2, 2]]
+    const d2: [number, number][] = [[0, 2], [1, 1], [2, 0]]
+    const resultD1 = new CellsChecker(d1).check(board)
+    const resultD2 = new CellsChecker(d2).check(board)
+    return resultD1.finished ? resultD1 : resultD2
+  }
+}
+```
