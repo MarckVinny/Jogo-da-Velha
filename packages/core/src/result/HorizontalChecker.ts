@@ -1,7 +1,7 @@
-import Board from "../game/Board"
-import CellsChecker from "./CellsChecker"
-import GameResult from "./GameResult"
-import ResultChecker from "./ResultChecker"
+import Board from '../game/Board'
+import CellsChecker from './CellsChecker'
+import GameResult from './GameResult'
+import ResultChecker from './ResultChecker'
 
 export default class HorizontalChecker implements ResultChecker {
   check(board: Board): GameResult {
@@ -13,9 +13,10 @@ export default class HorizontalChecker implements ResultChecker {
       //* depois o board verifica se houve alguma Jogada Vencedora na Linha
       new CellsChecker(linha0).check(board),
       new CellsChecker(linha1).check(board),
-      new CellsChecker(linha2).check(board),
+      new CellsChecker(linha2).check(board)
       //* Procura nos resultados se está finalizado
     ].find((result) => result.finished)
     return finalResult ?? new GameResult()
   }
 }
+

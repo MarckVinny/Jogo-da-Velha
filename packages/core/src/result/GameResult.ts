@@ -7,10 +7,10 @@ export default class GameResult {
     private _tied: boolean = false //* Cria uma variável privada de Empate - com o valor padrão FALSO
   ) {}
 
-  //   //? Verifica se o "Jogador X" Venceu
-  //   get xWins(): boolean {
-  //     return this.winningMove[0]?.type === PlayerType.X
-  //   }
+    // //? Verifica se o "Jogador X" Venceu
+    // get xWins(): boolean {
+    //   return this.winningMove[0]?.type === PlayerType.X
+    // }
 
   //? Verifica se o "Jogador X" Venceu
   get xWins(): boolean {
@@ -26,10 +26,10 @@ export default class GameResult {
     return this.winningMove.every((cell) => cell.type === playerTypeX)
   }
 
-  //   //? Verifica se o "Jogador O" Venceu
-  //   get oWins(): boolean {
-  //     return this.winningMove[0]?.type === PlayerType.O
-  //   }
+    // //? Verifica se o "Jogador O" Venceu
+    // get oWins(): boolean {
+    //   return this.winningMove[0]?.type === PlayerType.O
+    // }
 
   //? Verifica se o "Jogador O" Venceu
   get oWins(): boolean {
