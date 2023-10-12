@@ -31,6 +31,7 @@ ___
 - [Criando a Classe DiagonalChecker](#criando-a-classe-diagonalchecker)
 - [Criando o Teste Unitário da Classe DiagonalChecker](#criando-o-teste-unitário-da-classe-diagonalchecker)
 - [Criando a Classe TieChecker](#criando-a-classe-tiechecker)
+- [Criando o Teste Unitário da Classe TieChecker](#criando-o-teste-unitário-da-classe-tiechecker)
 
 ___
 
@@ -2236,3 +2237,85 @@ export default class TieChecker implements ResultChecker {
 ```
 
 Essa foi uma abordagem simples para se verificar se houve o empate, sem ter a necessidade desta lógica ir em todos os Elementos verificando se houve ou não vencedor.
+
+[^ Sumário ^](#sumário)
+
+## Criando o Teste Unitário da Classe TieChecker
+
+Primeiro entre no Diretório/Pasta `/packages/core/test/result` e crie o arquivo de Teste `DiagonalChecker.test.ts` e dentro defina os Testes Unitários:
+
+1. Crie um Teste que deve continuar em progresso:
+
+    - Defina uma Função `test(` mensagem do Teste`'Deve continuar em Progresso.',` defina uma Arrow Function Anônima `() =>` então, `{`  
+      - defina uma constante `const` chamada `board` recebendo `=` um Tabuleiro Vazio `Board.empty()`  
+        - marque a Célula `.set(` na posição `0, 0,` com o "Jogador O" `PlayerType.O)`  
+        - marque a Célula `.set(` na posição `1, 1,` com o "Jogador O" `PlayerType.O)`  
+        - marque a Célula `.set(` na posição `2, 2,` com o "Jogador O" `PlayerType.O)`  
+      - defina uma constante `const` chamada `result` recebendo `=` uma Nova Instância `new TieChecker()` verificando se houve Vencedor no Tabuleiro`.check(board)`  
+      - espera-se `expect` que o Resultado em Finalizado `result.finished` seja FALSO `.toBeFalsy()`  
+      - espera-se `expect` que o Resultado em Empatado `result.tied` seja FALSO `.toBeFalsy()`  
+      - espera-se `expect` que o Resultado "Jogador X" Venceu `result.xWins` seja FALSO `.toBeFalsy()`  
+      - espera-se `expect` que o Resultado "Jogador O" Venceu `result.oWins` seja FALSO `.toBeFalsy() })`  
+
+      ```ts
+      // TieChecker.test.ts
+
+      import { Board, PlayerType, TieChecker } from '../../src'
+
+      test('Deve retornar jogo em progresso', () => {
+          const board = Board.empty()
+              .set(0, 0, PlayerType.O)
+              .set(1, 1, PlayerType.O)
+              .set(2, 2, PlayerType.O)
+          const result = new TieChecker().check(board)
+          expect(result.finished).toBeFalsy()
+          expect(result.tied).toBeFalsy()
+          expect(result.xWins).toBeFalsy()
+          expect(result.oWins).toBeFalsy()
+      })
+      ...
+      ```
+
+2. Crie um Teste que deve retornar jogo como empatado.  
+
+    - Defina uma Função de `test(`mensagem do Teste `'Deve retornar jogo como empatado.',` defina uma Arrow Function Anônima `() =>` então, `{`  
+      - defina uma constante `const` chamada `board` recebendo `=` um Tabuleiro Vazio `Board.empty()`  
+        - marque a Célula `.set(` na posição `0, 0,` com o Jogador X `PlayerType.O)`  
+        - marque a Célula `.set(` na posição `0, 1,` com o Jogador X `PlayerType.X)`  
+        - marque a Célula `.set(` na posição `0, 2,` com o Jogador X `PlayerType.O)`  
+        - marque a Célula `.set(` na posição `1, 0,` com o Jogador X `PlayerType.O)`  
+        - marque a Célula `.set(` na posição `1, 1,` com o Jogador X `PlayerType.X)`  
+        - marque a Célula `.set(` na posição `1, 2,` com o Jogador X `PlayerType.O)`  
+        - marque a Célula `.set(` na posição `2, 0,` com o Jogador X `PlayerType.O)`  
+        - marque a Célula `.set(` na posição `2, 1,` com o Jogador X `PlayerType.X)`  
+        - marque a Célula `.set(` na posição `2, 2,` com o Jogador X `PlayerType.O)`  
+      - defina uma constante `const` chamada `result` recebendo `=` uma Nova Instância de `TieChecker()` verificando se houve Vencedor no Tabuleiro `.checker(board)`  
+      - espera-se `expect(` que o Resultado Finalizado `result.finished)` seja FALSO `.toBeTruthy()`  
+      - espera-se `expect(` que o Resultado Empatado `result.tied)` seja VERDADEIRO `.toBeTruthy()`  
+      - espera-se `expect(` que a vitória do Jogador X `result.xWins)` seja FALSO `.toBeFalsy()`  
+      - espera-se `expect(` que a vitória do Jogador O`result.oWins)` seja FALSO `.toBeFalsy() })`
+
+```ts
+// DiagonalChecker.test.ts
+
+...
+test('Deve retornar jogo como empatado', () => {
+    const board = Board.empty()
+        .set(0, 0, PlayerType.O)
+        .set(0, 1, PlayerType.X)
+        .set(0, 2, PlayerType.O)
+        .set(1, 0, PlayerType.O)
+        .set(1, 1, PlayerType.X)
+        .set(1, 2, PlayerType.O)
+        .set(2, 0, PlayerType.X)
+        .set(2, 1, PlayerType.O)
+        .set(2, 2, PlayerType.X)
+    const result = new TieChecker().check(board)
+    expect(result.finished).toBeTruthy()
+    expect(result.tied).toBeTruthy()
+    expect(result.xWins).toBeFalsy()
+    expect(result.oWins).toBeFalsy()
+})
+```
+
+Com isso, temos 100% de cobertura dos Testes Unitários da Classe TieChecker.
