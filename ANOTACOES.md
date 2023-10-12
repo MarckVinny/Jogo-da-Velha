@@ -30,6 +30,7 @@ ___
 - [Criando o Teste Unitário da Classe VerticalChecker](#criando-o-teste-unitário-da-classe-verticalchecker)
 - [Criando a Classe DiagonalChecker](#criando-a-classe-diagonalchecker)
 - [Criando o Teste Unitário da Classe DiagonalChecker](#criando-o-teste-unitário-da-classe-diagonalchecker)
+- [Criando a Classe TieChecker](#criando-a-classe-tiechecker)
 
 ___
 
