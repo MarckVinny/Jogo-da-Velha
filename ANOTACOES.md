@@ -24,6 +24,8 @@ ___
 - [Criando os Testes da Classe GameResult](#criando-os-testes-da-classe-gameresult)
 - [Criando a Classe ResultChecker](#criando-a-classe-resultchecker)
 - [Criando a Classe CellsChecker](#criando-a-classe-cellschecker)
+- [Criando a Classe HorizontalChecker](#criando-a-classe-horizontalchecker)
+- [Criando o Teste Unitário da Classe HorizontalChecker](#criando-o-teste-unitário-da-classe-horizontalchecker)
 
 ___
 
@@ -1724,7 +1726,7 @@ Fazendo uma verificação logo em seguida, se todos os Elementos são do mesmo T
 Importe os Módulos que serão utilizados:
 
 ```ts
-// CellChecker.ts
+// CellsChecker.ts
 
 import Board from '../game/Board'
 import Cell from '../shared/Cell'
@@ -1738,10 +1740,10 @@ Então, exporte por padrão `export default` uma Classe `class` chamada `CellsCh
 defina um Construtor `constructor(` defina um atributo privado `private` somente leitura `readonly` chamado `cells:` recebendo um Array de números `[number, number][]){}` que será a posição da Célula (linha, coluna).  
 
 ```ts
-// CellChecker.ts
+// CellsChecker.ts
 
 ...
-export default class CellChecker implements ResultChecker {
+export default class CellsChecker implements ResultChecker {
   constructor(private readonly cells: [number, number][]) {}
 
 ...
@@ -1750,18 +1752,18 @@ export default class CellChecker implements ResultChecker {
 Implemente o Método `check(` recebendo um parâmetro `board:` do Tipo `Board)` retornando `:` um Objeto do Tipo `GameResult` então, `{`  
 defina uma constante `const` chamada `cells` recebendo `=` uma Lista de posição no Jogo `this.cells` usando o Método `.map(` para percorrer `(`cada posição `[row, col])` utilize uma Arrow Function `=>` para pegar as Células correspondentes no Tabuleiro `board.get(row, col))`  
 defina uma constante `const` chamada `type` recebendo `=` uma nova Lista de Células `cells.map((`para cada Célula `cell)`utilize uma Arrow Function `=>` para extrair o Tipo de cada Célula Não NULA "!" `cell!.type)`  
-retorne `return` verifique se todos os Tipos do Array `types.every((type)` são diferentes `!=` de NULO `null` e `&&` são estritamente iguais `===` ao primeiro Tipo `type[0])`, isso verifica se todas as Células são do mesmo Tipo.  
+retorne `return` verifique se todos os Tipos do Array `types.every((type)` são diferentes `!=` de NULO `null` e `&&` são estritamente iguais `===` ao primeiro Tipo `types[0])`, isso verifica se todas as Células são do mesmo Tipo.  
 Se for do mesmo Tipo `?` retorna um Novo Resultado do Jogo `new ResultGame(`contendo uma Jogada Vencedora `cells as Cell[])`  
 Senão `:` retorna um Novo Resultado Vazio `new ResultGame() } }` que é um resultado em progresso.
 
 ```ts
-// CellChecker.ts
+// CellsChecker.ts
 
   ...
   check(board: Board): GameResult {
     const cells = this.cells.map(([row, col]) => board.get(row, col))
     const types = cells.map((cell) => cell!.type)
-    return types.every((type) => type != null && type === type[0])
+    return types.every((type) => type != null && type === types[0])
       ? new GameResult(cells as Cell[])
       : new GameResult()
   }
@@ -1769,3 +1771,142 @@ Senão `:` retorna um Novo Resultado Vazio `new ResultGame() } }` que é um resu
 ```
 
 Essa Classe irá nos auxiliar na construção de diversos outras Classes de Resultados como: horizontal, vertical e diagonal por exemplo.  
+
+[^ Sumário ^](#sumário)
+
+## Criando a Classe HorizontalChecker
+
+A Classe `HorizontalChecker` irá ajudar na verificação das Células se estavam preenchidas em cada Linha (1, 2 e 3) com o mesmo Jogador, essa Classe, implementa `implements` a Classe `ResultChecker` passando via Construtor `constructor` um conjunto de Números `cells:` sendo o Array contendo a posição de cada Célula (linha, coluna).  
+
+Em seguida, procurar algum resultado que finalizou o Jogo ele retorna o Resultado Final, caso contrário retorna um Resultado Vazio.  
+
+Importe os Módulos que serão utilizados:
+
+```ts
+// HorizontalChecker.ts
+
+import Board from '../game/Board'
+import Cell from '../shared/Cell'
+import GameResult from './GameResult'
+import ResultChecker from './ResultChecker'
+
+...
+```
+
+Então, exporte por padrão `export default` uma Classe `class` chamada `HorizontalChecker` que Implementa `implements` a Classe `ResultChecker` então, `{`  
+Implemente o Método `check(` recebendo um parâmetro `board:` do Tipo `Board)` retornando `:` um Objeto do Tipo `GameResult` então, `{`  
+defina uma constante `const` chamada `linha0:` do Tipo `[number, number][]` recebendo `=` um Array de Posições `[[0, 0], [0, 1], [0, 2]]`  
+defina uma constante `const` chamada `linha1:` do Tipo `[number, number][]` recebendo `=` um Array de Posições `[[1, 0], [1, 1], [1, 2]]`  
+defina uma constante `const` chamada `linha2:` do Tipo `[number, number][]` recebendo `=` um Array de Posições `[[2, 0], [2, 1], [2, 2]]`  
+defina uma constante `const` chamada `finalResult` recebendo `=` um Array de Posições `[`  
+verifique as Células `new CellsChecker(` da Linha `linha0` se todas estão preenchidas com o mesmo Jogador`)` verifica se houve Vencedor nesta Linha`.check(board),`  
+verifique as Células `new CellsChecker(` da Linha `linha1` se todas estão preenchidas com o mesmo Jogador`)` verifica se houve Vencedor nesta Linha`.check(board),`  
+verifique as Células `new CellsChecker(` da Linha `linha2` se todas estão preenchidas com o mesmo Jogador`)` verifica se houve Vencedor nesta Linha`.check(board)`  
+`]` procure `.find((` o resultado `result)` utilizando uma Arrow Function `=>` para extrair o resultado finalizado `result.finished)`  
+retorne `return` o resultado final `finalResult` senão `??` retorne um resultado vazio `new GameResult()`
+
+```ts
+// HorizontalChecker.ts
+
+...
+export default class HorizontalChecker implements ResultChecker {
+  check(board: Board): GameResult {
+    const linha0: [number, number][] = [[0, 0], [0, 1], [0, 2]] //* posições da Linha0
+    const linha1: [number, number][] = [[1, 0], [1, 1], [1, 2]] //* posições da Linha1
+    const linha2: [number, number][] = [[2, 0], [2, 1], [2, 2]] //* posições da Linha2
+    const finalResult = [
+      //* Verifica se todas as Células da Linha estão preenchidas com o mesmo Jogador
+      //* depois o board verifica se houve alguma Jogada Vencedora na Linha
+      new CellsChecker(linha0).check(board),
+      new CellsChecker(linha1).check(board),
+      new CellsChecker(linha2).check(board),
+      //* Procura nos resultados se está finalizado
+    ].find((result) => result.finished)
+    return finalResult ?? new GameResult()
+  }
+}
+```
+
+Essa abordagem é a modelagem que foi escolhida pra esse projeto, poderia ter sido adotada outro tipo de abordagem, como criar uma matriz e fazer toda lógica através de interface.  
+
+Mas através desta abordagem podemos ver que é possível ter uma Modelagem Rica, possuindo divisões (Classes) e não só tendo uma Matriz e fazer tudo na interface.  
+
+Se fosse fazer somente um exemplo de Jogo da Velha, só para mostrar a Interface Gráfica, não me preocuparia em criar uma Modelagem Rica com vários elementos.  
+
+Mas quando olhamos para o Modelo, faz sentido pois o Jogo possui uma Célula, um Tabuleiro, formas diferentes de verificar e tudo isso está presente no Jogo.  
+
+Se pegamos o domínio do problema e trazemos para o domínio da solução, começamos perceber os Elementos e sua Iterações, boa parte do que será verificado, será passado um conjunto de Células *(Linhas)* para serem verificadas, por isso foi criado o Checador de Células ***CellChecker()*** para verificar se todas as Células tem o mesmo Jogador e se tiver, tem que retornar que ali teve uma Vitória.  
+
+***Resumindo:***  
+Dos três possíveis resultados `finalResult`, ele vai procurar `find((result) =>` algum que finalizou o Jogo `result.finished)`.  
+Se encontrou algum que finalizou o Jogo ele retorna o Resultado Final `return finalResult` Caso contrário retorna uma Nova Instância do Resultado do Jogo Vazio `?? new GameResult()`.
+
+[^ Sumário ^](#sumário)
+
+## Criando o Teste Unitário da Classe HorizontalChecker
+
+Primeiro entre no Diretório/Pasta `/packages/core/test/result` e crie o arquivo de Teste `HorizontalChecker.test.ts` e dentro defina os Testes Unitários:
+
+1. Crie um Teste que deve finalizar com a vitória do "Jogador X".  
+
+    - Defina uma Função de `test(`mensagem do Teste `'Deve finalizar com a Vitória do "Jogador X".',` defina uma Arrow Function Anônima `() =>` então, `{`  
+      - defina uma constante `const` chamada `board` recebendo `=` um Tabuleiro Vazio `Board.empty()`  
+        - marque a Célula `.set(` na posição `0, 0,` com o Jogador X `PlayerType.X)`  
+        - marque a Célula `.set(` na posição `0, 1,` com o Jogador X `PlayerType.X)`  
+        - marque a Célula `.set(` na posição `0, 2,` com o Jogador X `PlayerType.X)`  
+      - defina uma constante `const` chamada `result` recebendo `=` uma Nova Instância de `HorizontalChecker()` verificando se houve Vencedor no Tabuleiro `.checker(board)`  
+      - espera-se `expect(` que o Resultado Finalizado `result.finished)` seja VERDADEIRO `.toBeTruthy()`  
+      - espera-se `expect(` que a vitória do Jogador X `result.xWins)` seja VERDADEIRA `.toBeTruthy()`  
+      - espera-se `expect(` que a vitória do Jogador O`result.oWins)` seja FALSA `.toBeFalsy() })`
+
+    ```ts
+    // HorizontalChecker.test.ts
+
+    import { PlayerType } from '../../src'
+    import Board from '../../src/game/Board'
+    import HorizontalChecker from '../../src/result/HorizontalChecker'
+
+    test('Deve finalizar a Jogada com a Vitória do "Jogador X."', () => {
+      const board = Board.empty() //* Cria um Tabuleiro Vazio
+        .set(0, 0, PlayerType.X) //* Marca a Célula na posição 0,0 com o "Jogador X"
+        .set(0, 1, PlayerType.X) //* Marca a Célula na posição 0,1 com o "Jogador X"
+        .set(0, 2, PlayerType.X) //* Marca a Célula na posição 0,2 com o "Jogador X"
+      //* Cria uma Instância do Verificador Horizontal e verifica se houve vencedor no Tabuleiro.
+      const result = new HorizontalChecker().check(board)
+      expect(result.finished).toBeTruthy() //* Espera-se que o Resultado Finalizado seja "VERDADEIRA"
+      expect(result.xWins).toBeTruthy() //* Espera-se que a Vitória do "Jogador X" seja "VERDADEIRA"
+      expect(result.oWins).toBeFalsy() //* Espera-se que a Vitória do "Jogador o" seja "FALSA"
+    })
+    ...
+    ```
+
+2. Crie um Teste que deve continuar em progresso:
+
+    - Defina uma Função `test(` mensagem do Teste`'Deve continuar em Progresso.',` defina uma Arrow Function Anônima `() =>` então, `{`  
+      - defina uma constante `const` chamada `board` recebendo `=` um Tabuleiro Vazio `Board.empty()`  
+        - marque a Célula `.set(` na posição `0,0,` com o "Jogador X" `PlayerType.X)`  
+        - marque a Célula `.set(` na posição `0,1,` com o "Jogador X" `PlayerType.X)`  
+        - marque a Célula `.set(` na posição `0,2,` com o "Jogador O" `PlayerType.O)`  
+      - defina uma constante `const` chamada `result` recebendo `=` uma Nova Instância `new HorizontalChecker()` verificando se houve Vencedor no Tabuleiro`.check(board)`  
+      - espera-se `expect` que o Resultado em Progresso`result.inProgress` seja VERDADEIRO `.toBeTruthy()`  
+      - espera-se `expect` que o Resultado "Jogador X" Venceu `result.xWins` seja FALSO `.toBeFalsy()`  
+      - espera-se `expect` que o Resultado "Jogador O" Venceu `result.oWins` seja FALSO `.toBeFalsy() })`  
+
+    ```ts
+    // HorizontalChecker.test.ts
+
+    ...
+    test('Deve continuar em Progresso.', () => {
+      const board = Board.empty()
+        .set(0, 0, PlayerType.X)
+        .set(0, 1, PlayerType.X)
+        .set(0, 2, PlayerType.O)
+      const result = new HorizontalChecker().check(board)
+      expect(result.inProgress).toBeTruthy()
+      expect(result.xWins).toBeFalsy()
+      expect(result.oWins).toBeFalsy()
+    })
+    ...
+    ```
+
+Com isso, temos 100% de cobertura dos Testes Unitários da Classe HorizontalChecker.
