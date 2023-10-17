@@ -1,0 +1,158 @@
+{
+    "cSpell.language": "pt-BR,en-US",
+    "cSpell.words": [
+        "aleatorio",
+        "Aleatorio",
+        "botao",
+        "brasilia",
+        "csrf",
+        "cuiaba",
+        "Cuiaba",
+        "Dragislav",
+        "emojify",
+        "espacos",
+        "Imprimiveis",
+        "indice",
+        "informacoes",
+        "Jogavel",
+        "luxon",
+        "Luxon",
+        "Manipulaveis",
+        "Nikola",
+        "Nodemom",
+        "opcao",
+        "Petković",
+        "Politik",
+        "posicao",
+        "posicoes",
+        "roma",
+        "Selecao",
+        "seoul",
+        "Simbolos",
+        "sindresorhus",
+        "Taíssa",
+        "trunc",
+        "Unico",
+        "Usuario",
+        "uuidv",
+        "Vinicius"
+    ],
+    "cSpell.enableFiletypes": [
+        "!asciidoc",
+        "!c",
+        "!csharp",
+        "!elixir",
+        "!erlang",
+        "!go",
+        "!graphql",
+        "!jade",
+        "!java",
+        "!jupyter",
+        "!latex",
+        "!rust",
+        "!swift",
+        "!vue"
+    ],
+    "cSpell.diagnosticLevel": "Information",
+    "cSpell.hideAddToDictionaryCodeActions": false,
+    "cSpell.showAutocompleteSuggestions": true,
+    "editor.fontSize": 18,
+    "editor.codeActionsOnSave": {},
+    "bracketLens.languageConfiguration": {
+        "ignoreCase": false,
+        "comments": {
+            "block": [
+                {
+                    "opening": "/*",
+                    "closing": "*/"
+                }
+            ],
+            "line": [
+                "//"
+            ]
+        },
+        "brackets": {
+            "symbol": [
+                {
+                    "opening": "(",
+                    "closing": ")",
+                    "headerMode": "smart",
+                    "inters": []
+                },
+                {
+                    "opening": "[",
+                    "closing": "]",
+                    "headerMode": "smart",
+                    "inters": []
+                },
+                {
+                    "opening": "{",
+                    "closing": "}",
+                    "headerMode": "smart",
+                    "inters": []
+                }
+            ],
+            "word": []
+        },
+        "strings": {
+            "inline": [
+                {
+                    "opening": "\"",
+                    "closing": "\"",
+                    "escape": [
+                        "\\\\",
+                        "\\\""
+                    ]
+                },
+                {
+                    "opening": "'",
+                    "closing": "'",
+                    "escape": [
+                        "\\\\",
+                        "\\'"
+                    ]
+                }
+            ],
+            "multiline": [
+                {
+                    "opening": "`",
+                    "closing": "`",
+                    "escape": [
+                        "\\\\",
+                        "\\`"
+                    ]
+                }
+            ]
+        },
+        "terminators": [
+            ";",
+            ","
+        ],
+        "ignoreSymbols": [
+            "\\//"
+        ]
+    },
+    "markdown.preview.fontSize": 18,
+    "markdown.preview.lineHeight": 2.6,
+    "markdownlint.config": {
+        "MD033": {
+            "allowed_elements": [
+                "sup",
+            ]
+        }
+    },
+    "markdownlint.ignore": [],
+    //! Material Icons 
+    "material-icon-theme.folders.associations": {
+        "CURSO-NODE": "src",
+        "modulos-ecmascript": "javascript",
+        "modulos-node": "node",
+        "pacotes": "packages",
+        "ESTRUTURAS_CONTROLE": "functions",
+        "HTML-CSS-JAVASCRIPT": "css",
+        "INTEGRACAO-HTML-CSS-JAVASCRIPT": "css"
+    },
+    //! Prettier
+    "prettier.singleQuote": true,
+    "prettier.semi": false
+}
