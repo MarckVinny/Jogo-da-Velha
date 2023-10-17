@@ -134,7 +134,13 @@
     },
     "markdown.preview.fontSize": 18,
     "markdown.preview.lineHeight": 2.6,
-    "markdownlint.config": {},
+    "markdownlint.config": {
+        "MD033": {
+            "allowed_elements": [
+                "sup"
+            ]
+        }
+    },
     "markdownlint.ignore": [],
     //! Material Icons 
     "material-icon-theme.folders.associations": {
