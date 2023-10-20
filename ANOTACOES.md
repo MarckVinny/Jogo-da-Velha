@@ -32,6 +32,15 @@ ___
 - [Criando o Teste Unitário da Classe DiagonalChecker](#criando-o-teste-unitário-da-classe-diagonalchecker)
 - [Criando a Classe TieChecker](#criando-a-classe-tiechecker)
 - [Criando o Teste Unitário da Classe TieChecker](#criando-o-teste-unitário-da-classe-tiechecker)
+- [Criando a Classe Game](#criando-a-classe-game)
+  - [Método Estático Create](#método-estático-create)
+  - [Método Estático NextRound](#método-estático-nextround)
+  - [Método Público Clear](#método-público-clear)
+  - [Método Público AddMove](#método-público-addmove)
+  - [Método Privado CalculateResult](#método-privado-calculateresult)
+  - [Método Privado Players](#método-privado-players)
+  - [Método Privado SwitchPlayer](#método-privado-switchplayer)
+- [Criando o Teste Unitário da Classe Game](#criando-o-teste-unitário-da-classe-game)
 
 ___
 
@@ -2319,3 +2328,376 @@ test('Deve retornar jogo como empatado', () => {
 ```
 
 Com isso, temos 100% de cobertura dos Testes Unitários da Classe TieChecker.
+
+[^ Sumário ^](#sumário)
+
+## Criando a Classe Game
+
+É na Classe Game que tudo acontece é onde todos os processos do Jogo são controlados e ela não é tão grande assim, pois, a maior parte de sua lógica está nas outras Classes que criamos anteriormente.  
+
+Então, vamos para a criação de nossa última Classe de nossa ***Modelagem de Domínio***, entre no Diretório/Pasta `packages/core/src/game` e crie um arquivo chamado `Game.ts` e dentro dele:
+
+Importe os Módulos que serão utilizados.
+
+```ts
+// Game.ts
+
+import Player from '../player/Player'
+import DiagonalChecker from '../result/DiagonalChecker'
+import GameResult from '../result/GameResult'
+import HorizontalChecker from '../result/HorizontalChecker'
+import TieChecker from '../result/TieChecker'
+import VerticalChecker from '../result/VerticalChecker'
+import { PlayerType } from '../shared/PlayerType'
+import Board from './Board'
+...
+```
+
+> ***DICA<SUP>3:***  
+  *O Estado das Vitórias ficam na Classe Player, mas, o **Estado do Empate fica salvo na Classe Game** ou seja, o cálculo é feito dentro do Jogo.*  
+
+Então, exporte por padrão `export default` uma Classe `class` chamada `Game` então, `{`  
+crie um Construtor Privado `private constructor(` recebendo alguns parâmetros Somente Leitura:  
+
+> ***DICA<sup>1:***  
+  *Quando criamos um Construtor Privado, significa que iremos implementar **Métodos Estáticos** para acessar os **Atributos/Parâmetros** do Construtor.*  
+
+como, o Jogador 1 `readonly player1:` recebendo como valor um `Player,`  
+o Jogador 2 `readonly player2:` recebendo como valor um `Player,`  
+o Tabuleiro do Jogo `readonly board:` recebendo como valor um `Board,`  
+o Primeiro Jogador `readonly first:` recebendo como valor um `Player,`  
+o Jogador Atual `readonly currentPlayer:` recebendo como valor um `Player,`  
+> ***DICA<sup>2:***  
+  *Sempre que o Jogo é reiniciado (uma nova rodada), o **Jogador Atual** `currentPlayer` é alterado.*  
+
+o Empate `readonly ties:` recebendo como valor padrão `number = 0,`  
+e por último temos o Resultado `readonly result:` recebendo o Resultado do Jogo `GameResult` que recebe `=` uma Nova Instância com Resultado Vazio `new GameResult() ){}`  
+
+```ts
+// Game.ts
+
+...
+
+export default class Game{
+  private constructor(
+    readonly player1: Player,        //* Jogador 1
+    readonly player2: Player,        //* Jogador 2
+    readonly board: Board,           //* Tabuleiro
+    readonly first: Player,          //* Primeiro Jogador
+    readonly currentPlayer: Player,  //* Jogador Atual
+    readonly ties: number = 0,       //* Empate
+    readonly result: GameResult = new GameResult()  //* Resultado Vazio
+  ){}
+  ...
+```
+
+[^ Sumário ^](#sumário)
+
+### Método Estático Create()
+
+Agora iremos começar a definir os Métodos Estáticos que serão chamados no Jogo, pois, não estamos criando o jogo pelo Construtor para poder simplificar.  
+
+Então, defina um Método Estático `static` que cria um Jogo, chamado `create(` recebendo como parâmetro o Jogador 1 `player1: Player,` e o Jogador 2 `player2: Player)` retornando `:` um Jogo `Game {`  
+então, retorne `return` uma Nova Instância do Jogo `new Game(`recebendo por Parâmetro o Jogador 1 `player1,` e o Jogador 2 `player2,` com um Tabuleiro Vazio `Board.empty(),` o Primeiro Jogador será `player1,` e o Jogador Atual será `player1)}`  
+
+```ts
+// Game.ts
+
+  ...
+
+  //? Método Estático que cria um Jogo passando por parâmetro o Jogador 1 e o Jogador 2
+  static create(player1: Player, player2: Player) : Game {
+    
+    //* Cria uma Nova Instancia do Jogo recebendo por parâmetro:
+    return new Game(
+      player1,                //* Jogador 1,
+      player2,                //* Jogador 2,
+      Board.empty(),          //* Tabuleiro Vazio,
+      player1,                //* Primeiro Jogador
+      player1                 //* Jogador Atual.
+    )
+  }
+  ...
+```
+
+[^ Sumário ^](#sumário)
+
+### Método Estático NextRound
+
+O Próximo Método é referente ao botão que para a Jogada e reinicia a partida, quando se está no meio de uma partida e que ir para a Próxima Rodada `nextRound()`.  
+Este Método irá criar um Novo Jogo com os mesmos jogadores e suas pontuações com um Tabuleiro Vazio e mantendo os valores de Empate, mas antes disso, irá verificar Se o Tipo do Novo Primeiro Jogador é igual ao Tipo do Jogador 1, Se for igual, então, o Novo Primeiro Jogador será o Jogador 2, Senão, será o Jogador 1. Ficando nessa troca até o final da partida.  
+
+Então, defina uma Método que vai para a Próxima Rodada `nextRound()` retornando `:` um Objeto Jogo `Game` então, `{`  
+defina uma Constante `const` chamada Novo Primeiro Jogador `newFirst` verificando `=` se o Tipo deste Primeiro Jogador `this.first.type` é estritamente igual `===` ao Tipo deste do Jogador 1 `this.player1.type` Se for igual, então, `?` o Novo Primeiro Jogador será este Jogador 2 `this.player2` Senão, `:` será este Jogador 1 `this.player1`  
+Agora retorne `return` uma Nova Instância do Jogo `new Game(` passando os mesmos Jogadores com suas Pontuações `this.player1, this.player2,` com um Tabuleiro Vazio `Board.empty(),` passando o Novo Primeiro Jogador `newFirst,` passando a mesma Pontuação de Empate `this.ties)}`  
+
+```ts
+// Game.ts
+
+  ...
+
+  //? Método que reinicia a partida
+  nextRound() : Game {
+    
+    //* newFirst, verifica se o Tipo deste Primeiro Jogador 
+    //* é igual ao Tipo do Jogador 1
+    const newFirst = this.first.type === this.player1.type 
+        ? this.player2        //* Se for igual, retorna o Jogador 2
+        : this.player1        //* Senão, retorna o Jogador 1
+
+    //* retorna um Novo Jogo recebendo os mesmos Jogadores
+    return new Game(
+      this.player1,           //* Jogador 1 com suas pontuações
+      this.player2,           //* Jogador 2 com suas pontuações
+      Board.empty(),          //* um Tabuleiro Vazio
+      newFirst,               //* como Primeiro Jogador, recebe o Novo Primeiro Jogador
+      newFirst,               //* como Jogador Atual, recebe o Novo Primeiro Jogador
+      this.ties               //* e por fim mantém a quantidade de Empates
+    )
+  }
+  ...
+```
+
+[^ Sumário ^](#sumário)
+
+### Método Público Clear
+
+O próximo Método a ser definido, será o Método que irá Limpar o Jogo `clear()`, ele primeiramente irá fazer a mesma verificação que o Método anterior, se o Tipo do Primeiro Jogador é igual ao Tipo do Jogador 1, se for igual ele retorna o Jogador 2, senão, ele retorna o Jogador 1 e vice versa.  
+
+Então, defina o Método que Limpa um Jogo, chamado `clear()` que retorna `:` um Objeto Jogo `Game` então, `{`  
+defina uma Constante `const` chamada Novo Primeiro Jogador `newFirst` verificando `=` se o Tipo deste Primeiro Jogador `this.first.type` é estritamente igual `===` ao Tipo deste do Jogador 1 `this.player1.type` Se for igual, então, `?` o Novo Primeiro Jogador será este Jogador 2 `this.player2` Senão, `:` será este Jogador 1 `this.player1`  
+retorne `return` uma Nova Instância do Jogo `new Game(` contendo os seguintes parâmetros  
+limpar este Jogador 1 `this.player1.clear(),`  
+limpar este Jogador 2 `this.player2.clear(),`  
+limpar o Tabuleiro `Board.empty(),`  
+pega o Novo Primeiro Jogador `newFirst,`  
+pega o Novo Primeiro Jogador Atual `newFirst,`  
+zera o valor de Empate `0)}`  
+
+```ts
+// Game.ts
+
+  ...
+
+  //? Método que Limpa o Jogo
+  clear() : Game {
+
+    //* newFirst, verifica se o Tipo deste Primeiro Jogador 
+    //* é igual ao Tipo do Jogador 1
+    const newFirst = this.first.type === this.player1.type 
+        ? this.player2        //* Se for igual, retorna o Jogador 2
+        : this.player1        //* Senão, retorna o Jogador 1
+
+    //* retorna uma Nova Instância do Jogo e:
+    return new Game(
+      this.player1.clear(),   //* limpa o Jogador 1
+      this.player2.clear(),   //* limpa o Jogador 2
+      Board.empty(),          //* limpa o Tabuleiro
+      newFirst,               //* altera o Primeiro Jogador
+      newFirst,               //* altera o Jogador Atual
+      0                       //* zera a pontuação de Empate
+    )
+  }
+  ...
+```
+
+[^ Sumário ^](#sumário)
+
+### Método Público AddMove
+
+O próximo Comportamento Rico será o Método que irá Adicionar um Movimento no Jogo.  
+
+Então, defina o Método que Adiciona um Movimento, chamado `addMove(` recebendo como parâmetro número de uma posição, Linha `row: number,` Coluna `col: number)` que retorna `:` um Objeto Jogo `Game {`  
+verifique Se `if(` esta posição no Tabuleiro está preenchida `this.board.isNotEmpty(row, col))` se estiver, retorne `return` esta instância do Jogo `this`  
+verifique Se `if(` o este resultado NÃO está em progresso `!this.result.inProgress)` se NÃO estiver, retorne `return` esta instância do Jogo `this` pois, se pode adicionar uma Jogada em um Jogo que não está em progresso.  
+
+Então, passando por essas verificações é que iremos definir uma Constante `const` chamada `board` que receberá `=` setando a posição neste Tabuleiro `this.board.set(row, col,` com o Tipo deste Jogador Atual `this.currentPlayer.type)`  
+defina uma Constante `const` chamada `result` que recebe `=` cálculo deste resultado `this.resultCalculate(` do Tabuleiro `board)`  
+defina uma Constante `const` contendo os Jogadores `[player1, player2]` recebendo `=` o resultado destes Jogadores `this.players(result)`  
+
+Então, retorne `return` uma Nova Instância do Jogo `new Game(` contendo os parâmetros:  
+Jogador 1 `player1,`  
+Jogador 2 `player2,`  
+Tabuleiro `board,`  
+este Primeiro Jogador `this.first,`  
+este Jogador Atual `this.currentPlayer,`  
+se o resultado for Empatado `result.tied` então `?` acrescente 1 ponto ao Empate `this.ties + 1` senão, `:` não acrescente `this.ties,`  
+resultado `result)` troque o Jogador `.switchPlayer()}`  
+
+```ts
+// Game.ts
+
+  ...
+  
+  //? Método que adiciona um movimento, recebendo como parâmetro uma posição
+  addMove(row: number, col: number) : Game {
+    //* Verifica Se esta posição no Tabuleiro está preenchida
+    //* Se estiver, retorna a mesma Instância
+    if (this.board.isNotEmpty(row, col)) return this
+
+    //* Verifica Se o resultado NÃO está em progresso
+    //* Se NÃO estiver, retorna a mesma Instância
+    if (!this.result.inProgress) return this
+
+    //* Seta o Tipo do Jogador Atual nesta posição do Tabuleiro
+    const board = this.board.set(row, col, this.currentPlayer.type)
+
+    //* Calcula o Resultado neste Tabuleiro
+    const result = this.calculateResult(board)
+
+    //*
+    const [player1, player2] = this.players(this.result)
+
+    //* retorna uma Nova Instância do Jogo
+    return new Game(
+      player1,              //* Jogador 1
+      player2,              //* Jogador 2
+      board,                //* Tabuleiro
+      this.first,           //* Primeiro Jogador
+      this.currentPlayer,   //* Jogador Atual
+      result.tied           //* Se o resultado for Empatado
+        ? this.ties + 1     //* acrescenta 1 ponto ao Empates
+        : this.ties,        //* Senão, retorna o valor atual
+      result                //* resultado
+    ).switchPlayer()        //* troca o Jogador
+  }
+  ...
+```
+
+[^ Sumário ^](#sumário)
+
+### Método Privado CalculateResult
+
+Agora iremos definir o Método Privado que Calcula o Resultado do Tabuleiro.  
+
+Então, defina um Método Privado `private` chamado `calculateResult(` recebendo como parâmetro um Tabuleiro `board: Board)` retornado `:` um Objeto Resultado do Jogo `GameResult{`  
+defina uma Constante `const` chamada `results` que verifica os resultados `=` no Array `[`  
+na Vertical `new VerticalChecker().check(board),`
+na Horizontal `new HorizontalChecker().check(board),`
+na Diagonal `new DiagonalChecker().check(board)]`  
+
+retorne `return` os resultados `results` procurando em todos os Elementos do Array`.find((` Se cada resultado do Tabuleiro `result)` tiver `=>` o resultado finalizado `result.finished)` se for verdadeiro retorna Vitória, Senão `??` retorna Empate `nes TieChecker().check(board)}`  
+
+```ts
+// Game.ts
+
+  ...
+
+  //? Método Privado Calculo do Resultado do Tabuleiro
+  private calculateResult(board: Board) : GameResult {
+    const results = [
+      new VerticalChecker().check(board),             //* Verifica se houve Vencedor na Vertical
+      new HorizontalChecker().check(board),           //* Verifica se houve Vencedor na Horizontal
+      new DiagonalChecker().check(board)              //* Verifica se houve Vencedor na Diagonal
+    ]
+
+    return results.find((result) => result.finished)  //* Procura se houve Vencedor nos resultados acima,
+    ?? new TieChecker().check(board)                  //* Senão, retorna Empate.
+  }
+  ...
+```
+
+[^ Sumário ^](#sumário)
+
+### Método Privado Players
+
+Agora iremos definir o Método Privado que irá retornar o Jogador com sua Pontuação.  
+
+Então, defina um Método Privado `private` chamado `players(` recebendo como parâmetro um resultado `result: GameResult)` retornando `:` um Array de Jogadores `Player[]` então, `{`  
+Se `if(` o "Jogador X" Vencer `result.xWins)` então,`{`  
+retorne `return` verifique Se o Tipo deste Jogador 1 `this.player1.type` é estritamente igual `===` ao Tipo do "Jogador X" `PlayerType.X`  
+Se for `?` retorna um Array com os dois Jogadores `[` acrescenta 1 ponto a este Jogador 1 `this.player1.addScore(1),` e este Jogador 2 sem alteração `this.player2]`  
+Senão, `:` retorna um Array com os dois Jogadores `[` com este Jogador 1 sem alteração `this.player1,` e acrescenta 1 ponto a este Jogador 2`this.player2.addScore(1)]}`  
+
+Se `if(` o "Jogador O" Vencer `result.oWins)` então, `{`  
+retorne `return` verifique se o Tipo deste Jogador 1 `this.player1.type` é estritamente igual `===` ao Tipo do "Jogador O" `PlayerType.O`  
+Se for `?` retorne um Array com os dois Jogadores `[` acrescente 1 ponto a este Jogador 1 `this.player1.addScore(1),` e este Jogador 2 sem alteração `this.player2]`  
+Senão, `:` retorne um Array com os dois Jogadores `[` acrescente 1 ponto a este Jogador 2 `this.player2.addScore(1),` e este Jogador 1 sem alterações `this.player1]}`  
+
+Se não houver vencedor, retorne um Array com estes dois Jogadores sem alterações.  
+`return [this.player1, this.player2]}`  
+
+```ts
+// Game.ts
+
+  ...
+
+  //? Método Privado que retorna o Jogador com a Pontuação
+  private players(result: GameResult) : Player[] {
+    
+    //* Se o "Jogador X" Venceu
+    if(result.xWins) {
+
+      //* Verifique o Tipo deste Jogador 1 
+      //* é estritamente igual ao Tipo do "Jogador X"
+      return this.player1.type === PlayerType.X
+
+        //* Se for, retorne um Array acrescentando 1 ponto a este Jogador 1 e sem alteração no Jogador 2
+        ? [this.player1.addScore(1), this.player2] 
+        
+        //* Senão, retorne um Array acrescentando 1 ponto a este Jogador 2 e sem alteração no Jogador 1
+        : [this.player2.addScore(1), this.player1] 
+    }
+
+    //* Se o "Jogador O" Venceu
+    if(result.oWins) {
+      return this.player1.type === PlayerType.O
+        ? [this.player1.addScore(1), this.player2]
+        : [this.player2.addScore(1), this.player1]
+    }
+
+    //* Se não houver Vencedor, retorne um Array com estes Jogadores sem alterações
+    return [this.player1, this.player2]
+  }
+  ...
+```
+
+[^ Sumário ^](#sumário)
+
+### Método Privado SwitchPlayer
+
+Por fim, vamos definir o Método Privado que irá Trocar/Inverter o Tipo do Jogador toda vez que o Jogo for reiniciado.  
+
+Então, defina um Método Privado `private` chamado `switchPlayer()` retornando `:` um Objeto Jogo `Game{`  
+Verifique Se `if(` o resultado dest Jogo NÃO está em progresso `!this.result.inProgress)` se NÃO estiver retorne `return` a mesma Instância `this`  
+defina uma Constante `const` chamada Novo Jogador Atual `newCurrentPlayer` verificando `=` se o Tipo deste Jogador Atual `this.currentPlayer.type` é estritamente igual `===` ao Tipo deste do Jogador 1 `this.player1.type` Se for igual, então, `?` o Novo Jogador Atual será este Jogador 2 `this.player2` Senão, `:` será este Jogador 1 `this.player1`  
+retorne `return` uma Nova Instância do Jogo `new Game(` contendo os seguintes parâmetros:  
+este Jogador 1 `this.player1,`  
+este Jogador 2 `this.player2,`  
+este Tabuleiro `this.board,`  
+este Primeiro Jogador `this.first,`  
+Novo Jogador Atual `newCurrentPlayer,`  
+este Empate `this.ties,`  
+este Resultado `this.result)} }`
+
+```ts
+// Game.ts
+
+  ...
+
+  //? Método Privado que Troca/Inverte o Tipo do Jogador
+  private switchPlayer(): Game {
+    //* Verifica se o Resultado deste Jogo NÃO está em progresso
+    //* Se NÃO estiver, retorna a mesma Instância
+    if (!this.result.inProgress) return this
+
+    const newCurrentPlayer =
+      //* Verifica se o Tipo deste Jogador Atual 
+      //* é estritamente igual ao Tipo do Jogador 1
+      this.currentPlayer.type === this.player1.type
+        ? this.player2          //* Se for, retorna o Jogador 2
+        : this.player1          //* Senão, retorna o Jogador 1
+    
+    //* Retorna uma Nova Instância do Jogo
+    return new Game(
+      this.player1,         //* este Jogador 1
+      this.player2,         //* este Jogador 2
+      this.board,           //* este Tabuleiro
+      this.first,           //* este Primeiro Jogador
+      newCurrentPlayer,     //* Novo Jogador Atual
+      this.ties,            //* este Empate
+      this.result           //* este Resultado
+    )
+  }
+}
+```
