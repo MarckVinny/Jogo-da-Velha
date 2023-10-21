@@ -91,30 +91,30 @@ export default class Game {
 
     //* retorna uma Nova Instância do Jogo
     return new Game(
-      player1, //* Jogador 1
-      player2, //* Jogador 2
-      board, //* Tabuleiro
-      this.first, //* Primeiro Jogador
-      this.currentPlayer, //* Jogador Atual
-      result.tied //* Se o resultado for Empatado
-        ? this.ties + 1 //* acrescenta 1 ponto ao Empates
-        : this.ties, //* Senão, retorna o valor atual
-      result //* resultado
-    ).switchPlayer() //* troca o Jogador
+      player1,                    //* Jogador 1
+      player2,                    //* Jogador 2
+      board,                      //* Tabuleiro
+      this.first,                 //* Primeiro Jogador
+      this.currentPlayer,         //* Jogador Atual
+      result.tied                 //* Se o resultado for Empatado
+        ? this.ties + 1           //* acrescenta 1 ponto ao Empates
+        : this.ties,              //* Senão, retorna o valor atual
+      result                      //* resultado
+    ).switchPlayer()              //* troca o Jogador
   }
 
   //? Método Privado Calculo do Resultado do Tabuleiro
   private calculateResult(board: Board): GameResult {
     const results = [
-      new VerticalChecker().check(board), //* Verifica se houve Vencedor na Vertical
-      new HorizontalChecker().check(board), //* Verifica se houve Vencedor na Horizontal
-      new DiagonalChecker().check(board), //* Verifica se houve Vencedor na Diagonal
+      new VerticalChecker().check(board),             //* Verifica se houve Vencedor na Vertical
+      new HorizontalChecker().check(board),           //* Verifica se houve Vencedor na Horizontal
+      new DiagonalChecker().check(board),             //* Verifica se houve Vencedor na Diagonal
     ]
 
     return (
-      results.find((result) => result.finished) ?? //* Procura se houve Vencedor nos resultados acima,
-      new TieChecker().check(board)
-    ) //* Senão, retorna Empate.
+      results.find((result) => result.finished) ??    //* Procura se houve Vencedor nos resultados acima,
+      new TieChecker().check(board)                   //* Senão, retorna Empate.
+    ) 
   }
 
   //? Método Privado que retorna o Jogador com a Pontuação
@@ -126,15 +126,15 @@ export default class Game {
       return this.player1.type === PlayerType.X
         ? //* Se for, retorne um Array acrescentando 1 ponto a este Jogador 1 e sem alteração no Jogador 2
           [this.player1.addScore(1), this.player2]
-        : //* Senão, retorne um Array acrescentando 1 ponto a este Jogador 2 e sem alteração no Jogador 1
-          [this.player2.addScore(1), this.player1]
+        : //* Senão, retorne um Array sem alteração no Jogador 1 e acrescentando 1 ponto a este Jogador 2
+          [this.player1, this.player2.addScore(1)]
     }
 
     //* Se o "Jogador O" Venceu
     if (result.oWins) {
       return this.player1.type === PlayerType.O
         ? [this.player1.addScore(1), this.player2]
-        : [this.player2.addScore(1), this.player1]
+        : [this.player1, this.player2.addScore(1)]
     }
 
     //* Se não houver Vencedor, retorne um Array com estes Jogadores sem alterações
