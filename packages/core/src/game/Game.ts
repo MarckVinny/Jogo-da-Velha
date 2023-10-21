@@ -87,7 +87,7 @@ export default class Game {
     const result = this.calculateResult(board)
 
     //*
-    const [player1, player2] = this.players(this.result)
+    const [player1, player2] = this.players(result)
 
     //* retorna uma Nova Instância do Jogo
     return new Game(
