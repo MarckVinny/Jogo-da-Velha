@@ -2353,9 +2353,6 @@ import Board from './Board'
 ...
 ```
 
-> ***DICA<SUP>3:***  
-  *O Estado das Vitórias ficam na Classe Player, mas, o **Estado do Empate fica salvo na Classe Game** ou seja, o cálculo é feito dentro do Jogo.*  
-
 Então, exporte por padrão `export default` uma Classe `class` chamada `Game` então, `{`  
 crie um Construtor Privado `private constructor(` recebendo alguns parâmetros Somente Leitura:  
 
@@ -2371,6 +2368,10 @@ o Jogador Atual `readonly currentPlayer:` recebendo como valor um `Player,`
   *Sempre que o Jogo é reiniciado (uma nova rodada), o **Jogador Atual** `currentPlayer` é alterado.*  
 
 o Empate `readonly ties:` recebendo como valor padrão `number = 0,`  
+
+> ***DICA<SUP>3:***  
+  *O Estado das Vitórias ficam na Classe Player, mas, o **Estado do Empate fica salvo na Classe Game** ou seja, o cálculo é feito dentro do Jogo.*  
+
 e por último temos o Resultado `readonly result:` recebendo o Resultado do Jogo `GameResult` que recebe `=` uma Nova Instância com Resultado Vazio `new GameResult() ){}`  
 
 ```ts
@@ -2546,7 +2547,7 @@ resultado `result)` troque o Jogador `.switchPlayer()}`
     const result = this.calculateResult(board)
 
     //*
-    const [player1, player2] = this.players(this.result)
+    const [player1, player2] = this.players(result)
 
     //* retorna uma Nova Instância do Jogo
     return new Game(
@@ -2612,7 +2613,7 @@ Senão, `:` retorna um Array com os dois Jogadores `[` com este Jogador 1 sem al
 Se `if(` o "Jogador O" Vencer `result.oWins)` então, `{`  
 retorne `return` verifique se o Tipo deste Jogador 1 `this.player1.type` é estritamente igual `===` ao Tipo do "Jogador O" `PlayerType.O`  
 Se for `?` retorne um Array com os dois Jogadores `[` acrescente 1 ponto a este Jogador 1 `this.player1.addScore(1),` e este Jogador 2 sem alteração `this.player2]`  
-Senão, `:` retorne um Array com os dois Jogadores `[` acrescente 1 ponto a este Jogador 2 `this.player2.addScore(1),` e este Jogador 1 sem alterações `this.player1]}`  
+Senão, `:` retorne um Array com os dois Jogadores `[`este Jogador 1 sem alterações `this.player1,` e acrescente 1 ponto a este Jogador 2 `this.player2.addScore(1)]}`  
 
 Se não houver vencedor, retorne um Array com estes dois Jogadores sem alterações.  
 `return [this.player1, this.player2]}`  
@@ -2622,28 +2623,25 @@ Se não houver vencedor, retorne um Array com estes dois Jogadores sem alteraç�
 
   ...
 
-  //? Método Privado que retorna o Jogador com a Pontuação
-  private players(result: GameResult) : Player[] {
-    
-    //* Se o "Jogador X" Venceu
-    if(result.xWins) {
 
-      //* Verifique o Tipo deste Jogador 1 
+  //? Método Privado que retorna o Jogador com a Pontuação
+  private players(result: GameResult): Player[] {
+    //* Se o "Jogador X" Venceu
+    if (result.xWins) {
+      //* Verifique o Tipo deste Jogador 1
       //* é estritamente igual ao Tipo do "Jogador X"
       return this.player1.type === PlayerType.X
-
-        //* Se for, retorne um Array acrescentando 1 ponto a este Jogador 1 e sem alteração no Jogador 2
-        ? [this.player1.addScore(1), this.player2] 
-        
-        //* Senão, retorne um Array acrescentando 1 ponto a este Jogador 2 e sem alteração no Jogador 1
-        : [this.player2.addScore(1), this.player1] 
+        ? //* Se for, retorne um Array acrescentando 1 ponto a este Jogador 1 e sem alteração no Jogador 2
+          [this.player1.addScore(1), this.player2]
+        : //* Senão, retorne um Array sem alteração no Jogador 1 e acrescentando 1 ponto a este Jogador 2
+          [this.player1, this.player2.addScore(1)]
     }
 
     //* Se o "Jogador O" Venceu
-    if(result.oWins) {
+    if (result.oWins) {
       return this.player1.type === PlayerType.O
         ? [this.player1.addScore(1), this.player2]
-        : [this.player2.addScore(1), this.player1]
+        : [this.player1, this.player2.addScore(1)]
     }
 
     //* Se não houver Vencedor, retorne um Array com estes Jogadores sem alterações
@@ -2700,4 +2698,474 @@ este Resultado `this.result)} }`
     )
   }
 }
+```
+
+[^ Sumário ^](#sumário)
+
+## Criando o Teste Unitário da Classe Game
+
+Assim como nas outras Classes, a Classe Game não poderia ficar sem testes, então vamos criar os Testes Unitários dos Métodos vistos anteriormente.  
+
+Então, dentro do Diretório/Pasta `packages/core/src/test/game` e dentro, crie um arquivo chamado `Game.test.ts` e em seguida crie os seguintes testes:  
+
+Antes de tudo, precisamos adicionar a Classe Game no arquivo `index.ts` que se encontra em `packages/core/src`, para que possamos fazer o import do Módulo do local correto.
+
+```ts
+// index.ts
+
+...
+import Game from './game/Game'
+
+export { Board, Cell, Game, GameResult, PlayerType, Player, TieChecker }
+...
+```
+
+1. Defina um Teste, que cria um Jogo contendo os Jogadores "P1" representado pelo "Tipo O" e "P2" representado pelo "Tipo X", mudando o Tipo do Jogador quando a Partida é reiniciada:  
+
+    - Defina a Função de Teste, `test(`mensagem do teste`'Deve reiniciar o Jogo mudando o próximo Jogador',` crie uma Arrow Function `() => {`  
+      - crie uma constante `const` chamada `game` recebendo `=` uma Instância que cria um Jogo `Game.create(` crie uma Nova Instância do Jogador `new Player(` como o nome de `'P1',` do "Tipo O" `PlayerType.O),` crie uma Nova Instância do Jogador `new Player(` com o nome de `'P2',` do "Tipo X" `PlayerType.X))`  
+      - espera-se `expect(` que o Tipo do Jogador Atual `game.currentPlayer.type)`
+      - Seja do "Tipo O"`.toBe(PlayerType.O)`  
+      - espera-se `expect(`que está Empatado `gameResult.tied)`seja FALSO`.toBeFalsy()`  
+      - espera-se `expect(`que o Tipo do Jogador Atual na Próxima Rodada `game.nextRound().currentPlayer.type)`
+      - Seja "do Tipo X" `.toBe(PlayerType.X)})`
+
+        ```ts
+        // Game.test.ts
+
+        import { Game, Player, PlayerType } from '../../src'
+
+        //* Teste #01
+        test('Deve reiniciar o Jogo mudando o próximo Jogador.', () => {
+          
+          //*Cria uma Instância do Jogo
+          const game = Game.create(
+            new Player('P1', PlayerType.O),     //* com o Jogador "P1" do "Tipo O"
+            new Player('P2', PlayerType.X)      //*e com o Jogador "P2" do "Tipo X"
+          )
+          expect(game.currentPlayer.type)
+          .toBe(PlayerType.O)                   //* Jogador Atual é do "Tipo O"
+          expect(game.nextRound().currentPlayer.type)
+          .toBe(PlayerType.X)                   //* O próximo Jogador Atual é do "Tipo X"
+        })
+        ...
+        ```
+
+2. Defina um Teste, que deve finalizar o Jogo com a Vitória do Jogador "P1":  
+
+    - Defina o Teste, `test(` mensagem `'Deve finalizar o Jogo com a Vitória do Jogador "P1".', () => {`
+      - Crie uma Constante `const` chamada `game` que recebe `=` uma Instância que cria um Jogo `new Game.create(` crie uma Nova Instância do Jogador 1 `new Player(` de nome `'P1',` do "Tipo O" `PlayerType.O),` crie uma Nova Instância do Jogador `new Player(` de nome `'P2',` do "Tipo X" `PlayerType.X))`
+        - Adicione o Movimento "P1" (0,0) `.addMove(0, 0),`
+        - Adicione o Movimento "P2" (1,1) `.addMove(1, 1),`
+        - Adicione o Movimento "P1" (0,1) `.addMove(0, 1),`
+        - Adicione o Movimento "P2" (1,2) `.addMove(1, 2),`
+        - Adicione o Movimento "P1" (0,2) `.addMove(0, 2),`
+      - Espera-se `expect(` que o Resultado do Jogo Finalizado `game.result.finished)`
+      - Seja VERDADEIRO `.toBeTruthy()`
+      - Espera-se `expect(` que a Resultado de Vitória do Jogador "P1" `game.result.oWins)`
+      - Seja VERDADEIRA `.toBeTruthy()`
+      - Espera-se `expect(` que o Resultado de Vitória do Jogador "P2" `game.result.xWins)`
+      - Seja FALSO `.toBeFalsy()`
+      - Espera-se `expect(` que a Pontuação do Jogador "P1" `game.player1.score)`seja acrescentado 1 ponto `.toBe(1)`
+      - Espera-se `expect(` que a Pontuação do Jogador "P2" `game.player2.score)`
+      - Seja ZERO `.toBe(0)})`  
+
+        ```ts
+        // Game.test.ts
+
+        ...
+        //* Teste #02
+        test('Deve finalizar o Jogo com a Vitória do Jogador "P1".', () => {
+          
+          //* Cria uma Instância do Jogo
+          const game = Game.create(
+            new Player('P1', PlayerType.O),     //* com o Jogador "P1" do "Tipo O"
+            new Player('P2', PlayerType.X)      //* e com o Jogador "P2" do "Tipo X"
+          )
+            .addMove(0, 0)      //* Jogada "P1"
+            .addMove(1, 1)      //* Jogada "P2"
+            .addMove(0, 1)      //* Jogada "P1"
+            .addMove(1, 2)      //* Jogada "P2"
+            .addMove(0, 2)      //* Jogada "P1"
+          
+          console.log(game.player1.score)
+          expect(game.result.finished).toBeTruthy()   //* Espera-se que o Jogo esteja Finalizado
+          expect(game.result.oWins).toBeTruthy()      //* Espera-se a Vitória do Jogador "P1"
+          expect(game.result.xWins).toBeFalsy()       //* Espera-se a Derrota do Jogador "P2"
+          expect(game.player1.score).toBe(1)          //* Espera-se que Acrescente 1 Ponto ao Jogador "P1"
+          expect(game.player2.score).toBe(0)          //* Espeta-se que o Jogador "P2" receba 0 Pontos
+        })
+        ...
+        ```
+
+3. Defina um Teste, que deve finalizar o Jogo com a Vitória do Jogador "P2":  
+
+    - Defina o Teste, `test(` mensagem `'Deve finalizar o Jogo com a Vitória do Jogador "P2".', () => {`
+      - Crie uma Constante `const` chamada `game` que recebe `=` uma Instância que cria o Jogo `Game.create(`
+        - Crie uma Nova Instância do Jogador `new Player(` com o nome `'P1',` do "Tipo O" `PlayerType.O),`
+        - Crie uma Nova Instância do Jogador `new Player(` com o nome `'P2',` do "Tipo X"`))`
+          - Adicione o Movimento "P1" (1, 0) `.addMove(1, 1)`
+          - Adicione o Movimento "P2" (0, 0) `.addMove(0, 0)`
+          - Adicione o Movimento "P1" (1, 2) `.addMove(1, 2)`
+          - Adicione o Movimento "P2" (0, 1) `.addMove(0, 1)`
+          - Adicione o Movimento "P1" (2, 2) `.addMove(2, 2)`
+          - Adicione o Movimento "P2" (0, 2) `.addMove(0, 2)`
+          - Adicione o Movimento "P1" (2, 0) `.addMove(2, 0)`
+      - Espera-se `expect(` que o Resultado do Jogo Finalizado `game.result.finished)`
+      - Seja VERDADEIRO `.toBeTruthy()`
+      - Espera-se `expect(` que o Resultado do Jogo, "Jogador O" Venceu `game.result.oWins)`
+      - Seja FALSO `.toBeFalsy()`
+      - Espera-se `expect(` que o Resultado do Jogo, "Jogador X" Venceu `game.result.xWins)`
+      - Seja VERDADEIRO `.toBeTruthy()`
+      - Espera-se `expect(` que Acrescente a Pontuação do Jogador "P1" `game.player1.addScore)` ZERO `.toBe(0)`
+      - Espera-se `expect(` que Acrescente a Pontuação do Jogador "P2" `game.player2.addScore)` 1 ponto `.toBe(1)})`  
+
+        ```ts
+        // Game.test.ts
+        
+        ...
+        //* Teste #03
+        test('Deve finalizar o Jogo com a Vitória do Jogador "P2".', () => {
+
+          const game = Game.create(
+            new Player('P1', PlayerType.O),
+            new Player('P2', PlayerType.X)
+          )
+            .addMove(1, 1)
+            .addMove(0, 0)
+            .addMove(1, 2)
+            .addMove(0, 1)
+            .addMove(2, 2)
+            .addMove(0, 2)
+            .addMove(2, 0)
+
+          expect(game.result.finished).toBeTruthy()
+          expect(game.result.oWins).toBeFalsy()
+          expect(game.result.xWins).toBeTruthy()
+          expect(game.player1.score).toBe(0)
+          expect(game.player2.score).toBe(1)
+        })
+        ...
+        ```
+
+4. Defina um Teste, que Deve limpar o Jogo depois de uma Vitória.  
+
+    - Defina uma Função de Teste, `test(` mensagem `'Deve limpar o Jogo depois de uma Vitória', () => {`
+      - Crie uma Constante `const` chamada `game` que recebe `=` uma Instância que cria o Jogo `Game.create(`
+        - Crie uma Nova Instância do Jogador `new Player(` com o nome `'P1',` do "Tipo X" `PlayerType.X),`
+        - Crie uma Nova Instância do Jogador `new Player(` com nome `'P2,'` do "Tipo O" `PlayerType.O))`
+          - Adicione um Movimento "P1" (0, 0) `.addMove(0, 0)`
+          - Adicione um Movimento "P2" (1, 1) `.addMove(1, 1)`
+          - Adicione um Movimento "P1" (0, 1) `.addMove(0, 1)`
+          - Adicione um Movimento "P2" (1, 2) `.addMove(1, 2)`
+          - Adicione um Movimento "P1" (0, 2) `.addMove(0, 2)`
+          - Limpe o Jogo `.clear()`
+      - Espera-se `expect(` que o Resultado do Jogo em Progresso `game.result.inProgress)`
+      - Seja VERDADEIRO `.toBeTruthy()`
+      - Espera-se `expect(` que Acrescente 1 ponto ao Jogador "P1" `game.player.score).toBe(1)`
+      - Espera-se `expect(` que Acrescente 0 ponto ao Jogador "P2" `game.player2.score).toBe(0)})`
+
+        ```ts
+        // Game.test.ts
+
+        ...
+        //* Teste #04
+        test('Deve limpar o Jogo depois de uma Vitória.', () => {
+          const game = Game.create(
+            new Player('P1', PlayerType.X),
+            new Player('P2', PlayerType.O)
+          )
+            .addMove(0, 0)    //* "P1"
+            .addMove(1, 1)    //* "P2"
+            .addMove(0, 1)    //* "P1"
+            .addMove(1, 2)    //* "P2"
+            .addMove(0, 2)    //* "P1"
+            .clear()          //* Limpa o Jogo
+
+          expect(game.result.inProgress).toBeTruthy()
+          expect(game.player1.score).toBe(0)
+          expect(game.player2.score).toBe(0)
+        })
+        ...
+        ```
+
+5. Defina um Teste, que deve ir para Próxima Rodada do Jogo depois de uma Vitória.
+
+    - Defina uma Função de Teste, `test(` mensagem `'Deve ir para Próxima Rodada do Jogo depois de uma Vitória.', () => {`
+      - Crie uma Constante `const` chamada `game` que recebe `=` uma Instância que cria um Jogo `Game.create(`
+        - Crie uma Nova Instância do Jogador `new Player(` com o nome `'P1',` do "Tipo X"`PlayerType.X),`
+        - Crie uma Nova Instância do Jogador `new Player(` com o nome `'P2',` do "Tipo O"`PlayerType.O))`
+          - Adicione um Movimento "P1" (0, 0) `.addMove(0, 0)`
+          - Adicione um Movimento "P2" (1, 1) `.addMove(1, 1)`
+          - Adicione um Movimento "P1" (0, 1) `.addMove(0, 1)`
+          - Adicione um Movimento "P2" (1, 2) `.addMove(1, 2)`
+          - Adicione um Movimento "P1" (0, 2) `.addMove(0, 2)`
+          - Vá para a Próxima Rodada `.nextRound()`
+      - Espera-se `expect(` que o Resultado do Jogo em Progresso `game.result.inProgress)`
+      - Seja VERDADEIRO `.toBeTruthy()`
+      - Espera-se `expect(` que a Pontuação do Jogador "P1"`game.player1.score)`
+      - Seja acrescentado 1 Ponto`.toBe(1)`
+      - Espera-se `expect(` que a Pontuação do Jogador "P2"`game.player2.score)`
+      - Seja acrescentado ZERO Ponto`.toBe(0)`
+      - Espera-se `expect(` que o Tipo do Jogador Atual`game.currentPlayer.type)`
+      - Seja `.toBe(` do Tipo do Jogador "P2"`game.player2.type)})`
+
+        ```ts
+        // Game.test.ts
+
+        ...
+        //* Teste #05
+        test('Deve ir para Próxima Rodada do Jogo depois de uma Vitória.', () => {
+          const game = Game.create(
+            new Player('P1', PlayerType.X),
+            new Player('P2', PlayerType.O)
+          )
+            .addMove(0, 0)    //* "P1"
+            .addMove(1, 1)    //* "P2"
+            .addMove(0, 1)    //* "P1"
+            .addMove(1, 2)    //* "P2"
+            .addMove(0, 2)    //* "P1"
+            .nextRound()      //* Próxima Rodada
+          
+          expect(game.result.inProgress).toBeTruthy()
+          expect(game.player1.score).toBe(1)
+          expect(game.player2.score).toBe(0)
+          expect(game.currentPlayer.type)     //* Espera-se que o Tipo do Jogador Atual
+            .toBe(game.player2.type)          //* Seja do Tipo do Jogador "P2"
+        })
+        ...
+        ```
+
+6. Defina um Teste, que deve alternar Jogador ao Limpar o Jogo.  
+
+    - Defina uma Função de Teste, `test(` mensagem `'Deve alternar Jogador ao Limpar o Jogo.', () => {`
+      - Crie uma Constante `const` chamada `game` que recebe `=` uma Instância que cria um Jogo `Game.create(`
+        - Crie uma Nova Instância do Jogador `new Player(` com o nome `'P1',` do "Tipo X"`PlayerType.X),`
+        - Crie uma Nova Instância do Jogador `new Player(` com o nome `'P1',` do "Tipo O"`PlayerType.O))`
+      - Espera-se `expect(` que o Tipo do Jogador Atual `game.currentPlayer.type)`
+        - Seja `.toBe(` do Tipo do Jogador "P2"`game.player2.type)`
+      - Crie uma Constante `const` chamada `newGame` que recebe `=` um Jogo Limpo `game.clear()`
+      - Espera-se `expect(` que o Tipo do Jogador Atual no Novo Jogo Limpo `newGame.currentPlayer.type)`
+        - Seja `.toBe(` o Tipo do Jogador "P1"`game.player1.type)})`
+
+        ```ts
+        // Game.test.ts
+
+        ...
+        //* Teste #06
+        test('Deve alternar Jogador ao Limpar o Jogo.', () => {
+          const game = Game.create(
+            new Player('P1', PlayerType.X),
+            new Player('P2', PlayerType.O)
+          )
+            .clear()                          //* Limpa o Jogo
+
+          expect(game.currentPlayer.type)     //* Espera-se que o Tipo do Jogador Atual
+            .toBe(game.player2.type)          //* Seja do Tipo do Jogador "P2"
+          
+          const newGame = game.clear()        //* Cria uma Instancia Limpa do Jogo
+          
+          expect(newGame.currentPlayer.type)  //* Espera-se que o Tipo do Jogador Atual no Novo Jogo Limpo
+            .toBe(game.player1.type)          //* Seja do Tipo do Jogador "P1"
+        })
+        ...
+        ```
+
+7. Defina um Teste que deve alternar Jogador ao ir para Próxima Rodada.
+
+    - Defina uma Função de Teste, `test(` mensagem `'Deve alternar Jogador ao ir para Próxima Rodada.', () => {`
+      - Crie uma Constante `const` chamada `game` que recebe `=` uma Instância que cria um Jogo `Game.create(`
+        - Crie uma Nova Instância do Jogador `new Player(`com o nome`'P1',`do "Tipo X"`PlayerType.X),`
+        - Crie uma Nova Instância do Jogador `new Player(`com o nome`'P1',`do "Tipo O"`PlayerType.O))`
+        - Próxima Rodada`.nextRound()`
+      - Espera-se `expect(`que o Tipo do Jogador Atual`game.currentPlayer.type)`
+      - Seja`.toBe(`do Tipo do Jogador "P2"`game.player2.type)`
+      - Crie uma Constante `const` chamada `newGame` que recebe `=` a Próxima Rodada `game.nextRound()`
+      - Espera-se `expect(` que o Tipo do Jogador Atual na Próxima Rodada `newGame.currentPlayer.type)`
+      - Seja `.toBe(` o Tipo do Jogador "P1" `game.player1.type)})`
+
+        ```ts
+        // Game.test.ts
+
+        ...
+        //* Teste #06
+        test('Deve alternar Jogador ao ir para Próxima Rodada.', () => {
+          const game = Game.create(
+            new Player('P1', PlayerType.X),
+            new Player('P2', PlayerType.O)
+          )
+            .nextRound()                      //* Avança para a Próxima Rodada
+
+          expect(game.currentPlayer.type)     //* Espera-se que o Tipo do Jogador Atual
+          .toBe(game.player2.type)            //* Seja do Tipo do Jogador "P1"
+
+          const newGame = game.nextRound()    //* Cria um Novo Jogo na Próxima Rodada
+
+          expect(newGame.currentPlayer.type)  //* Verifica se o Tipo do Jogador Atual na Próxima Rodada
+          .toBe(game.player1.type)            //* É o mesmo Tipo do Jogador "P1"
+        })
+        ...
+        ```
+
+8. Defina um Teste que deve ignorar Jogada repetida.
+
+    - Defina uma Função de Teste, `test(`mensagem`'Deve ignorar Jogada repetida.', (){`
+      - Crie uma Constante `const` chamada `game` que recebe `=` uma Instância que cria um Jogo `Game.create(`
+        - Crie uma Nova Instância do Jogador `new Player(`com o nome`'P1',`do "Tipo X"`PlayerType.X),`
+        - Crie uma Nova Instância do Jogador `new Player(`com o nome`'P1',`do "Tipo O"`PlayerType.O))` adicione o Movimento (0, 0)`.addMove(0, 0)`
+        - Crie uma Constante `const` chamada `newGame` que recebe `=` o mesmo Movimento no Novo Jogo `game.addMove(0, 0)`
+        - Espera-se `expect(` que verifique Se o Movimento do Jogo `game` é estritamente igual `===` ao Movimento do Novo Jogo`newGame)` seja VERDADEIRO `.toBeTruthy()})`
+
+          ```ts
+          // Game.test.ts
+
+          ...
+          //* Teste #08
+          test('Deve ignorar Jogada repetida.', () => {
+            const game = Game.create(
+              new Player('P1', PlayerType.X),
+              new Player('P2', PlayerType.O)
+            ).addMove(0, 0)                       //* Adiciona um Movimento
+            
+            const newGame = game.addMove(0, 0)    //* Cria um Novo Jogo com o mesmo Movimento
+
+            expect(game === newGame).toBeTruthy() //* Verifica se o Movimento do Jogo é igual ao Movimento do Novo Jogo
+          })
+          ...
+          ```
+
+9. Defina um Teste que deve ignorar Movimento de Jogo ganho.  
+
+    - Defina uma Função de Teste, `test(`mensagem`'Deve ignorar Movimento de Jogo ganho.', () => {`
+      - Crie uma Constante `const` chamada `game` que recebe `=` uma Instância que cria um Jogo `Game.create(`
+        - Crie um Nova Instancia do Jogador `new Player(`com o nome`'P1',`do "Tipo X"`PlayerType.X),`
+        - Crie um Nova Instancia do Jogador `new Player(`com o nome`'P2',`do "Tipo O"`PlayerType.O))`
+          - Adicione um Movimento "P1" (1, 1)`.addMove(1, 1)`
+          - Adicione um Movimento "P2" (0, 0)`.addMove(0, 0)`
+          - Adicione um Movimento "P1" (1, 2)`.addMove(1, 2)`
+          - Adicione um Movimento "P2" (0, 1)`.addMove(0, 1)`
+          - Adicione um Movimento "P1" (2, 2)`.addMove(2, 2)`
+          - Adicione um Movimento "P2" (0, 2)`.addMove(0, 2)`
+          - Adicione um Movimento "P1" (2, 0)`.addMove(2, 0)`
+      - Crie uma Constante `const` chamada `newGame` que recebe `=` um Novo Jogo com um Movimento inválido `game.addMove(2, 2)`
+      - Espera-se `expect(` verifica se o Movimento do Jogo `game` é estritamente igual `===` ao Movimento do Novo Jogo `newGame)` seja VERDADEIRO `.toBeTruthy()})`
+
+        ```ts
+        // Game.test.ts
+
+        ...
+        //* Teste #09
+        test('Deve ignorar Movimento de Jogo ganho.', () => {
+          const game = Game.create(
+            new Player('P1', PlayerType.X),
+            new Player('P2', PlayerType.O)
+            )
+            .addMove(1, 1)
+            .addMove(0, 0)
+            .addMove(1, 2)
+            .addMove(0, 1)
+            .addMove(2, 2)
+            .addMove(0, 2)
+            .addMove(2, 0)
+            
+          const newGame = game.addMove(2, 2)
+          expect(game === newGame).toBeTruthy()
+        })
+        ...
+        ```
+
+10. Defina um Teste que deve gerar um Jogo Empatado.
+
+    - Defina uma Função de Teste, `test(`mensagem`'Deve gerar um Jogo Empatado.', () => {`
+      - Crie uma Constante `const` chamada `game` que recebe `=` uma Instância que cria um Jogo `Game.create(`
+        - Crie um Nova Instancia do Jogador `new Player(`com o nome`'P1',`do "Tipo X"`PlayerType.X),`
+        - Crie um Nova Instancia do Jogador `new Player(`com o nome`'P2',`do "Tipo O"`PlayerType.O))`
+          - Adicione um Movimento "P1" (0, 0)`.addMove(0, 0)`
+          - Adicione um Movimento "P2" (0, 1)`.addMove(0, 1)`
+          - Adicione um Movimento "P1" (0, 2)`.addMove(0, 2)`
+          - Adicione um Movimento "P2" (1, 0)`.addMove(1, 0)`
+          - Adicione um Movimento "P1" (1, 1)`.addMove(1, 1)`
+          - Adicione um Movimento "P2" (1, 2)`.addMove(1, 2)`
+          - Adicione um Movimento "P1" (2, 0)`.addMove(2, 0)`
+          - Adicione um Movimento "P2" (2, 1)`.addMove(2, 1)`
+          - Adicione um Movimento "P1" (2, 2)`.addMove(2, 2)`
+      - Espera-se `expect(` que o Resultado do Jogo Finalizado `game.result.finished)` seja VERDADEIRO `.toBeTruthy()})`
+      - Espera-se `expect(` que o Resultado Empatado `game.result.finished)` seja VERDADEIRO `.toBeTruthy()})`
+
+        ```ts
+        // Game.test.ts
+
+        ...
+        //* Teste #10
+        test('Deve gerar um Jogo Empatado.', () => {
+          const game = Game.create(
+            new Player('P1', PlayerType.X),
+            new Player('P2', PlayerType.O)
+          )
+            .addMove(0, 0)
+            .addMove(0, 1)
+            .addMove(0, 2)
+            .addMove(1, 1)
+            .addMove(1, 0)
+            .addMove(1, 2)
+            .addMove(2, 1)
+            .addMove(2, 0)
+            .addMove(2, 2)
+          
+          expect(game.result.finished).toBeTruthy()
+          expect(game.result.tied).toBeTruthy()
+        })
+        ...
+        ```
+
+***Conclusão:***  
+
+Com isso, terminados de criar toda a Lógica do Jogo da Velha e ainda temos 100% de cobertura nos Teste Unitários, como podemos conferir logo abaixo na saída do Terminal.  
+
+O Próximo passo será a criação da Interface do Jogo.  
+
+```zsh
+// Terminal
+
+$ npm test
+
+> core@1.0.0 test
+> jest --watchAll --collectCoverage
+
+ PASS  test/game/Board.test.ts (5.48 s)
+ PASS  test/result/DiagonalChecker.test.ts (5.56 s)
+ PASS  test/result/GameResult.test.ts (5.592 s)
+ PASS  test/shared/cell.test.ts
+ PASS  test/result/TieChecker.test.ts
+ PASS  test/result/HorizontalChecker.test.ts
+ PASS  test/player/player.test.ts
+ PASS  test/result/VerticalChecker.test.ts
+ PASS  test/game/Game.test.ts (6.185 s)
+-----------------------|---------|----------|---------|---------|-------------------
+File                   | % Stmts | % Branch | % Funcs | % Lines | Uncovered Line #s
+-----------------------|---------|----------|---------|---------|-------------------
+All files              |     100 |      100 |     100 |     100 |
+ src                   |     100 |      100 |     100 |     100 |
+  index.ts             |     100 |      100 |     100 |     100 |
+ src/game              |     100 |      100 |     100 |     100 |
+  Board.ts             |     100 |      100 |     100 |     100 |
+  Game.ts              |     100 |      100 |     100 |     100 |
+ src/player            |     100 |      100 |     100 |     100 |
+  Player.ts            |     100 |      100 |     100 |     100 |
+ src/result            |     100 |      100 |     100 |     100 |
+  CellsChecker.ts      |     100 |      100 |     100 |     100 |
+  DiagonalChecker.ts   |     100 |      100 |     100 |     100 |
+  GameResult.ts        |     100 |      100 |     100 |     100 |
+  HorizontalChecker.ts |     100 |      100 |     100 |     100 |
+  TieChecker.ts        |     100 |      100 |     100 |     100 |
+  VerticalChecker.ts   |     100 |      100 |     100 |     100 |
+ src/shared            |     100 |      100 |     100 |     100 |
+  Cell.ts              |     100 |      100 |     100 |     100 |
+  PlayerType.ts        |     100 |      100 |     100 |     100 |
+-----------------------|---------|----------|---------|---------|-------------------
+
+Test Suites: 9 passed, 9 total
+Tests:       36 passed, 36 total
+Snapshots:   0 total
+Time:        10.767 s
 ```
