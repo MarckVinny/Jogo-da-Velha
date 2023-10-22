@@ -7,6 +7,9 @@ ___
 - [Visão Geral](#visão-geral)
 - [Configuração do Projeto](#configuração-do-projeto)
 - [Criando o Novo Projeto Front-end](#criando-o-novo-projeto-front-end)
+
+### Modelagem do Projeto
+
 - [Criando o Projeto Core](#criando-o-projeto-core)
 - [Criando o Diretório Compartilhado](#criando-o-diretório-compartilhado)
 - [Criando a Classe Player](#criando-a-classe-player)
@@ -212,6 +215,13 @@ Agora vamos sair da pasta `/apps` com o comando `cd ..` e estaremos na pasta do 
 Agora, dentro da pasta `/frontend` iremos instalar uma Dependência chamada [Tabler](https://tabler.io/) que é uma Biblioteca de ícones, através do comando `npm i @tabler/icons-react`
 
 [^ Sumário ^](#sumário)
+___
+___
+
+## <center>MODELAGEM DO PROJETO</center>
+
+___
+___
 
 ## Criando o Projeto Core
 
