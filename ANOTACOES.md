@@ -3128,7 +3128,26 @@ export { Board, Cell, Game, GameResult, PlayerType, Player, TieChecker }
         ...
         ```
 
-***Conclusão:***  
+***Considerações Finais:***  
+
+A Modelagem Rica, vai deixar pronto para poder extender o Projeto (Jogo), dando mais possibilidades para se mexer na Lógica.  
+Pois, se coloca tudo em uma lugar só, só irá funcionar para aquele cenário, não sendo possível utilizar em um Terminal usando linha de comando, não conseguindo reutilizar em outros frameworks (Angular, VUEjs, etc.) pois estará tudo misturado dentro do React, Componentes, etc.  
+
+Então, quando se separa utilizando uma Modelagem Rica, se consegue testar, tendo a tranquilidade de testar as partes realizando os Testes Unitários, pois, o todo irá funcionar ou grande parte vai, se as partes estiverem funcionando.
+
+> ***Observação:***  
+*Tudo está interligado, que se começa a entender uma Modelagem mais Rica colocando o Comportamento certo no lugar certo, não é para adicionar complexidade, é para colocar complexidade em um **Local Único** não precisando ficar se repetindo em outros lugares da Aplicação.*  
+>
+> *Este é um **Projeto Simples**, mas ao mesmo tempo tem suas complexidades, pois, muda a forma como enxergamos o desenvolvimento onde muitas vezes é misturado e quando a aplicação começa a crescer, vai se deparara com uma dificuldade para evoluir.*  
+>
+> ***Observação²:***  
+***Sistemas Empresariais,** tem sempre a necessidade de ir para coisas mais complexas.  
+Uma coisa que é preciso ter em mente quando se vai para **Sistemas Complexos**, que é impossível se modelar um Sistema Empresarial grande, em um único domínio (deixando todo o modelo dentro de um único local).*  
+>
+> *Mas para se resolver isso, se criam **Contextos Delimitados** (Vendas, Logística, Suprimentos, etc.), vai separando esses contextos para que se tenham modelagens menores, de áreas específicas da empresa.*
+
+Utilizando esta abordagem, estaremos escrevendo um código que irá entregar valor para a empresa, pois, está expressando o negócio que pode durar décadas, pois, foi escrito separado de tecnologia.  
+E depois, se mudar o framework, a biblioteca ou a tecnologia, se consegue ajustar o código, pois a Regra de Negócio foi implementada, é independente, tá fora de detalhes de Banco de Dados e é possível utilizar essas Regras de Negócio em outro contexto e isso é muito enriquecedor.  
 
 Com isso, terminados de criar toda a Lógica do Jogo da Velha e ainda temos 100% de cobertura nos Teste Unitários, como podemos conferir logo abaixo na saída do Terminal.  
 
