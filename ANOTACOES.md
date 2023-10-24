@@ -45,6 +45,10 @@ ___
   - [Método Privado SwitchPlayer](#método-privado-switchplayer)
 - [Criando o Teste Unitário da Classe Game](#criando-o-teste-unitário-da-classe-game)
 
+### Interface Gráfica - Front-end
+
+- [Configurando o TurboRepo](#configurando-o-turborepo)
+
 ___
 
 ## Visão Geral
@@ -3198,3 +3202,152 @@ Tests:       36 passed, 36 total
 Snapshots:   0 total
 Time:        10.767 s
 ```
+
+[^ Sumário ^](#interface-gráfica---front-end)
+
+___
+___
+
+## <center>INTERFACE GRÁFICA - FRONT-END</center>
+
+___
+___
+
+## Configurando o TurboRepo
+
+Entrando no Diretório/Pasta principal do Projeto *(na raiz `/`)*, `jogo-velha/` e rodar o comando `npm run dev` iremos iniciar o Projeto na porta 3000 do navegador e poderemos ver a página padrão, pois ainda não desenvolvemos nosso front-end.  
+Rodando o comando, teremos a seguinte saída no terminal.
+
+```zsh
+// Terminal
+
+$ $ npm run dev
+
+> dev
+> turbo run dev
+
+• Packages in scope: core, eslint-config-custom, frontend, tsconfig, ui
+• Running dev in 5 packages
+• Remote caching disabled
+frontend:dev: cache bypass, force executing da08193f875147f8
+frontend:dev: 
+frontend:dev: > frontend@0.1.0 dev
+frontend:dev: > next dev
+frontend:dev:
+frontend:dev: - ready started server on [::]:3000, url: http://localhost:3000
+frontend:dev: - event compiled client and server successfully in 723 ms (20 modules)
+frontend:dev: - wait compiling...
+frontend:dev: - event compiled client and server successfully in 401 ms (20 modules)
+```
+
+E como podemos ver na saída do Terminal, podemos acessar nossa página no navegador através do endereço <http://localhost:3000>, que será apresentado a página padrão quando criamos o Projeto lá no inicio.
+
+![pagina padrão](/imagens/pg-padrao.png)
+
+Agora precisamos estabelecer uma relação de dependência entre o Projeto Font-end e o pacote Core que foi criado nos processos anteriores, onde foram criadas as Regras de Negócio e as Modelagens Ricas.  
+
+A primeira coisa a se prestar atenção, é se o arquivo package.json que se encontra na raiz do Core `packages/core/package.json` tem o atributo `"main": "index.js"` apontando para o arquivo correto que no nosso caso precisa apontar para o arquivo `index.ts` que se encontra no caminho relativo `./src/`, devendo ficar da seguinte forma `"main": "./src/index.ts"` prestando atenção para a extensão correta pois estamos codificando em Typescript.  
+
+```json
+// package.json
+
+{
+  "name": "core",
+  "version": "1.0.0",
+  "main": "./src/index.ts",
+  ...
+```
+
+A partir deste arquivo, é importado tudo que precisamo e exportamos todas as Classes, Interfaces e Tipos do Projeto Core.  
+
+> ***DICA:***  
+Se houver uma quantidade muito grande de arquivos para serem importados, podemos utilizar do artifício de se criar um arquivo index em cada pasta exportando os arquivos referentes e depois importando no index principal.  
+>
+> Exemplo:
+>
+> ```ts
+> // index.ts
+>
+> export * from './core'     // Exporta tudo que estiver na pasta Core.
+> export * from './facade'   // Exporta tudo que estiver na pasta Facade.
+> ```
+>
+> ```ts
+> // ./core/index.ts
+>
+> export * from './arquivo'
+> export * from './bot'
+> export * from './certificado'
+> ...
+> ```
+>
+> ```ts
+> // ./core/arquivo/index.ts
+>
+> import teste1 from './core/arquivo1'
+> import teste2 from './core/arquivo2'
+> import teste3 from './core/arquivo3'
+> 
+> export { teste1, teste2, teste3 }
+> ...
+> ```
+
+Voltando ao arquivo `package.json`, uma informação muito importante é o nome do Pacote que em nosso caso e core `"name": "core"`, pois precisaremos dele mais adiante.  
+
+Agora, iremos declarar uma Dependência da Aplicação Font-end com o Pacote Core que criamos anteriormente e estamos configurando agora no `package.json`.  
+
+Então, no caminho `/apps/frontend` abra o arquivo `package.json` e no Atributo de `"dependencies": {}` iremos adicionar o nosso Pacote Core, onde vai constar o nome do Pacote `"core":` e a sua versão `*`, ela está representada por um asterisco, pois, irá pegar a versão atual local que está dentro dos Pacotes `/packages/core`, assim, se efetuarmos alguma alteração no Pacote, não será preciso fazer nenhuma alteração no `package.json`.  
+
+```json
+// package.json
+
+{
+  "name": "frontend",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint"
+  },
+  "dependencies": {
+    "@tabler/icons-react": "^2.34.0",
+    "@types/node": "20.6.0",
+    "@types/react": "18.2.21",
+    "@types/react-dom": "18.2.7",
+    "autoprefixer": "10.4.15",
+>>  "core": "*",
+    ...
+```
+
+Mas isso ainda não é suficiente para poder estabelecer a Dependência, para isso, será preciso instalar os Pacotes, então, no Termina e dentro da raiz do Projeto `/jogo-velha/`, execute o comando `npm i` para poder instalar os pacotes.  
+
+```zsh
+// Terminal
+
+$ npm i
+
+changed 5 packages, and audited 872 packages in 8s
+
+197 packages are looking for funding
+  run `npm fund` for details
+```
+
+Ele instala normalmente como se fosse um pacote do Node.js verificando as Dependências internamente e as resolvendo, pois, a única forma que teríamos para fazer essa separação entre Projetos diferentes, seria publicando o Projeto Core no NPM, sendo que publicar e colocar em um projeto privado seria preciso ter uma chave de acesso para o Projeto e isso se torna mais chato, pois, se é feito uma alteração no Projeto Core, será preciso publicá-lo novamente e passar por toda a burocracia.
+
+E a ideia do TurboRepo é ter vários Projetos separados, tendo a possibilidade de organizar da forma que preferir se ter a necessidade de envolver um repositório como o NPM para o publicar os Pacotes.  
+
+Tendo inserido a Dependência do Core, lá no código por exemplo no caminho `./apps/frontend/src/app/page.tsx` teremos a possibilidade de importar por exemplo a Classe `PlayerType.X` diretamente do Pacote Core `import { PlayerType } from 'core'`, com isso, temos acesso ao que foi definido no Core da Aplicação.
+
+> ***Observação:***  
+*Dificilmente na vida real, o processo de criação será estritamente como estamos abordando aqui, definindo primeiramente toda a Modelagem Rica, e depois definindo a Interface Gráfica.  
+O que geralmente ocorre, é que se cria uma parte da modelagem, se testa e faz a interface, e vai seguindo assim até o término da Aplicação.*
+
+Quando se criam as Interfaces e fazendo esse trabalho de forma incremental, fica mais fácil de visualizar de como o Modelo Rico vai se desenvolver para atender a Aplicação como um todo, para atender o negócio.  
+
+Mas existe uma diferença entre implementar um Modelo Rico que irá atender a Interface Gráfica, sendo um espelho da Interface Gráfica ou um espelho do Banco de Dados, e ter um Modelo Rico que irá refletir como o negócio funciona.  
+
+***Conclusão:***  
+Não queremos que o Modelo se pareça com o Front-end e nem com o Banco de Dados.  
+Queremos que o Modelo represente o negócio da melhor forma possível e como isso será convertido para o Banco de Dados, tem a ver com a Camada de Adaptação e no decorrer iremos adaptar nosso Modelo para os diversos dispositivos externos.
