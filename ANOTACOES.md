@@ -48,6 +48,7 @@ ___
 ### Interface Gráfica - Front-end
 
 - [Configurando o TurboRepo](#configurando-o-turborepo)
+- [Configurando o TailwindCSS](#configurando-o-tailwindcss)
 
 ___
 
@@ -3351,3 +3352,125 @@ Mas existe uma diferença entre implementar um Modelo Rico que irá atender a In
 ***Conclusão:***  
 Não queremos que o Modelo se pareça com o Front-end e nem com o Banco de Dados.  
 Queremos que o Modelo represente o negócio da melhor forma possível e como isso será convertido para o Banco de Dados, tem a ver com a Camada de Adaptação e no decorrer iremos adaptar nosso Modelo para os diversos dispositivos externos.
+
+[^ Sumário ^](#interface-gráfica---front-end)
+
+## Configurando o TailwindCSS
+
+De início, existem algumas configurações do TailwindCSS que podemos usar, que ao invés de ficarmos monitorando diversas pastas como *(app, components, etc.)*, podemos monitorar somente a pasta raiz que seria a pasta `/src`, assim, todas as pastas criadas dentro dela já estariam sendo monitoradas.
+
+Então no caminho `./apps/frontend/` abra o arquivo `tailwind.config.ts` e edite o Atributo `content: []` deixando somente a pasta `'./src/**/*.{js,ts,jsx,tsx,mdx}',` sendo monitorada como mostrado abaixo.  
+
+```ts
+// tailwind.config.ts
+
+import type { Config } from 'tailwindcss'
+
+const config: Config = {
+  content: [
+    './src/**/*.{js,ts,jsx,tsx,mdx}',
+  ],
+  ...
+```
+
+Isso faz com que o TailwindCSS resolva as Classes CSS, ele faz um processo chamado ***PURGE*** eliminando todas as Classes TailwindCSS que não foram utilizadas no Projeto.  
+Pois existem milhares de Classes TailwindCSS, mas, somente 200 foram utilizada no Projeto, então, ele cria uma compilação constando somente as Classes que estão efetivamente sendo utilizadas, gerando um arquivo mais compacto.  
+E justamente em cima deste caminho que ele irá fazer a busca das Classes utilizadas.  
+
+***Configurando o Tema `theme:`:***  
+
+Ainda dentro do arquivo `tailwind.config.ts` iremos definir as cores utilizadas no Tema, então:  
+
+- Dentro do Atributo `theme: {`
+  - Estenda o Tema `extend: (`
+    - E dentro definas as Cores que serão utilizadas dentro do Projeto `colors: {`
+      - Crie a cor Primária `primary: {`
+        - `400: '#65E9E4',` Que terá 3 Tons
+        - `500: '#31C3BD',`
+        - `600: '#218C87',`
+      - `},`
+      - Crie a cor Secundária `secondary: {`
+        - `400: '#FCC860',`
+        - `500: '#F3B136',`
+        - `600: '#CC8B13',`
+      - `},`
+      - Crie a cor Light `light: {`
+        - `400: '#DBE8ED',`
+        - `500: '#A8BFC9',`
+        - `600: '#6B8997',`
+      - `},`
+      - Crie a cor Dark `Dark: {`
+        - `400: '#1F3641',`
+        - `500: '#1F3641',`
+        - `600: '#10212A',`
+      - `},`
+    - `},`
+  - `},`
+
+    ```ts
+    // tailwind.config.ts
+
+    ...
+      theme: {
+        extend: {
+          primary: {
+            400: '#65E9E4',
+            500: '#31C3BD',
+            600: '#218C87',
+          },
+          secondary: {
+            400: '#FCC860',
+            500: '#F3B136',
+            600: '#CC8B13',
+          },
+          light: {
+            400: '#DBE8ED',
+            500: '#A8BFC9',
+            600: '#6B8997',
+          },
+          Dark: {
+            400: '#1F3641',
+            500: '#1F3641',
+            600: '#10212A',
+          },
+        },
+      },
+    ...
+    ```
+
+Com essas configurações de cores, iremos poder utilizar Fundo Dark, Light, Texto Dark, Light, Primary e Secondary.
+
+Com isso, podemos utilizar essas variações de cores, e ter nossas cores personalizadas dentro do TailwindCSS.  
+
+***Configurando o SafeList `safelist:`:***  
+
+O Safelist é importante, pois, sempre fomos fazer alguma ***Verificação Dinâmica*** dentro das Classes do TailwindCSS, precisamo informar para o TailwindCSS que essas Classes, deverão sempre estar no arquivo compilado final.  
+Ou seja, mesmo que não estejamos utilizando diretamente a Classe `bg-primary:`, ela deverá estar na compilação final, pois é a Classe responsável pelo Tema personalizado `primary:` que configuramos acima.  
+
+Então, ainda dentro do arquivo `tailwind.config.ts` vamos adicionar o Atributo `safelist: []` logo após a definição do Tema.  
+
+- ...
+  - `safelist: [` Atributo que garante que determinadas Classes sejam adicionadas ao arquivo compilado final.  
+    - `{ pattern: '/^bg-primary/', variants: [ 'hover' ] },`
+    - `{ pattern: '/^bg-secondary/', variants: [ 'hover' ] },`
+    - `{ pattern: '/^bg-light/', variants: [ 'hover' ] },`
+    - `{ pattern: '/^bg-dark/', variants: [ 'hover' ] },`
+  - `],`
+  - `plugins: [],`  
+- `}`  
+`export default config` Por fim, exporta a congiguração por padrão.
+
+```ts
+// tailwind.config.ts
+
+  ...
+  safelist: [
+    { pattern: /^bg-primary/, variants: [ 'hover' ] },
+    { pattern: /^bg-secondary/, variants: [ 'hover' ] },
+    { pattern: /^bg-light/, variants: [ 'hover' ] },
+    { pattern: /^bg-dark/, variants: [ 'hover' ] },
+  ],
+  plugins: [],
+}
+export default config
+```
