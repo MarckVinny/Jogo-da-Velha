@@ -155,5 +155,8 @@
     },
     //! Prettier
     "prettier.singleQuote": true,
-    "prettier.semi": false
+    "prettier.tabWidth": 2,
+    "prettier.semi": false,
+    "prettier.printWidth": 90,
+    "prettier.jsxSingleQuote": true
 }

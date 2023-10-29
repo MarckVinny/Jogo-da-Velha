@@ -49,6 +49,7 @@ ___
 
 - [Configurando o TurboRepo](#configurando-o-turborepo)
 - [Configurando o TailwindCSS](#configurando-o-tailwindcss)
+- [Componente `<Card>`](#componente-card)
 
 ___
 
@@ -3322,7 +3323,7 @@ Então, no caminho `/apps/frontend` abra o arquivo `package.json` e no Atributo 
     ...
 ```
 
-Mas isso ainda não é suficiente para poder estabelecer a Dependência, para isso, será preciso instalar os Pacotes, então, no Termina e dentro da raiz do Projeto `/jogo-velha/`, execute o comando `npm i` para poder instalar os pacotes.  
+Mas isso ainda não é suficiente para poder estabelecer a Dependência, para isso, será preciso instalar os Pacotes, então, no Terminal e dentro da raiz do Projeto `/jogo-velha/`, execute o comando `npm i` para poder instalar os pacotes.  
 
 ```zsh
 // Terminal
@@ -3458,7 +3459,7 @@ Então, ainda dentro do arquivo `tailwind.config.ts` vamos adicionar o Atributo 
   - `],`
   - `plugins: [],`  
 - `}`  
-`export default config` Por fim, exporta a congiguração por padrão.
+`export default config` Por fim, exporta a configuração por padrão.
 
 ```ts
 // tailwind.config.ts
@@ -3473,4 +3474,78 @@ Então, ainda dentro do arquivo `tailwind.config.ts` vamos adicionar o Atributo 
   plugins: [],
 }
 export default config
+```
+
+[^ Sumário ^](#interface-gráfica---front-end)
+
+## Componente `<Card>`
+
+Agora iremos iniciar propriamente nas definições da Interface Gráfica, e o primeiro Componente que iremos definir é o Card.  
+Este Componente, será responsável por grande parte da Interface, pois, praticamente todos os Elementos utilizam este Componente *(Células, Botões, Placar)*, ou seja, todo jogo vai girar em torno deste Componente.  
+
+Então, acesse o caminho `./apps/frontend/src` a crie um novo Diretório/Pasta chamado `/components` e dentro, crie outro Diretório/Pasta chamada `/shared` que irá conter todos os Componentes Compartilhados da Aplicação.  
+
+Agora crie o arquivo chamado `Card.tsx` que será a Classe que contém as definições do ***Componente Card***.
+
+> ***DICA:***  
+*Essa Interface ***CardProps*** é utilizada para definir as propriedades que podem ser passadas para um Componente chamado ***Card***.*  
+*Ao usar essa Interface, você está especificando quais propriedades o ***Componente Card*** pode receber, seus tipos e quais são opcionais `?`.*
+
+- `export interface CardPros {` Exporta uma Interface chamada CardPros que irá conter as Propriedades do Card.  
+
+  - `children?: React.ReactNode` ***"children:"*** é uma Propriedade opcional ***"?"*** que recebe qualquer tipo de nó *(elemento React, texto, etc.)* como conteúdo.
+  - `colors?: 'primary' | 'secondary' | 'light' | 'black'`  ***"colors:"*** é uma Propriedade opcional ***"?"*** que pode ter um dos quatro valores de cor específicos.
+  - `noBorder?: boolean` ***noBorder:*** é uma Propriedade opcional ***"?"*** booleana *(verdadeira/falsa)*. Se estiver presente e for true, significa que o componente não terá borda.
+  - `hover?: boolean`
+- `}`
+
+  ```tsx
+  // ./frontend/src/components/Card.tsx
+
+  export interface CardProps {
+    children?: React.ReactNode
+    colors?: 'primary' | 'secondary' | 'light' | 'black'
+    noBorder?: boolean
+    hover?: boolean
+  }
+  ...
+  ```
+
+Agora iremos criar o Componente propriamente dito:
+
+- Exporte por padrão `export default` uma Função `function` chamada `Card(` recebendo como parâmetro a Propriedade `props:` do Tipo `CardProps) {`
+  - Então, retorne o Componente `return (`
+    - Defina o ***Container da Linha*** `<div` com Classes do Tailwind CSS `className="` organize os filhos da Div em uma linha `flex` centralizando-os na horizontal `justify-center` e na vertical `itens-center ">`
+      - Defina o ***Container da Cor*** `<div` com Classes dinâmicas do Tailwind CSS ``className={` `` a Classe `rounded-xl` adiciona cantos arredondados, e a Classe `classe` define a cor de fundo `bg-` com base na propriedade ***"color"*** fornecida`${props.color`, Se não houver cor especificada,`??` usa ***"light"*** como padrão.`'light'}` com a intensidade da cor em ``-600`}>``
+        - Defina o ***Container da Borda*** `<div` com Classes dinâmicas do Tailwind CSS ``className={` `` com cantos arredondados `rounded-xl`, verificando `${props.noBorder` Se `?` ***"noBorder"*** for verdadeira, essa Classe não é aplicada `''` Senão, `:`  adiciona uma margem ``'mb-2'}` `` na parte inferior. `}>`
+          - Defina o ***Container do Conteúdo*** `<div` com Classes dinâmicas do Tailwind CSS ``className={` `` a Classe `rounded-xl` adiciona cantos arredondados, e a Classe `classe` define a cor de fundo `bg-` com base na propriedade ***"color"*** fornecida `${props.color`, Se não houver cor especificada,`??` aplica ***"light"*** como cor padrão.`'light'}` com a intensidade da cor em `-500` com Padding de 2 unidades `p-2` escondendo qualquer conteúdo que ultrapasse as bordas do contêiner`overflow-hidden` defina o efeito ***"Hover"*** com base na Propriedade `${props.hover` Se, `?` o cursor pairar sobre o Card `hover:` define a cor de fundo `bg-` com base na propriedade ***"color"*** fornecida `${props.color`, Se não houver cor especificada, `??` aplica ***"light"*** como cor padrão.`'light'}` com a intensidade da cor em `-400` Senão, `:` não aplica nada ``''}`}>``
+            - `{props.children}` Isso renderiza o conteúdo interno do card, que é passado como filhos ***"children"*** do ***Componente Card***.
+          - `</div>` Feche o Container do Conteúdo.
+        - `</div>` Feche o Container da Borda.
+      - `</div>` Feche o Container da Cor.
+    - `</div>` Feche o Container da Linha.
+  - `)` Feche o escopo do Retorno.
+- `}` Feche o escopo da Classe.
+
+```ts
+// Card.ts
+
+...
+export default function Card(props: CardProps) {
+  return (
+    <div className='flex justify-center items-center'>
+      <div className={`rounded-xl bg-${props.color ?? 'light'}-600`}>
+        <div className={`rounded-xl ${props.noBorder ? '' : 'mb-2'}`}>
+          <div
+            className={`rounded-xl bg-${props.color ?? 'light'}-500 p-2 overflow-hidden ${
+              props.hover ? `hover:bg-${props.color ?? 'light'}-400` : ''
+            }`}
+          >
+            {props.children}
+          </div>
+        </div>
+      </div>
+    </div>
+  )
+}
 ```
