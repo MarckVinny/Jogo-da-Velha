@@ -3549,3 +3549,49 @@ export default function Card(props: CardProps) {
   )
 }
 ```
+
+E para que possamos ver o Componente Card em ação, podemos editar o arquivo `page.tsx` que se encontra no caminho `./frontend/src/app/`.  
+
+Importe `import` o Componente `Card` do `from` caminho `"@/components/shared/Card"`.
+
+- Exporte por padrão `export default` a Função `function` chamada `Home() {`
+  - Então retorne os Componente da Página `return (`
+    - Defina um Container `<div` contendo as Classes TailwindCSS `className='` organiza em linha`flex` justifica com espaços iguais`justify-around` centraliza o texto `text-center` margem top 10`mt-10'>`
+      - Defina o Componente Card `<Card` defina a cor `color=` defina o Valor personalizado `'primary'>`
+        - Defina a Tag do Título `<h2` contendo as Classes TailwindCSS `className='` que formata o tamanho do texto em 18px`text-lg'>` defina o Texto `Isto é um Card` feche a Tag `</h2>`
+        - Defina a Tag Paragrafo `<p` contendo a Classe `className='` que formata o tamanho do texto em 14px `text-sm'>` defina o Texto `com Cor Primária` feche a Tag `</p>`
+      - Repita o processo para os outros Cards.
+    - `</div>` Feche o Container da Linha.
+  - `)`
+- `}`
+
+```tsx
+// page.tsx
+
+import Card from "@/components/shared/Card"
+
+export default function Home() {
+  return (
+    <div className='flex justify-around text-center mt-10'>
+      <Card color='primary'>
+        <h2 className='text-lg'>Isto é um Card!</h2>
+        <p className='text-sm'>com Cor Primária</p>
+      </Card>
+      <Card color='secondary'>
+        <h2 className='text-lg'>Isto é um Card!</h2>
+        <p className='text-sm'>com Cor Secundária</p>
+      </Card>
+      <Card color='light'>
+        <h2 className='text-lg'>Isto é um Card!</h2>
+        <p className='text-sm'>com Cor Light</p>
+      </Card>
+      <Card color='dark'>
+        <h2 className='text-lg'>Isto é um Card!</h2>
+        <p className='text-sm'>com Cor Dark</p>
+      </Card>
+    </div>
+  )
+}
+...
+```
+
