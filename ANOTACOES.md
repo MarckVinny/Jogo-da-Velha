@@ -3595,3 +3595,6 @@ export default function Home() {
 ...
 ```
 
+***Componente Card***
+
+![Componente Card](./imagens/card.png)
