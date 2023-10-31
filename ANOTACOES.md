@@ -50,6 +50,7 @@ ___
 - [Configurando o TurboRepo](#configurando-o-turborepo)
 - [Configurando o TailwindCSS](#configurando-o-tailwindcss)
 - [Componente `<Card>`](#componente-card)
+- [Componente `<Modal>`](#componente-modal)
 
 ___
 
@@ -3598,3 +3599,114 @@ export default function Home() {
 ***Componente Card***
 
 ![Componente Card](./imagens/card.png)
+
+[^ Sumário ^](#interface-gráfica---front-end)
+
+## Componente `<Modal>`
+
+O próximo Elemento que iremos definir, será uma ára que representa o Componente Modal.  
+
+Basicamente o Modal pode ou não estar visível `visible`, se a Propriedade estiver setada como visível ele será mostrado senão, não mostrará nada.  
+
+Então, no caminho `./src/components/shard/` crie um arquivo chamado `Modal.tsx` e dentro:  
+
+- `export interface ModalProps {` Exporte uma Interface chamada ModalProps
+  - `visible: boolean`  
+  ***"visible:"*** propriedade que aceita valores Verdadeiro ou Falso.
+  - `children: React.ReactNode`  
+  ***"children:"*** é uma Propriedade que recebe qualquer tipo de nó *(elemento React, texto, etc.)* como conteúdo.
+  - `className?: string`  
+  ***"className"*** é de uso opcional e aplica as Classes de Estilo do TailwindCSS.
+- `}`
+
+```tsx
+// Modal.tsx
+
+export interface ModalProps {
+  visible: boolean
+  children: React.ReactNode
+  className?: string
+}
+...
+```
+
+Em resumo, a ***Interface ModalProps*** define um conjunto de propriedades que podem ser usadas ao criar um ***Componente Modal em React***.  
+O Componente Modal pode receber uma propriedade ***visible*** para controlar sua visibilidade, a propriedade ***children*** para renderizar qualquer conteúdo aninhado e opcionalmente uma propriedade ***className*** para aplicar classes de estilo.
+
+Agora vamos definir o ***Componente Modal***:  
+
+- Exporte por padrão `export default` uma Função `function` chamada `Modal(` recebendo como parâmetro uma Propriedade `props:` do Tipo `ModalProps) {`  
+  - Então, retorne `return` Se a Propriedade Visível `props.visible` for verdadeira `?` então, `(`
+    - Mostre o Container do Modal:  
+      - Crie uma Tela de Sobreposição com Preto 50% e centralizada vertical e horizontalmente.  
+      `<div className="flex flex-col justify-center items-center absolute w-screen h-screen top-0 left-0 bg-black/50">`  
+        - `<div` Container da Sobreposição  
+        - `className="` contendo as Classes TailwindCSS  
+        - `flex` Adiciona a propriedade ***"display: flex"*** ao elemento, permitindo que seus filhos se comportem como flex containers.  
+        Organizando em linha.  
+        - `flex-col` Estabelece a orientação das DIVs flexíveis como coluna, o que significa que os filhos do elemento serão empilhados verticalmente.  
+        Centraliza na Vertical.  
+        - `justify-center` Centraliza os itens ao longo do eixo principal ***(vertical, neste caso)***.  
+        Ele alinha os itens ao centro vertical dentro do container flexível.  
+        - `itens-center` Centraliza os itens ao longo do eixo transversal ***(horizontal, neste caso)***.  
+        Ele alinha os itens ao centro horizontal dentro do container flexível.
+        - `absolute` Remove o elemento do fluxo normal do documento e posiciona-o em relação ao elemento pai mais próximo que possui uma posição diferente de ***"static"***.
+        - `w-screen` Define a largura do elemento como 100% da largura da tela ***"viewport"***.
+        - `h-screen` Define a altura do elemento como 100% da altura da tela ***"viewport"***.
+        - `top-0` Define a posição ***"superior"*** do elemento como ***"0"*** em relação ao seu contêiner pai ou, no caso de ***"absolute"***, em relação ao ***"viewport"***.
+        - `left-0` Define a posição ***"à esquerda"*** do elemento como ***"0"*** em relação ao seu contêiner pai ou, no caso de ***"absolute"***, em relação ao ***"viewport"***.
+        - `bg-black/50">` Define o plano de fundo ***"background"*** como preto ***"bg-black"*** e utiliza a variante ***"bg-opacity-50"*** para aplicar uma opacidade de 50%.  
+        Isso cria um fundo preto semitransparente.
+      - Crie a Faixa que conterá as informações do Modal.  
+      ``<div className={`flex flex-col justify-center items-center w-full h-1/3 bg-dark-500/80 ${props.className ?? ''}`}>``
+        - `<div` Container do Modal;  
+        - ``className={` `` contendo as Classes TailwindCSS em Template String.  
+        - `flex` Adiciona a propriedade ***"display: flex"*** ao elemento, permitindo que seus filhos se comportem como flex containers.  
+        Organizando em linha.  
+        - `flex-col` Estabelece a orientação das DIVs flexíveis como coluna, o que significa que os filhos do elemento serão empilhados verticalmente.  
+        Centraliza na Vertical.  
+        - `justify-center` Centraliza os itens ao longo do eixo principal ***(vertical, neste caso)***.  
+        Ele alinha os itens ao centro vertical dentro do container flexível.  
+        - `itens-center` Centraliza os itens ao longo do eixo transversal ***(horizontal, neste caso)***.  
+        Ele alinha os itens ao centro horizontal dentro do container flexível.
+        - `w-full` Define a largura do elemento como 100% da largura do contêiner pai.
+        - `h-1/3` Define a altura do elemento como 1/3 da altura do contêiner pai.  
+        O uso de frações ***1/3*** é uma conveniente forma de especificar tamanhos relativos.
+        - `bg-dark-500/80` Define o plano de fundo ***"background"*** usando a cor ***"dark-500"*** *(definida no arquivo de configuração do Tailwind)* e aplica uma opacidade de 80%.  
+        O número após a barra ***"/"*** representa a opacidade, onde ***"0"*** é completamente transparente e ***"100"*** é completamente opaco.
+        - ``${props.className ?? ''}`}>`` Incorpora a classe adicional fornecida como ***"props.className"***. O operador ***"??"*** é o operador de ***fusão nula*** *(nullish coalescing)*, que usa o valor à direita se o valor à esquerda for nulo ***"null"*** ou indefinido ***"undefined"***.  
+        A Classe Adicional ***"props.className"*** pode ser fornecida para personalizar ainda mais o estilo do Modal.
+          - `{props.children}` Renderiza os elementos ou componentes filhos dentro do Modal.
+        - `</div>` Fecha o container interno do modal.
+      - `</div>` Fecha o container de Sobreposição do Modal.
+    - `) : null` Finaliza a expressão condicional.  
+    Se ***"props.visible"*** for ***"false"***, retorna ***"null"***, indicando que o Modal não deve ser renderizado.
+  - `}` Fecha a Função do Modal.
+
+```tsx
+// Modal.tsx
+
+...
+
+export default function Modal(props: ModalProps) {
+  return props.visible ? (
+    // * Cria uma Tela de Sobreposição centralizada com preto 50%
+    <div className='flex flex-col justify-center items-center absolute w-screen h-screen top-0 left-0 bg-black/50'>
+      {/* Cria um Modal centralizado na vertical com largura total e 1/3 da altura com dark-500 80%, personalizando com Classes adicionais */}
+      <div className={`flex flex-col justify-center items-center w-full h-1/3 bg-dark-500/80 ${props.className ?? ''}`}>
+        {/* Conteúdo do Modal, contendo qualquer Elemento React */}
+        {props.children}
+      </div>
+    </div>
+  ) : null
+}
+```
+
+***Componente Modal***
+
+![Componente Modal](./imagens/modal.png)
+
+***Transparência Componente Modal***  
+Adicionando uma transparência será possível ver a Jogada Vencedora no Tabuleiro.
+
+![Componente Modal-1](./imagens/modal-1.png)
