@@ -1,8 +1,9 @@
 import Card from "@/components/shared/Card"
+import Modal from "@/components/shared/Modal"
 
 export default function Home() {
   return (
-    <div className='flex justify-around text-center mt-10'>
+    <div className='flex justify-around itens-center text-center mt-10'>
       <Card color='primary'>
         <h2 className='text-lg'>Isto é um Card!</h2>
         <p className='text-sm'>com Cor Primária</p>
@@ -19,6 +20,9 @@ export default function Home() {
         <h2 className='text-lg'>Isto é um Card!</h2>
         <p className='text-sm'>com Cor Dark</p>
       </Card>
+      <Modal visible>
+        <h1 className="text-5xl">Isto é um Modal</h1> 
+      </Modal>
     </div>
   )
 }
