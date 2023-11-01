@@ -51,6 +51,7 @@ ___
 - [Configurando o TailwindCSS](#configurando-o-tailwindcss)
 - [Componente `<Card>`](#componente-card)
 - [Componente `<Modal>`](#componente-modal)
+- [Componente `<Button>`](#componente-button)
 
 ___
 
@@ -3413,8 +3414,9 @@ Ainda dentro do arquivo `tailwind.config.ts` iremos definir as cores utilizadas 
     // tailwind.config.ts
 
     ...
-      theme: {
-        extend: {
+    theme: {
+      extend: {
+        colors: {
           primary: {
             400: '#65E9E4',
             500: '#31C3BD',
@@ -3430,13 +3432,14 @@ Ainda dentro do arquivo `tailwind.config.ts` iremos definir as cores utilizadas 
             500: '#A8BFC9',
             600: '#6B8997',
           },
-          Dark: {
+          dark: {
             400: '#1F3641',
             500: '#1F3641',
             600: '#10212A',
           },
         },
       },
+    },
     ...
     ```
 
@@ -3495,7 +3498,7 @@ Agora crie o arquivo chamado `Card.tsx` que será a Classe que contém as defini
 - `export interface CardPros {` Exporta uma Interface chamada CardPros que irá conter as Propriedades do Card.  
 
   - `children?: React.ReactNode` ***"children:"*** é uma Propriedade opcional ***"?"*** que recebe qualquer tipo de nó *(elemento React, texto, etc.)* como conteúdo.
-  - `colors?: 'primary' | 'secondary' | 'light' | 'black'`  ***"colors:"*** é uma Propriedade opcional ***"?"*** que pode ter um dos quatro valores de cor específicos.
+  - `color?: 'primary' | 'secondary' | 'light' | 'black'`  ***"color:"*** é uma Propriedade opcional ***"?"*** que pode ter um dos quatro valores de cor específicos.
   - `noBorder?: boolean` ***noBorder:*** é uma Propriedade opcional ***"?"*** booleana *(verdadeira/falsa)*. Se estiver presente e for true, significa que o componente não terá borda.
   - `hover?: boolean`
 - `}`
@@ -3505,7 +3508,7 @@ Agora crie o arquivo chamado `Card.tsx` que será a Classe que contém as defini
 
   export interface CardProps {
     children?: React.ReactNode
-    colors?: 'primary' | 'secondary' | 'light' | 'black'
+    color?: 'primary' | 'secondary' | 'light' | 'black'
     noBorder?: boolean
     hover?: boolean
   }
@@ -3710,3 +3713,109 @@ export default function Modal(props: ModalProps) {
 Adicionando uma transparência será possível ver a Jogada Vencedora no Tabuleiro.
 
 ![Componente Modal-1](./imagens/modal-1.png)
+
+[^ Sumário ^](#interface-gráfica---front-end)
+
+## Componente `<Button>`
+
+Agora iremos definir mais um Componente Compartilhado, o Botão `Button` será um Componente Card envolvido por um Elemento Button adicionando a funcionalidade de Click `onClick = () => {}`.  
+
+O Componente Button, terá basicamente os mesmo Atributos que o Card, como as cores, com a diferença que será clicável.  
+
+Então, no caminho `./src/components/shared/` crie um arquivo chamado `Button.tsx` e dentro iremos definir nosso ***Componente Button***.
+
+Agora defina a Interface do Componente Button:  
+
+- `import Card from './Card'` Importe o Componente Card.
+- Exporte uma Interface `export interface` chamada `ButtonPros` que estende `extends` de `React.HTMLAttributes<` pegando os Atributos do Tipo Botão `HTMLButtonElements>` então, `{`
+  - `children: React.ReactNode` ***"children:"*** é uma Propriedade que recebe qualquer tipo de nó *(elemento React, texto, etc.)* como conteúdo.
+  - `color?: 'primary' | 'secondary' | 'light' | 'black'`  ***"color:"*** é uma Propriedade opcional ***"?"*** que pode ter um dos quatro valores de cor específicos.
+- `}` Fechamento da Interface.
+
+> ***Observação:***  
+Con isso, além de ter os Atributos `children` e `color` *(vindos do Card)*, temos todos os Atributos de um Botão.  
+Através do ***Operador Spread*** *(...)*, todos os Atributos/Propriedades, serão passados para o Elemento `<Button>` em `{...props}`.  
+
+```tsx
+// Button.tsx
+
+import Card from './Card'
+
+export interface ButtonProps extends React.HTMLAttributes<HTMLButtonElement> {
+  children: React.ReactNode
+  color?: 'primary' | 'secondary' | 'light' | 'dark'
+}
+...
+```
+
+Agora, iremos definir a Função do Componente Button, basicamente iremos envolver o Componente Card com o Componente Button.  
+
+- Exporte por padrão `export default` uma Função `function` chamada `Button(` recebendo como parâmetro uma Propriedade `props:` do Tipo `ButtonProps)` então. `{`
+  - Retorne `return (`
+    - O Componente Button `<Button` recebendo as Propriedades da Interface `{...props}` contendo a Classes TailwindCSS `classeName=` formatando o texto na cor preta `text-black>`
+      - Defina o Componente Card `<Card` recebendo a cor `color=` através das propriedades `{props.color}` e recebendo o efeito de Hover `hover>`
+        - Defina o conteúdo do Button `{props.children}`
+      - `</Card>` Feche o Componente Card.
+    - `</Button>` Feche o Componente Button.
+  - `)` Feche o retorno da Função.
+- `}` Feche a Função.  
+
+```tsx
+// Button.tsx
+
+...
+
+export default function Button(props: ButtonProps) {
+  return (
+    <Button {...props} className='text-black'>
+      <Card color={props.color} hover>
+        {props.children}
+      </Card>
+    </Button>
+  )
+}
+```
+
+Até aqui, criamos o Componente Botão, mas agora precisamos adicioná-lo à Página.  
+
+Então no caminho `./src/app/` abra o arquivo `page.tsx` e adicione o Componente `<Button>` que acabamos de criar da seguinte forma:  
+
+- Adicione o Componente Modal visível `<Modal visible>`
+  - Adicione uma TAG `<h1` contendo as Classes TailwindCSS `className=` que formata o tamanho do Texto *(3rem ou 48px)* `'text-5xl` e um Padding de *(1rem ou 16px)* `p-4'>`
+    - Defina o Texto que será exibido `Isto é um Modal`
+  - `</h1>` Feche a TAG
+  - Adicione o Componente Botão `<Button` adicione uma cor *(por padrão é light)* `color='secondary'` adicione a Função `onClick={` acrescente a Função Anônima `()` que retornará `=>` o click no console `{console.log('Clicado!!!')}}>`
+    - Defina do Texto do Botão `Clique Aqui!!!`
+  - `</Button>` Feche o Componente Botão.
+- `</Modal>` Feche o Componente Modal.
+
+```tsx
+// page.tsx
+
+'use client'
+
+import Button from '@/components/shared/Button'
+import Card from '@/components/shared/Card'
+import Modal from '@/components/shared/Modal'
+
+export default function Home() {
+  return (
+    <div className='flex justify-around itens-center text-center mt-10'>
+      ...
+      <Modal visible>
+        <h1 className='text-5xl p-4'>
+          Isto é um Modal
+        </h1>
+        <Button color='secondary' onClick={() => console.log('Clicado!')}>
+          Click aqui!!!
+        </Button>
+      </Modal>
+    </div>
+  )
+}
+```
+
+![Modal com Botão](./imagens/modal-2.png)
+
+> ***Observação:***  
+*Para que a ***Função onClick*** funcione, será preciso adicionar `'use client'` no inicio do arquivo, pois a página está sendo gerada no servidor e esta função roda no cliente (navegador).*
