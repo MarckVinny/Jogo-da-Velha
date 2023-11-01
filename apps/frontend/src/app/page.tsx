@@ -1,5 +1,8 @@
-import Card from "@/components/shared/Card"
-import Modal from "@/components/shared/Modal"
+'use client'
+
+import Button from '@/components/shared/Button'
+import Card from '@/components/shared/Card'
+import Modal from '@/components/shared/Modal'
 
 export default function Home() {
   return (
@@ -21,7 +24,10 @@ export default function Home() {
         <p className='text-sm'>com Cor Dark</p>
       </Card>
       <Modal visible>
-        <h1 className="text-5xl">Isto é um Modal</h1> 
+        <h1 className='text-5xl p-4'>Isto é um Modal</h1>
+        <Button color='secondary' onClick={() => console.log('Clicado!')}>
+          Click aqui!!!
+        </Button>
       </Modal>
     </div>
   )
