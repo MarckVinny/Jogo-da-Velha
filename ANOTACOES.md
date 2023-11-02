@@ -3964,6 +3964,62 @@ export default function CellArea(props: CellAreaProps) {
 ...
 ```
 
+```tsx
+// page.tsx
+
+import CellArea from '@/components/game/CellArea'
+import Button from '@/components/shared/Button'
+import Card from '@/components/shared/Card'
+import Modal from '@/components/shared/Modal'
+import { PlayerType } from 'core'
+
+export default function Home() {
+  return (
+    <div>
+      ...
+      <div className='flex justify-around items-center'>
+        <div>
+          <span className='text-center block'>
+            Célula <br />
+            Vazia
+          </span>
+          <CellArea />
+        </div>
+        <div>
+          <span className='text-center block'>
+            Célula <br />
+            Marcada
+          </span>
+          <CellArea type={PlayerType.X} />
+        </div>
+        <div>
+          <span className='text-center block'>
+            Célula <br />
+            Marcada
+          </span>
+          <CellArea type={PlayerType.O} />
+        </div>
+        <div>
+          <span className='text-center block'>
+            Célula <br />
+            Selecionada
+          </span>
+          <CellArea type={PlayerType.X} selected />
+        </div>
+        <div>
+          <span className='text-center block'>
+            Célula <br />
+            Selecionada
+          </span>
+          <CellArea type={PlayerType.O} selected />
+        </div>
+      </div>
+      ...
+    </div>
+  )
+}
+```
+
 ***Cards, Células e Modal:***
 
 ![Cards, Células e Modal](./imagens/modal-3.png)
