@@ -52,6 +52,7 @@ ___
 - [Componente `<Card>`](#componente-card)
 - [Componente `<Modal>`](#componente-modal)
 - [Componente `<Button>`](#componente-button)
+- [Componente `<CellArea>`](#componente-cellarea)
 
 ___
 
@@ -3611,7 +3612,7 @@ O próximo Elemento que iremos definir, será uma ára que representa o Componen
 
 Basicamente o Modal pode ou não estar visível `visible`, se a Propriedade estiver setada como visível ele será mostrado senão, não mostrará nada.  
 
-Então, no caminho `./src/components/shard/` crie um arquivo chamado `Modal.tsx` e dentro:  
+Então, no caminho `./apps/frontend/src/components/shared/` crie um arquivo chamado `Modal.tsx` e dentro:  
 
 - `export interface ModalProps {` Exporte uma Interface chamada ModalProps
   - `visible: boolean`  
@@ -3722,7 +3723,7 @@ Agora iremos definir mais um Componente Compartilhado, o Botão `Button` será u
 
 O Componente Button, terá basicamente os mesmo Atributos que o Card, como as cores, com a diferença que será clicável.  
 
-Então, no caminho `./src/components/shared/` crie um arquivo chamado `Button.tsx` e dentro iremos definir nosso ***Componente Button***.
+Então, no caminho `./apps/frontend/src/components/shared/` crie um arquivo chamado `Button.tsx` e dentro iremos definir nosso ***Componente Button***.
 
 Agora defina a Interface do Componente Button:  
 
@@ -3778,7 +3779,7 @@ export default function Button(props: ButtonProps) {
 
 Até aqui, criamos o Componente Botão, mas agora precisamos adicioná-lo à Página.  
 
-Então no caminho `./src/app/` abra o arquivo `page.tsx` e adicione o Componente `<Button>` que acabamos de criar da seguinte forma:  
+Então no caminho `./apps/frontend/src/app/` abra o arquivo `page.tsx` e adicione o Componente `<Button>` que acabamos de criar da seguinte forma:  
 
 - Adicione o Componente Modal visível `<Modal visible>`
   - Adicione uma TAG `<h1` contendo as Classes TailwindCSS `className=` que formata o tamanho do Texto *(3rem ou 48px)* `'text-5xl` e um Padding de *(1rem ou 16px)* `p-4'>`
@@ -3819,3 +3820,150 @@ export default function Home() {
 
 > ***Observação:***  
 *Para que a ***Função onClick*** funcione, será preciso adicionar `'use client'` no inicio do arquivo, pois a página está sendo gerada no servidor e esta função roda no cliente (navegador).*
+
+[^ Sumário ^](#interface-gráfica---front-end)
+
+## Componente `<CellArea>`
+
+Este componente representa a ***Área da Célula*** que é cada Célula onde serão feitas as Jogadas.  
+
+O Tabuleiro é formado por 9 dessas Células, com isso, este é um dos Componentes mais importantes do Jogo.
+
+A Área da Célula será composta por 5 estados:
+
+- Quando não tem nenhuma Jogada;
+- Quando tem uma Jogada do "Jogador X";
+- Quando tem uma Jogada do "Jogador O";
+- Quando tem uma Jogada Selecionada do "Jogador X";
+- Quando tem uma Jogada Selecionada do "Jogador O";
+
+Então, no caminho `./apps/frontend/src/components/` crie um Diretório/Pasta chamado `game/` e dentro, crie um arquivo chamado `CellArea.tsx` e dentro defina o Componente.  
+
+- `import { IconCircle, IconX } from '@tabler/icons-react'` Importe os ícones que serão utilizados no "Jogador O" e no "Jogador X".
+- `import { PlayerType } from 'core'` Importe a Classe PlayerType.
+- `import Card from '../shared/Card'` Importe o Componente Card.
+
+```tsx
+// CellArea.tsx
+
+import { IconCircle, IconX } from '@tabler/icons-react'
+import { PlayerType } from 'core'
+import Card from '../shared/Card'
+...
+```
+
+- Exporte a Interface `export interface` chamada `CellAreaProps {`
+  - Então, defina a Propriedade opcional `type?:` recebendo um Tipo `PlayerType` ou `|` um valor Nulo `null`.  
+  O Atributo ***"type?:"*** será responsável por marcar a Jogada com o Tipo do Jogador ou deixar vazio.
+  - Defina a Propriedade opcional `selected?:` recebendo um valor Verdadeiro ou Falso `boolean`.  
+  O Atributo ***"selected?:"*** será responsável por marcar a Célula como selecionada na Jogada Vencedora.
+- `}` Feche a Interface.
+
+```tsx
+// CellArea.tsx
+
+...
+
+export interface CellAreaProps {
+  type?: PlayerType | null
+  selected?: boolean
+}
+...
+```
+
+Agora iremos definir a Função que faz tudo acontecer:  
+
+- Exporte por padrão `export default` uma Função `function` chamada `CellArea(` recebendo como parâmetro a Propriedade `props:` do Tipo `CellAreaProps) {`
+  - `return(` Então, retorne  
+    - `<Card` Componente Card.  
+      - `color={` Interface de Cor do Componente Card.  
+        - `!props.selected` Se NÃO estiver selecionado,
+          - `? 'dark'` Então, use a cor Dark  
+          - `: props.type === PlayerType.X` Senão, verifique Se o Tipo é estritamente igual ao Tipo do "Jogador X".
+          - `? 'primary'` Então, use a cor Primária.
+          - `: 'secondary'` Senão, use a cor Secundária.
+        - `}` Feche a Interface de Cor.
+      - `>` Feche o Componente Card.
+        - `<div` Define o Container dos ícones ***"Ícone X"*** e ***"Ícone O"*** veja abaixo o que cada Classe faz:  
+          - ``className={` `` com as Classes TailwindCSS *(utilizando Template String)*
+            - `flex` Adiciona a propriedade ***"display: flex"*** ao elemento, permitindo que seus ***filhos*** se comportem como ***flex containers***.  
+            - `justify-center` Centraliza os itens ao longo do eixo principal *(horizontal, neste caso)*. Ele alinha os itens ao centro horizontal dentro do container flexível.  
+            - `itens-center` Centraliza os itens ao longo do eixo transversal *(vertical, neste caso)*. Ele alinha os itens ao centro vertical dentro do container flexível.  
+            - `w-32` Define a largura da Célula como 32 und. ***"8rem ou 128px"***. O valor é baseado no sistema de espaçamento predefinido pelo Tailwind.  
+            - `h-32` Define a altura da Célula como 32 und. ***"8rem ou 128px"***.
+          - `` `}`` Fecha a Classe TailwindCSS ***(com template string)***.
+        - `/>` Fecha a TAG do Container dos ícones ***"Ícone X"*** e ***"Ícone O"***.
+          - Verifique Se o Tipo `{props.type` é estritamente igual `===` ao Tipo do "Jogador X" `PlayerType.X` E se o resultado dor Verdadeiro `&& (` marque a Célula com o ***"Ícone de X"***.  
+            - `<IconX` Defina um Componente de Ícone  
+              - `size={70}` com tamanho de 70px  
+              - `stroke={6}` espessura da linha de 6px  
+              - `className={props.selected` Se a Propriedade Selecionada for Verdadeira
+                - `? 'text-dark-500'` então use a Classe TailwindCSS Dark 500.
+                - `: 'text-primary-500'` Senão use a Classe TailwindCSS Primary 500.
+              - `}` Feche a Classe TailwindCSS.
+            - `/>` Feche o Componente ***"Ícone X"***.
+          - `)}` Feche o retorno do ícone do ***"Jogador X"***.
+          - Verifique Se o Tipo `{props.type` é estritamente igual `===` ao Tipo do "Jogador O" `PlayerType.O` E se o resultado for Verdadeiro `&& (` marque a Célula com o ***"Ícone de Círculo"***.  
+            - `<IconCircle` Defina um Componente de ***"Ícone O"***.
+              - `size={70}` com tamanho 70px
+              - `stroke={6}` com espessura da linha de 6px
+              - `className={props.selected` Se a Propriedade Selecionada for Verdadeira
+                - `? 'text-dark-500'` Então, use a Classe TailwindCSS Dark 500
+                - `: 'text-secondary-500'` Senão, use a Classe Tailwind Secondary 500.
+              - `}` Feche a Classe TailwindCSS.
+            - `/>` Feche o Componente do ***"Ícone O"***.
+          - `)}` Feche o retorno do ícone do ***"Jogador O"***.
+        - `</div>` Feche o Container dos ícones ***"Ícone X"*** e ***"Ícone O"***.
+      - `</Card>` Feche o Componente Card.
+    - `)` Feche o retorno da Função CellArea.
+  - `}` Feche a Função CellArea.
+
+```tsx
+// CellArea.tsx
+
+...
+
+export default function CellArea(props: CellAreaProps) {
+  return (
+    <Card                                 //* Componente Card
+      color={                             //* Interface de Cor do Componente Card
+        !props.selected                   //* Se NÃO estiver selecionado,
+          ? 'dark'                        //* Então, use a cor Dark 
+          : props.type === PlayerType.X   //* Senão, verifique Se o Tipo é estritamente igual ao Tipo do "Jogador X"
+          ? 'primary'                     //* Então, use a cor Primária 
+          : 'secondary'                   //* Senão, use a cor Secundária
+        }
+    >
+      <div className={`flex justify-center items-center w-12 h-12`}>
+        {props.type === PlayerType.X && (
+          <IconX
+            size={70}
+            stroke={6}
+            className={
+              props.selected
+                ? 'text-dark-500'
+                : 'text-primary-500'
+            }
+          />
+        )}
+        {props.type === PlayerType.O && (
+          <IconCircle
+            size={70}
+            stroke={6}
+            className={
+              props.selected
+                ? 'text-dark-500'
+                : 'text-secondary-500'
+            }
+          />
+        )}
+      </div>
+    </Card>
+  )
+}
+...
+```
+
+***Cards, Células e Modal:***
+
+![Cards, Células e Modal](./imagens/modal-3.png)
