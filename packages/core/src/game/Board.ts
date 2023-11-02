@@ -50,9 +50,9 @@ export default class Board {
   }
 
   //? Marca a Célula com uma Jogada
-  set(row: number, col: number, type: PlayerType): Board{
+  set(row: number, col: number, type: PlayerType): Board {
     const cell = this.get(row, col)
-    if(!cell || cell.isNotEmpty()) return this
+    if (!cell || cell.isNotEmpty()) return this
 
     const state = this.state.map((row) => [...row])
     state[row][col] = state[row][col].markWith(type)
