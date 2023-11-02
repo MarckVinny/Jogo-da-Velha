@@ -7,7 +7,7 @@ export interface CardProps {
 
 export default function Card(props: CardProps) {
   return (
-    <div className='flex justify-center items-center'>
+    <div className='flex justify-center items-center m-2'>
       <div className={`rounded-xl bg-${props.color ?? 'light'}-600`}>
         <div className={`rounded-xl ${props.noBorder ? '' : 'mb-2'}`}>
           <div
