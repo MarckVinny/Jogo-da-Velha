@@ -5,4 +5,3 @@
 ## Siga as anotações para criar o projeto do ZERO
 
 - [Anotações](ANOTACOES.md)
-
