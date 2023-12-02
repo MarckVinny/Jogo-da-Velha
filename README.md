@@ -1,7 +1,9 @@
-# Em breve adicionarei links para os Códigos
+# Projetos do Curso Formação DEV
+
+___
 
 #### Este conteúdo faz parte do curso de Fomação DEV da COD3R
 
-## Siga as anotações para criar o projeto do ZERO
+## Módulo Especialista
 
-- [Anotações](ANOTACOES.md)
+- [Jogo da Velha](https://github.com/MarckVinny/Jogo-da-Velha)
