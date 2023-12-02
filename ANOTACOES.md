@@ -53,6 +53,7 @@ ___
 - [Componente `<Modal>`](#componente-modal)
 - [Componente `<Button>`](#componente-button)
 - [Componente `<CellArea>`](#componente-cellarea)
+- [Componente `<GameContext>` - Gerenciamento de Estado](#componente-gamecontext---gerenciamento-de-estado)
 
 ___
 
@@ -4023,3 +4024,7 @@ export default function Home() {
 ***Cards, Células e Modal:***
 
 ![Cards, Células e Modal](./imagens/modal-3.png)
+
+[^ Sumário ^](#interface-gráfica---front-end)
+
+## Componente `<GameContext>` - Gerenciamento de Estado
