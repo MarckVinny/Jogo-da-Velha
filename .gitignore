@@ -1,3 +1,8 @@
+<<<<<<< HEAD
+# Projetos
+/codigo-professor
+/jogo-velha
+=======
 # Created by <https://www.toptal.com/developers/gitignore/api/node,react,nextjs,git,turbo,vercel,visualstudiocode>
 
 # Edit at <https://www.toptal.com/developers/gitignore?templates=node,react,nextjs,git,turbo,vercel,visualstudiocode>
@@ -246,3 +251,4 @@ sketch
 .ionide
 .gitignore2
 # End of <https://www.toptal.com/developers/gitignore/api/node,react,nextjs,git,turbo,vercel,visualstudiocode>
+>>>>>>> b0a50b03fbcd6715439aac7f8b735f0157b38764

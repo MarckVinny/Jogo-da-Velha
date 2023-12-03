@@ -137,7 +137,12 @@
     "markdownlint.config": {
         "MD033": {
             "allowed_elements": [
+<<<<<<< HEAD
                 "sup"
+=======
+                "sup",
+                "center"
+>>>>>>> f35bba80261a0cb3b27b7c7d87023b4361e80cd9
             ]
         }
     },
@@ -154,5 +159,12 @@
     },
     //! Prettier
     "prettier.singleQuote": true,
+<<<<<<< HEAD
     "prettier.semi": false
+=======
+    "prettier.tabWidth": 2,
+    "prettier.semi": false,
+    "prettier.printWidth": 90,
+    "prettier.jsxSingleQuote": true
+>>>>>>> f35bba80261a0cb3b27b7c7d87023b4361e80cd9
 }
