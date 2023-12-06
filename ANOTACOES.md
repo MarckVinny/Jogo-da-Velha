@@ -4028,3 +4028,5 @@ export default function Home() {
 [^ Sumário ^](#interface-gráfica---front-end)
 
 ## Componente `<GameContext>` - Gerenciamento de Estado
+
+Teste
