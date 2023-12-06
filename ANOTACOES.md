@@ -1,4 +1,4 @@
-# JOGO DA VELHA v1
+# JOGO DA VELHA
 
 ___
 
