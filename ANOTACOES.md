@@ -4029,4 +4029,4 @@ export default function Home() {
 
 ## Componente `<GameContext>` - Gerenciamento de Estado
 
-Teste
+Test
