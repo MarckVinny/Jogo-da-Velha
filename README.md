@@ -1,4 +1,14 @@
-# Turborepo starter
+# PROJETO JOGO DA VELHA
+
+___
+
+***Este projeto é parte integrante do curso Formação DEV da [COD3R](https://www.cod3r.com.br)***
+
+A implementação do projeto se encontra no arquivo [ANOTAÇÕES](./ANOTACOES.md), nele você conseguirá montar o projeto do zero, desde a ***Modelagem do Código*** até a ***Interface Gráfica.***
+
+___
+
+## Turborepo starter
 
 This is an official starter Turborepo.
 
