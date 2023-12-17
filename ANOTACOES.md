@@ -4458,5 +4458,6 @@ export default function BoardArea() {
 ...
 ```
 
-A renderização do GRID até o momento:
+A renderização do GRID até o momento:  
+
 ![grid board area](./imagens/grid-board-area.png)
