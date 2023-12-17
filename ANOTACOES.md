@@ -53,7 +53,7 @@ ___
 - [Componente `<Modal>`](#componente-modal)
 - [Componente `<Button>`](#componente-button)
 - [Componente `<CellArea>`](#componente-cellarea)
-- [Componente `<GameContext>` - Gerenciamento de Estado](#componente-gamecontext---gerenciamento-de-estado)
+- [Contexto `<GameContext>` - Gerenciamento de Estado](#contexto-gamecontext---gerenciamento-de-estado)
 
 ___
 
@@ -4027,6 +4027,254 @@ export default function Home() {
 
 [^ Sumário ^](#interface-gráfica---front-end)
 
-## Componente `<GameContext>` - Gerenciamento de Estado
+## Contexto `<GameContext>` - Gerenciamento de Estado
 
-Teste1
+O ***Contexto*** será responsável pelo ***Gerenciamento de Estado do Jogo***, pois, ele irá gerenciar todos os nosso ***Modelos Ricos*** que criamos na ***Modelagem do Código*** dentro do ***Pacote Core***.  
+
+Agora, no caminho `\apps\frontend\src` crie um novo Diretório/Pasta chamado `\contexts` e dentro crie o arquivo chamado `GameContext.tsx` onde serão definidas as Funções que irão fazer o gerenciamento dos Modelos Ricos do pacote Core.  
+
+```zsh
+// Terminal
+
+$ tree
+.
+|-- apps
+|   `-- frontend
+|       |-- src
+|       |   |-- app
+|       |   |-- components
+|       |   `-- contexts
+|       |       `-- GameContext.tsx
+...
+```
+
+> ***DICA:***  
+*O comando `tree` mostra a **Árvore de Diretórios e Arquivos** do Diretório Raiz onde o comando foi executado.*
+
+Agora que o arquivo foi criado, iremos definir seu algorítimo:  
+
+Então, exporte uma Função `export function` chamada `GameProvider(`recebendo uma propriedade por parâmetro `props: any)`, essa Função representa um Componente e por isso recebe uma propriedade como parâmetro, então, `{`  
+Podemos retornar `return (` uma DIV `<div>` com as propriedades dentro `{props.children}</div>)}`.
+
+```tsx
+// GameContext.tsx
+
+export function GameProvider(props: any){
+  return (
+    <div>
+      {props.children}
+    </div>
+  )
+}
+...
+```
+
+Pegando a ***Função GameProvider()***, que é o local onde será gerenciado o ***Estado da Aplicação*** *(peças, jogadores, movimentos, pontos, empates, etc.)*, lembrando que estaremos apenas gerenciando os ***Modelos Ricos*** que já foram definidos no ***Core da Aplicação***.  
+
+Uma vez que já temos a ***Função GameProvider()*** definida, podemos ir até o arquivo `layout.tsx` que se encontra no caminho `\apps\frontend\src\app\` e envolver o Elemento Filho `{children}` com o ***GamaProvider()*** que é o nosso Gerenciador de Estado.  
+
+Com isso, dentro do `<body>` iremos adicionar uma DIV centralizada na Tela `<div ClassName='flex justify-center items-center h-screen'>` e dentro dela iremos adicionar nosso Componente `<GameProvider>` que irá envolver o Elemento Filho `{children}` fechando o `</GameProvider>` e fechando `</div>` e por fim fechando o `</body>`.  
+
+```tsx
+// layout.tsx
+
+...
+    <html lang='pt-BR'>
+      <body className={outfit.className}>
+        <div className='flex justify-center items-center h-screen'>
+          <GameProvider>
+            {children}
+          </GameProvider>
+        </div>
+      </body>
+    </html>
+...
+```
+
+Aproveitando que estamos no arquivo `layout.tsx`, iremos modificar a fonte padrão, ao invés de usar a `Inter`, iremos utilizar a fonte `OutFit`.  
+
+```tsx
+// layout.tsx
+
+...
+import { Outfit } from 'next/font/google'
+
+const outfit = Outfit({ subsets: ['latin'] })
+...
+```
+
+Com isso, já temos o ***Provider*** `GameProvider()` que irá ***Gerenciar o Contexto***, envolvendo a Aplicação `<GameProvider>{children}</GameProvider>` já que foi colocado dentro da Função `RootLayout()`, isso significa que a Aplicação inteira vai ter acesso a tudo que estiver disponível dentro do ***Provider*** `GameProvider()`.  
+
+Agora, de volta ao arquivo `GameContext.tsx`, iremos disponibilizar algumas coisas:
+
+Primeiro irenos definir o Contexto, então, defina uma constante `const` chamada `GameContext` recebendo `=` o Método do React `createContext(` começando como um Objeto Vazio Qualquer`{} as any)` e a partir do ***"GameContext.Provider"*** que acabamos de definir, iremos envolver realmente nossa Aplicação, colocando o ***Value*** como um ***Objeto Vazio*** `value={{}}`.  
+
+Exportando por Padrão o Contexto `export default GameContext`.  
+
+Não esquecendo de adicionar na primeira linha do algorítimo a anotação `'use client'`, para que não ocorra erro na compilação do código e de importar a Classe `createContext` do React utilizando o Destructuring `import { createContext } from "react"`.
+
+```tsx
+// GameContext.tsx
+
+'use client'
+import { createContext } from "react"
+
+const GameContext = createContext({} as any)
+
+export function GameProvider(props: any){
+  return (
+    <GameContext.Provider value={{}}>
+      {props.children}
+    </GameContext.Provider>
+  )
+}
+
+export default GameContext
+...
+```
+
+A primeira coisa que podemos definir no Estado é o Jogo, para isso, vamos relembrar como se [Cria um Jogo](#criando-a-classe-game) em nosso Modelo Rico.  
+
+É na ***Classe Game*** que controlamos toda a lógica do Jogo, nela controlamos *(o Player 1, o Player 2, o Tabuleiro, o Primeiro Jogador, o Jogador Atual, o Empate e o Resultado)*
+
+```ts
+// Game.ts
+
+...
+
+export default class Game{
+  private constructor(
+    readonly player1: Player,        //* Jogador 1
+    readonly player2: Player,        //* Jogador 2
+    readonly board: Board,           //* Tabuleiro
+    readonly first: Player,          //* Primeiro Jogador
+    readonly currentPlayer: Player,  //* Jogador Atual
+    readonly ties: number = 0,       //* Empate
+    readonly result: GameResult = new GameResult()  //* Resultado Vazio
+  ){}
+  ...
+```
+
+Então, essa Classe controla o Estado do Jogo de forma completa e a partir desta Classe que iremos utilizar no Contexto Gerenciado do Estado do Jogo.  
+
+Para que possamos a partir desta Classe expor o Jogo, o Tabuleiro dentre outras coisa.  
+
+Primeiro, precisamos importar a Classe Tabuleiro do Pacote Core utilizando o Destructuring `import { Board } from "core"`.
+
+Para isso, iremos definir uma Interface `interface GameContextProps{`  
+deixando o Tabuleiro `board:` do Tipo `Board }` do Core, disponível.  
+Com isso, vamos expor o Tabuleiro para poder acessá-lo fora do Provider.  
+
+```tsx
+// GameContext.tsx
+
+'use client'
+import { Board } from "core"
+...
+
+interface GameContextProps {
+  board: Board
+}
+...
+```
+
+Agora, dentro da ***Função GameProvider()*** iremos criar um Estado do Jogo, para isso crie uma Constante `const` contendo um Array `[` com o jogo `game,` e o `setGame]` recebendo `=` o Estado `useState<` do Tipo `Game>(`  
+
+Agora instancie um Jogo, utilizando o Método create da Classe Game `Game.create(`  
+
+Instancie um Novo Jogador `new Player(` com nome `'P1',` do Tipo X `PlayerType.X),`  
+
+Instancie um Novo Jogador `new Player(` com nome `'P2',` do Tipo O `PlayerType.O), ))`.  
+
+Não esquecendo de importar utilizando Destructuring `{}` as Classes `Game, Player, PlayerType` vendas do Core e a Classe `useState` vinda do React.
+
+```tsx
+// GameContext.tsx
+
+'use client'
+import { Board, Game, Player, PlayerType} from "core"
+import { createContext, useState } from "react"
+
+...
+
+export function GameProvider(props: any){
+
+  const [ game, setGame ] = useState<Game>(
+    Game.create(
+      new Player('P1', PlayerType.X),
+      new Player('P2', PlayerType.O)
+    )
+  )
+...
+```
+
+Com isso temos o Jogo inteiro criado, sem pontos, sem empates e sem célula selecionada.
+
+Agora que temos o Jogo inteiro criado, e nas Propriedades do Contexto, estamos informando que queremos o Tabuleiro `interface GameContextProps { board: Board }`, podemos afirmar que no Game Context `const GameContext = createContext` que de fato vamos retornar esta Propriedade `<GameContextProps>({} as any)`.  
+
+```tsx
+// GameContext.tsx
+
+...
+interface GameContextProps {
+  board: Board
+}
+
+const GameContext = createContext<GameContextProps>({} as any)
+...
+```
+
+Com isso, conseguimos retornar `return` o Tabuleiro lá no valor do retorno do GameContext da seguinte forma `value={{board: game.board}}`
+
+```tsx
+// GameContext.tsx
+
+...
+  return (
+    <GameContext.Provider value={{
+      board: game.board
+    }}>
+      {props.children}
+    </GameContext.Provider>
+  )
+}
+...
+```
+
+A seguir vamos ver como fica o código completo com todas as partes até o momento:
+
+```tsx
+// GameContext.tsx
+
+'use client'
+import { Board, Game, Player, PlayerType} from "core"
+import { createContext, useState } from "react"
+
+interface GameContextProps {
+  board: Board
+}
+
+const GameContext = createContext<GameContextProps>({} as any)
+
+export function GameProvider(props: any){
+
+  const [ game, setGame ] = useState<Game>(
+    Game.create(
+      new Player('P1', PlayerType.X),
+      new Player('P2', PlayerType.O)
+    )
+  )
+
+  return (
+    <GameContext.Provider value={{
+      board: game.board
+    }}>
+      {props.children}
+    </GameContext.Provider>
+  )
+}
+
+export default GameContext
+```
+
+Isso foi feito, para que possamos criar o Componente que irá representar o Tabuleiro do Jogo.

@@ -1,22 +1,25 @@
+import { GameProvider } from '@/contexts/GameContext'
 import './globals.css'
 import type { Metadata } from 'next'
-import { Inter } from 'next/font/google'
+import { Outfit } from 'next/font/google'
 
-const inter = Inter({ subsets: ['latin'] })
+const outfit = Outfit({ subsets: ['latin'] })
 
 export const metadata: Metadata = {
   title: 'Jogo da Velha',
   description: 'Projeto do Curso Formação DEV COD3R',
 }
 
-export default function RootLayout({
-  children,
-}: {
-  children: React.ReactNode
-}) {
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="pt-BR">
-      <body className={inter.className}>{children}</body>
+    <html lang='pt-BR'>
+      <body className={outfit.className}>
+        <div className='flex justify-center items-center h-screen'>
+          <GameProvider>
+            {children}
+          </GameProvider>
+        </div>
+      </body>
     </html>
   )
 }
