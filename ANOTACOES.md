@@ -54,6 +54,7 @@ ___
 - [Componente `<Button>`](#componente-button)
 - [Componente `<CellArea>`](#componente-cellarea)
 - [Contexto `<GameContext>` - Gerenciamento de Estado](#contexto-gamecontext---gerenciamento-de-estado)
+- [Componente `<BoardArea>` - Área do Tabuleiro](#componente-boardarea---área-do-tabuleiro)
 
 ___
 
@@ -4280,3 +4281,182 @@ export default GameContext
 Isso foi feito, para que possamos criar o Componente que irá representar o Tabuleiro do Jogo.  
 
 Pois, a partir do Tabuleiro Vazio, podemos renderizar os Elementos na Tela.
+
+[^ Sumário ^](#interface-gráfica---front-end)
+
+## Componente `<BoardArea>` - Área do Tabuleiro
+
+Agora, no caminho `\apps\frontend\src\components\game` crie o arquivo chamado `BoardArea.tsx` onde serão renderizados os Elementos do Jogo.  
+
+```zsh
+// Terminal
+
+$ tree
+.
+|-- apps
+|   `-- frontend
+|       |-- src
+|       |   |-- app
+|       |   |-- components
+|       |   |   |-- BoardArea.tsx
+|       |   |   `-- CellArea.tsx
+|       |   `-- contexts
+...
+```
+
+Dentro do arquivo `BoardArea.tsx` exporte por padrão uma Função `export default function` chamada `BoardArea() {`  
+Então, retorne `return (`  
+Uma DIV `<div>`  
+Que renderiza o texto `Área do Tabuleiro`  
+Feche a DIV `</div> )}`.
+
+```tsx
+// BoardArea.tsx
+
+export default function BoardArea() {
+  return (
+    <div>
+      Área do Tabuleiro.
+    </div>
+  )
+}
+```
+
+Agora, no caminho `\apps\frontend\src\app` duplique o arquivo chamado `page.tsx` e renomeie a cópia para `page_exemplos.tsx` para que possamos continuar com a página que criamos até o momento.  
+
+```zsh
+// Terminal
+
+$ tree
+.
+|-- apps
+|   `-- frontend
+|       |-- src
+|       |   |-- app
+|       |   |   |-- favicon.ico
+|       |   |   |-- globals.css
+|       |   |   |-- layout.tsx
+|       |   |   |-- page.tsx
+|       |   |   `-- page_exemplos.tsx
+|       |   |-- components
+|       |   `-- contexts
+...
+```
+
+Em seguida edite o arquivo `page.tsx` que é o arquivo adicionando o Componente `<BoardArea />` que irá renderizar nosso Jogo dentro da DIV `<div>...</div>`.  
+
+```tsx
+// page.tsx
+
+import BoardArea from '@/components/game/BoardArea'
+
+export default function Home() {
+  return (
+    <div className='flex justify-around itens-center text-center mt-6'>
+      <BoardArea />
+    </div>
+  )
+}
+```
+
+Mas com isso, iremos nos deparar com um problema, pois, a página não será renderizada apresentando o seguinte erro:  
+
+![erro BoardArea](/imagens/erro-board-area.png)  
+
+Esse erro significa que o next não está conseguindo compilar o Pacote Core, não consegue fazer o parse do código.  
+
+Para resolver esse problema, no caminho `\apps\frontend\src` edite o arquivo `next.config.js` acrescentando a seguinte linha `transpilePackages: ['core']` na Constante `const nextConfig`.  
+
+```js
+// next.config.js
+
+/** @type {import('next').NextConfig} */
+const nextConfig = {
+  transpilePackages: ['core'],
+}
+
+module.exports = nextConfig
+```
+
+> ***PARA SABER:***  
+A configuração transpilePackages no arquivo next.config.js do Next.js é usada para especificar quais pacotes devem ser transpilados (convertidos) pelo Babel durante o processo de construção (build) do projeto.
+>
+> ***No código acima:***
+>
+> O pacote ***'core'*** será transpilado. Isso significa que o Babel irá processar e converter o código desse pacote durante a construção do seu aplicativo Next.js.
+>
+> A necessidade de transpilação geralmente ocorre quando você está usando bibliotecas ou pacotes que foram escritos em uma versão mais recente do JavaScript (por exemplo, ES6 ou ESNext) e você está construindo seu aplicativo para ser executado em ambientes que não suportam nativamente essas versões.
+>
+> Essa configuração permite que você controle quais pacotes específicos precisam ser transpilados, garantindo que o código seja compatível com a versão do JavaScript que você está direcionando.
+
+Agora precisamos ter acesso ao ***Contexto***, para isso, defina uma Constante `const` dando acesso ao Tabuleiro `{ board }` recebendo `=` o Contexto `useContext{GameContext}` não esquecendo de importar o GameContext `import GameContext from "@/contexts/GameContext"`.  
+
+```tsx
+// BoardArea.tsx
+
+import GameContext from "@/contexts/GameContext"
+import { useContext } from "react"
+
+export default function BoardArea() {
+
+  const { board } = useContext(GameContext)
+  
+  return (
+    <div>
+      Área do Tabuleiro.
+    </div>
+  )
+}
+```
+
+Com o Tabuleiro, iremos conseguir pegar quantos Elementos tem, quais estão selecionados e quais não estão, para que ele ***"BoardArea"*** possa renderizar no Tabuleiro.  
+
+Para fazer essa renderização, precisamos criar uma Função `function` chamada `renderCells(){` que irá renderizar as Células do Tabuleiro.  
+Então, defina uma Constante `const` chamada `cells` recebendo `=` um Array Vazio `[]`  
+defina um Laço For para renderizar a linha: enquanto `for (let` a linha `row` for igual a ZERO `= 0;` e a linha `row` for menor `<` que a quantidade de linhas do tabuleiro `board.row;` acrescente uma linha `row++){`  
+e coluna, enquanto `for(let` a coluna `col` for igual a ZERO `= 0;` e a coluna `col` for menor `<` que a quantidade de colunas do Tabuleiro `board.cols;` acrescente uma coluna `col++){`  
+Empurre a Célula `cells.push(`  
+defina uma DIV ``<div key={`${row}-${col}`}>``  
+Adicione uma Área de Célula `<CellArea type={board.get(row, col)?.type} selected={false} />`  
+Feche a DIV `</div>)}}`  
+Retornando as Células `return cells}`
+
+Já no retorno do `BoardArea()`, definimos a DIV com um GRID 3x3 com espaçamento de 0px "pois já foi configurado anteriormente com um valor padrão no Componente Card" `<div ClassName='grid grid-cols-3 gap-0'>` para renderizar as Células do Tabuleiro `{renderCells()}` sem esquecer de adicionar `'use client'` no início do algorítimo, para não dar erro de compilação.
+
+```tsx
+// BoardArea.tsx
+
+...
+'use client'
+import GameContext from "@/contexts/GameContext"
+import { useContext } from "react"
+
+export default function BoardArea() {
+
+  const { board } = useContext(GameContext)
+
+  function renderCells() {
+    const cells = []
+    for(let row = 0; row < board.rows; row++){
+      for(let col = 0; col <board.cols; col++){
+        cells.push(
+          <div key={`${row}-${col}`}>
+            <CellArea type={board.get(row, col)?.type} selected={false} />
+          </div>
+        )
+      }
+    }
+    return cells
+  }
+
+  return (
+    <div className='grid grid-cols-3'>
+      {renderCells()}
+    </div>
+  )
+}
+...
+```
+
+A renderização do GRID até o momento:
+![grid board area](./imagens/grid-board-area.png)
