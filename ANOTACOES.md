@@ -4277,4 +4277,6 @@ export function GameProvider(props: any){
 export default GameContext
 ```
 
-Isso foi feito, para que possamos criar o Componente que irá representar o Tabuleiro do Jogo.
+Isso foi feito, para que possamos criar o Componente que irá representar o Tabuleiro do Jogo.  
+
+Pois, a partir do Tabuleiro Vazio, podemos renderizar os Elementos na Tela.
