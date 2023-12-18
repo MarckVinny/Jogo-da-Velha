@@ -4324,7 +4324,7 @@ export default function BoardArea() {
 
 Agora, no caminho `\apps\frontend\src\app` duplique o arquivo chamado `page.tsx` e renomeie a cópia para `page_exemplos.tsx` para que possamos continuar com a página que criamos até o momento.  
 
-```zsh
+```graphql
 // Terminal
 
 $ tree
@@ -4460,4 +4460,9 @@ export default function BoardArea() {
 
 A renderização do GRID até o momento:  
 
+<center>
 ![grid board area](./imagens/grid-board-area.png)
+</center>
+Como podemos ver, a grade 3x3 foi renderizada, mas, ainda não temos como clicar nas Células para efetuar as jogadas, então, é isso que faremos a seguir.  
+
+
