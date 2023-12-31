@@ -55,6 +55,8 @@ ___
 - [Componente `<CellArea>`](#componente-cellarea)
 - [Contexto `<GameContext>` - Gerenciamento de Estado](#contexto-gamecontext---gerenciamento-de-estado)
 - [Componente `<BoardArea>` - Área do Tabuleiro](#componente-boardarea---área-do-tabuleiro)
+- [Contexto `<GameContext>` - Adicionar Movimento](#contexto-gamecontext---adicionar-movimento)
+  - [Implementando o Resultado](#implementando-o-resultado)
 
 ___
 
@@ -4324,7 +4326,7 @@ export default function BoardArea() {
 
 Agora, no caminho `\apps\frontend\src\app` duplique o arquivo chamado `page.tsx` e renomeie a cópia para `page_exemplos.tsx` para que possamos continuar com a página que criamos até o momento.  
 
-```graphql
+```zsh
 // Terminal
 
 $ tree
@@ -4460,9 +4462,223 @@ export default function BoardArea() {
 
 A renderização do GRID até o momento:  
 
-<center>
 ![grid board area](./imagens/grid-board-area.png)
-</center>
+
 Como podemos ver, a grade 3x3 foi renderizada, mas, ainda não temos como clicar nas Células para efetuar as jogadas, então, é isso que faremos a seguir.  
 
+[^ Sumário ^](#interface-gráfica---front-end)
 
+## Contexto `<GameContext>` - Adicionar Movimento
+
+Até o momento, não temos nenhuma Função que faça com que haja um movimento *(marcando com "X" ou "O" na Interface)* ao efetuarmos uma Jogada.  
+
+Para que isso ocorra, precisamos implementar uma Função que adiciona um movimento:  
+
+- No caminho `.\apps\frontend\src\contexts\` abra o arquivo `GameContext.tsx` e implemente a Função `addMove()`
+  - Antes do retorno da Função GameProvider(), crie uma Função `function` chamada `addMove(` recebendo por parâmetro o Número da Linha `row: number,` e o Número da Coluna `col: number){`
+    - Pegando o que foi retornado *(número da linha e coluna)* mandando alterar o Jogo como o Novo Estado gerado `setGame(game.addMove(row, col))`
+  - Fecha a Função addMove() `}`.
+  
+    ```tsx
+    // GameContext.tsx
+    
+    ...
+    export function GameProvider(props: any){
+    ...
+
+    function addMove(row: number, col: number){
+      setGame(game.addMove(row, col))
+    }
+    ...
+    ```
+
+    > ***Relembrando...***  
+    A lógica do Jogo ***(o Core)*** foi definida como *IMUTÁVEL*, onde, todos os atributos são ***somente leitura***, mas, sempre que precisamos fazer um ***Comportamento Rico*** como por exemplo [adicionando um movimento](#método-público-addmove), onde, a lógica é feita gerando um ***Novo Jogo*** com um ***Movimento Acrescentado*** e no final troca para o ***Próximo Jogador***.
+
+- Para que possamos retornar esta Função, precisamos adicioná-la na Interface.
+  - Então, após o atributo `board: Board,` adicione o atributo `addMove:` que irá receber o número da Linha e o número da Coluna `(row: number, col: number)` sem retornar nada `=> void`.
+
+    ```tsx
+    // GameContext.tsx
+    
+    ...
+    interface GameContextProps {
+    board: Board,
+    addMove: (row: number, col: number) => void
+    }
+    ...
+    ```
+
+  - Agora precisamos retornar esta Função, então, dentro do retorno da Função GameProvider(), acrescente a Função `addMove`.
+
+    ```tsx
+    // GameContext.tsx
+    
+    ...
+      return (
+    <GameContext.Provider value={{
+      board: game.board,
+      addMove
+    }}>
+      {props.children}
+    </GameContext.Provider>
+    )
+    ...
+    ```
+
+***Classe GameContext completa:***
+
+```tsx
+// GameContext.tsx
+
+'use client'
+...
+
+interface GameContextProps {
+  board: Board
+  addMove: (row: number, col: number) => void
+}
+
+...
+
+export function GameProvider(props: any){
+
+  ...
+
+  function addMove(row: number, col: number){
+    setGame(game.addMove(row, col))
+  }
+
+  return (
+    <GameContext.Provider value={{
+      board: game.board,
+      addMove
+    }}>
+      {props.children}
+    </GameContext.Provider>
+  )
+}
+
+export default GameContext
+```
+
+Com a Função addMove() disponível, lá na Classe BoardArea, no caminho `apps\frontend\src\components\game\BoardArea.tsx` podemos importar a Função `addMove`.  
+
+```tsx
+// BoardArea.tsx
+
+...
+export default function BoardArea() {
+
+  const { board, addMove } = useContext(GameContext)
+...
+```
+
+E podemos acrescentar o evento de Click ao efetuar uma Jogada, então, dentro da Função que renderiza as Células `renderCells()` no Método `cells.push()` adicione o evento de click na DIV.
+
+```tsx
+// BoardArea.tsx
+
+...
+  function renderCells() {
+    ...
+        cells.push(
+          <div key={`${row}-${col}`} onClick={() => addMove(row, col)}>
+            ...
+          </div>
+        )
+      }
+    }
+    return cells
+  }
+...
+```
+
+Como podemos ver, agora conseguimos realizar os movimentos mas, ainda não seleciona a Jogada Vencedora.
+
+![Adicionando Movimento](./imagens/grid-board-area-addMove.png)
+
+A lógica que foi implementada no ***Core da Aplicação***, impede que realize novas Jogadas após a ***Jogada Vencedora***, como podemos ver na imagem acima, mas, como ainda não implementamos a verificação do resultado na ***Interface Gráfica***, a Jogada Vencedora não foi marcada, mas resolveremos isso a seguir.
+
+[^ Sumário ^](#interface-gráfica---front-end)
+
+### Implementando o Resultado
+
+Para isso, precisamos voltar na Classe GameContext no caminho `apps\frontend\src\contexts\GameContext.tsx` e adicionar o Resultado.
+
+- Então, entre os atributos (board e addMove), adicione o atributo `result:` que é do Tipo `GameResult`, sem esquecer de adicionar a Classe GameResult no import do Core.
+
+  ```tsx
+  // GameContext.tsx
+
+  'use client'
+  import { Board, Game, GameResult, Player, PlayerType} from "core"
+  import { createContext, useState } from "react"
+
+  interface GameContextProps {
+    board: Board,
+    result: GameResult,
+    addMove: (row: number, col: number) => void
+  }
+  ...
+  ```
+
+- Agora precisamos retornar o Resultado do Jogo, mas como isso já foi implementado na lógica (Core) fica tudo mais fácil, bastando apenas adicionar no retorno da Função GameProvider() o resultado do Jogo `result: game.result`.
+
+  ```tsx
+  // GameContext.tsx
+
+  ...
+  return (
+    <GameContext.Provider value={{
+      board: game.board,
+      result: game.result,
+      addMove
+    }}>
+      {props.children}
+    </GameContext.Provider>
+  )
+  ...
+  ```
+
+  - Agora, a partir do Resultado no caminho `apps\frontend\src\components\game\BoardArea.tsx` conseguimos pegar o resultado `const { board, result, addMove } = useContext(GameContext)` e através do resultado `result` conseguimos saber se a Célula está selecionada ou não.  
+
+    - Então, dentro do segundo ***Laço FOR*** e antes do ***Método cells.push()***, adicione uma Constante `const` chamada `selected` que recebe `=` o resultado Se tem a Célula `result.hasCell(` na posição `row, col)` *(true ou false)*.
+    - Com isso, podemos adicionar a verificação no Componente `<CellArea>` no atributo `selected=` recebendo o valor `{selected}`.
+
+      ```tsx
+      // BoardArea.tsx
+
+      ...
+      function renderCells() {
+        const cells = []
+        for(let row = 0; row < board.rows; row++){
+          for(let col = 0; col <board.cols; col++){
+      >>>>  const selected = result.hasCell(row, col)
+            cells.push(
+              <div key={`${row}-${col}`} onClick={() => addMove(row, col)}>
+      >>>>      <CellArea type={board.get(row, col)?.type} selected={selected} />
+              </div>
+            )
+          }
+        }
+        return cells
+      }
+      ...
+      ```
+
+Com isso, agora a Jogada Vencedora será selecionada.
+
+![Adicionando Movimento Selecionado](./imagens/grid-board-area-addMove-selected.png)
+
+Isso acontece, pois, o resultado já está vindo da lógica que foi feita no Core da Aplicação (no Modelo de Negócio).  
+
+Alguém pode dizer que é uma complexidade maior e que poderia fazer toda a lógica dentro do Contexto "Classe GameContext", colocando um Array dentro de outro Array e controlando do o Estado por aqui.  
+
+Mas imagina isso em uma aplicação maior, onde desejamos compartilhar as Regras de Negócio, tanto no Frontend quanto no Backend. E se faz essa implementação amarrada dentro do Frontend, não terá a possibilidade de se reaproveitar o código em outros lugares da aplicação.  
+
+A vantagem, é que dessa forma, o Frontend fica muito limpo "clean", onde ele só se preocupa em renderizar os Componentes, pois, o "grosso" toda a lógica foi implementada nas Regras de Negócio (no Core).  
+
+Outra coisa que precisa ficar bem clara, é que o ***Core da Aplicação*** não é o Backend, pois ele só possui a lógica escrita em ***Linguagem de Programação***, a Regra de Negócio e é independente de tecnologias.  
+
+Pois nessa aplicação tudo está sendo rodada "publicado" no Frontend da Aplicação, o que vai dizer se irá ser usado no Front ou no Back, é onde o Core está sendo utilizado "importado".

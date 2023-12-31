@@ -1,9 +1,11 @@
 'use client'
-import { Board, Game, Player, PlayerType} from "core"
+import { Board, Game, GameResult, Player, PlayerType} from "core"
 import { createContext, useState } from "react"
 
 interface GameContextProps {
-  board: Board
+  board: Board,
+  result: GameResult,
+  addMove: (row: number, col: number) => void
 }
 
 const GameContext = createContext<GameContextProps>({} as any)
@@ -17,9 +19,15 @@ export function GameProvider(props: any){
     )
   )
 
+  function addMove(row: number, col: number){
+    setGame(game.addMove(row, col))
+  }
+
   return (
     <GameContext.Provider value={{
-      board: game.board
+      board: game.board,
+      result: game.result,
+      addMove
     }}>
       {props.children}
     </GameContext.Provider>
