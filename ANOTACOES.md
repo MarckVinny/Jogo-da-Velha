@@ -57,6 +57,11 @@ ___
 - [Componente `<BoardArea>` - Área do Tabuleiro](#componente-boardarea---área-do-tabuleiro)
 - [Contexto `<GameContext>` - Adicionar Movimento](#contexto-gamecontext---adicionar-movimento)
   - [Implementando o Resultado](#implementando-o-resultado)
+- [Componente `<Scoreboard>` - Placar](#componente-scoreboard---placar)
+  - [Recuperando as informações dos Jogadores e do Empate](#recuperando-as-informações-dos-jogadores-e-do-empate)
+    - [Renderizando a Pontuação dos Jogadores](#renderizando-a-pontuação-dos-jogadores)
+    - [Renderizando a Pontuação e o Nome dos Jogadores](#renderizando-a-pontuação-e-o-nome-dos-jogadores)
+    - [Renderizando os Empates](#renderizando-os-empates)
 
 ___
 
@@ -4682,3 +4687,296 @@ A vantagem, é que dessa forma, o Frontend fica muito limpo "clean", onde ele s�
 Outra coisa que precisa ficar bem clara, é que o ***Core da Aplicação*** não é o Backend, pois ele só possui a lógica escrita em ***Linguagem de Programação***, a Regra de Negócio e é independente de tecnologias.  
 
 Pois nessa aplicação tudo está sendo rodada "publicado" no Frontend da Aplicação, o que vai dizer se irá ser usado no Front ou no Back, é onde o Core está sendo utilizado "importado".
+
+[^ Sumário ^](#interface-gráfica---front-end)
+
+### Componente `<Scoreboard>` - Placar
+
+Até aqui, já implementamos os movimentos, já temos o tabuleiro sendo exibido e já temos a lógica funcionando quando efetuamos uma jogada vencedora e não é mais permitido efetuar nenhuma outra jogada "sendo bloqueada pela Regra de Negócio", só sendo possível jogar novamente após um restart no jogo.  
+
+Agora, iremos implementar o Componente que irá renderizar o Placar do Jogo, onde será exibido a pontuação do ***Jogador 1***, os ***Empates*** e a pontuação do ***Jogador 2***, esse pequeno Placar irá ficar abaixo do Tabuleiro.  
+
+Para isso, no caminho `.\apps\frontend\src\components\game` crie um arquivo chamado `Scoreboard.tsx` dentro deste arquivo:
+
+- `export default function Scoreboard() {` Exporte por padrão uma Função chamada Scoreboard.
+  - `return (` Então, retorne o Componente.
+    - `<div>` Abra uma DIV para poder estilizar o Componente.
+      - `Conteúdo do Placar` Implemente outros Componentes do com o conteúdo do Placar.
+    - `</div>` Feche a DIV do Componente.
+  - `)` Feche o escopo do retorno da Função Scoreboard().
+- `}` Feche o escopo da Função Scoreboard().
+
+```tsx
+// Scoreboard.tsx
+
+export default function Scoreboard() {
+
+  return (
+    <div>
+      Conteúdo do Placar
+    </div>
+  )
+}
+```
+
+Agora, para que possamos visualizar nosso Componente que acabamos de definir, precisamos adicioná-lo na página, então, no caminho `.\apps\frontend\src\app` abra o arquivo `page.tsx` e adicione o componente `<Scoreboard />` logo abaixo do componente `<BoardArea />` sem esquecer de fazer sua importação `import Scoreboard from '@/components/game/Scoreboad'`.  
+
+```tsx
+// page.tsx
+
+import BoardArea from '@/components/game/BoardArea'
+import Scoreboard from '@/components/game/Scoreboad'
+
+export default function Home() {
+  return (
+    <div>
+      <BoardArea />
+      <Scoreboard />
+    </div>
+  )
+}
+
+```
+
+Voltando ao Componente `<Scoreboard>`, iremos definir uma Função que irá renderizar o Componente `<Card>` juntamente com os itens (Nome do Jogador, pontuação e Empates).  
+
+Então, no caminho `.\apps\frontend\src\components\game\Scoreboard.tsx` defina a Função da seguinte forma:
+
+Defina uma Função chamada "renderItem()" que irá renderizar os itens do Card.
+
+- `function renderItem(` recebendo como parâmetro:
+  - `label: string,` um label do Tipo string.
+  - `value: number,` um valor do Tipo number.
+  - `color: string` e uma cor do Tipo string.
+- `){` Então,
+  - `return(`  retorne o Componente Card (sem se esquecer do import).
+    - `<Card color={color as any} noBorder>` contendo a cor (definida no tema) e sem Borda.
+      - `<div className="flex flex-col justify-center items-center text-dark-500">` Defina uma DIV centralizada na Coluna, com os itens centralizados e com a cor do texto escura.
+        - `<span className="uppercase">{label}</span>` Defina um SPAN em letras maiúsculas para exibir o "label".
+        - `<span className="text-3xl font-black">{value}</span>` Defina um SPAN com tamanho "3xl" em negrito forte para exibir o "value".
+      - `</div>` Feche a DIV.
+    - `</Card>` Feche o Componente Card.
+  - `)` Feche o escopo do retorno da Função renderItem().
+- `}` Feche o escopo da Função renderItem().
+
+```tsx
+// Scoreboard.tsx
+
+import Card from "../shared/Card"
+
+export default function Scoreboard() {
+
+  function renderItem(
+    label: string,
+    value: number,
+    color: string
+  ){
+    return(
+      <Card color={color as any} noBorder>
+        <div className="flex flex-col justify-center items-center text-dark-500">
+          <span className="uppercase">{label}</span>
+          <span className="text-3xl font-black">{value}</span>
+        </div>
+      </Card>
+    )
+  }
+...
+```
+
+Agora vamos definir o retorno da Função Scoreboard() que exemplificamos logo no inicio:
+
+- `return(` Retorno da Função Scoreboard()
+  - `<div className="flex justify-center">` Defina uma DIV centralizada na linha.
+    - ``{renderItem(`X (P1)`, 0, 'primary')}`` Defina o item do ***Jogador 1***
+    - `{renderItem('Empates', 0, 'light')}` Defina o item do ***Empate***
+    - ``{renderItem(`O (P2)`, 0, 'secondary')}`` Defina o item do ***Jogador 2***
+  - `</div>`
+
+```tsx
+// Scoreboard.tsx
+
+...
+
+  return (
+    <div className="flex justify-center">
+      {renderItem(`X (P1)`, 0, 'primary')}
+      {renderItem('Empates', 0, 'light')}
+      {renderItem(`O (P2)`, 0, 'secondary')}
+    </div>
+  )
+}
+```
+
+[^ Sumário ^](#interface-gráfica---front-end)
+
+### Recuperando as informações dos Jogadores e do Empate
+
+Agora, precisamos recuperar as informações sobre as pontuações dos Jogadores e dos Empates.  
+
+Para isso, precisamos adicionar alguns atributos na Classe GameContext, então, no caminho `.\apps\frontend\src\contexts\GameContext.tsx` adicione na Interface `GameContextProps` os atributos:
+
+- `player1: Player` Definindo o atributo "player1" do Tipo "Player"
+- `player2: Player` Definindo o atributo "player2" do Tipo "Player"
+
+```tsx
+// GameContext.tsx
+
+...
+interface GameContextProps {
+  player1: Player
+  player2: Player
+...
+```
+
+Agora no retorno da Função GameProvider() precisamos fazer a chamada desse dois atributos:
+
+- `player1: game.player1,` Retornando o Player1
+- `player2: game.player2,` Retornando o Player2
+
+```tsx
+// GameContext.tsx
+
+...
+  return (
+    <GameContext.Provider value={{
+      player1: game.player1,
+      player2: game.player2,
+...
+```
+
+[^ Sumário ^](#interface-gráfica---front-end)
+
+#### Renderizando a Pontuação dos Jogadores
+
+Mas ainda não é tudo, precisamos voltar ao Componente `<Scoreboard>` no caminho `.\apps\frontend\src\components\game\Scoreboad.tsx` e fazer a chamada do Contexto, então, no inicio da Função Scoreboard(), utilizando o Destructuring, defina uma Constante `const` contendo o Player1 e o Player2 `{player1, player2}` recebendo `=` o Contexto `useContext(GameContext)` sem esquecer de fazer os imports `import { useContext } from "react"` e `import GameContext from "@/contexts/GameContext"`.  
+
+E para que não ocorra nenhum erro de compilação, precisamos informar que este Componente é `'use client'`, pois, toda vez que tiver um Componente dinâmico (contexto, onClick, etc.) precisamos informar que será gerado do lado do cliente.
+
+```tsx
+// Scoreboard.tsx
+
+'use client'
+import { useContext } from "react"
+import Card from "../shared/Card"
+import GameContext from "@/contexts/GameContext"
+
+export default function Scoreboard() {
+
+  const { player1, player2 } = useContext(GameContext)
+...
+```
+
+Agora, precisamos fazer a pontuação ser renderizada quando ocorrer uma ***Jogada Vencedora***, para isso, precisamos modificar o valor de "0", para `player1.score` no ***Jogador 1*** e de "0" para `player2.score` no ***Jogador 2*** no retorno da Função Scoreboard().  
+
+```tsx
+// Scoreboard.tsx
+
+...
+
+  return (
+    <div className='flex justify-center'>
+      {renderItem(`X (P1)`, player1.score, 'primary')}
+      {renderItem('Empates', 0, 'light')}
+      {renderItem(`O (P2)`, player2.score, 'secondary')}
+    </div>
+  )
+}
+```
+
+Com isso, temos somente a pontuação sendo renderizada.
+
+![Pontuação](./imagens/grid-board-area-addMove-score.png)
+
+[^ Sumário ^](#interface-gráfica---front-end)
+
+#### Renderizando a Pontuação e o Nome dos Jogadores
+
+Podemos também já aproveitar e renderizar o ***Nome*** e o ***Tipo*** de cada jogador dinamicamente, caso venhamos implementar uma forma de editar o nome a cada Partida.  
+
+Para isso, iremos modificar a Template String `X (P1)`, para que a interpolação fique assim: para o Nome do ***Jogador 1*** `${Player.name}` e para o Tipo `(PlayerType.X)` e para o ***Jogador 2*** `${Player.name}` e para o Tipo `(PlayerType.O)`
+
+```tsx
+// Scoreboard.tsx
+
+...
+
+  return (
+    <div className='flex justify-center'>
+      {renderItem(`${player1.type} (${player1.name})`, player1.score, 'primary')}
+      {renderItem('Empates', 0, 'light')}
+      {renderItem(`${player2.type} (${player2.name})`, player2.score, 'secondary')}
+    </div>
+  )
+}
+```
+
+Desta forma, temos a pontuação e os Nomes sendo renderizados dinamicamente.
+
+![Nomes](./imagens/grid-board-area-addMove-nome.png)
+
+[^ Sumário ^](#interface-gráfica---front-end)
+
+#### Renderizando os Empates
+
+Agora, precisamos renderizar a Pontuação dos Empates, e para isso, vamos novamente editar o Contexto na ***Classe GameContext***.  
+
+Então, no caminho `.\apps\frontend\src\contexts\GameContext.tsx` faça as seguintes modificações:
+
+- Na Interface `interface GameContextProps{}` adicione o atributo `ties:` que é do Tipo `number`.
+
+  ```tsx
+  // GameContext.tsx
+
+  ...
+  interface GameContextProps {
+    ...
+    ties: number,
+    ...
+  ```
+
+- E no retorno da Função GameProvider(), adicione o atributo `ties:` com o valor `game.ties,` dentro do Componente `<GameContext.provider>`.
+
+  ```tsx
+  // GameContext.tsx
+
+    ...
+    return (
+      <GameContext.Provider value={{
+        ...
+        ties: game.ties,
+        ...
+  ```
+
+Agora, precisamos voltar ao Componente `<Scoreboard>` no caminho `.\apps\frontend\src\components\game\Scoreboad.tsx` e realizar as seguintes modificações:
+
+- Na Função Scoreboard() acrescente o atributo `ties` na importação por Destructuring do Contexto.
+
+  ```tsx
+  // Scoreboard.tsx
+
+  ...
+  export default function Scoreboard() {
+
+    const { player1, player2, ties } = useContext(GameContext)
+    ...
+  ```
+
+- E logo abaixo no retorno da Função Scoreboard(), modifique o valor `0` referente a Pontuação do Empate pela Constante `ties` que acabamos de importar.
+
+  ```tsx
+  // Scoreboard.tsx
+
+    ...
+    return (
+      <div className='flex justify-center'>
+        {renderItem(`${player1.type} (${player1.name})`, player1.score, 'primary')}
+  >>>>  {renderItem('Empates', ties, 'light')}
+        {renderItem(`${player2.type} (${player2.name})`, player2.score, 'secondary')}
+      </div>
+    )
+  }
+  ```
+
+Com isso, temos os Empates sendo renderizados corretamente e sendo guardados na Constante `ties` no Contexto do Jogo.
+
+![Empate](./imagens/grid-board-area-addMove-empate.png)
