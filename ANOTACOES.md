@@ -4508,7 +4508,7 @@ Para que isso ocorra, precisamos implementar uma Função que adiciona um movime
     
     ...
     interface GameContextProps {
-    board: Board,
+    board: Board
     addMove: (row: number, col: number) => void
     }
     ...
@@ -4621,8 +4621,8 @@ Para isso, precisamos voltar na Classe GameContext no caminho `apps\frontend\src
   import { createContext, useState } from "react"
 
   interface GameContextProps {
-    board: Board,
-    result: GameResult,
+    board: Board
+    result: GameResult
     addMove: (row: number, col: number) => void
   }
   ...
@@ -4930,7 +4930,7 @@ Então, no caminho `.\apps\frontend\src\contexts\GameContext.tsx` faça as segui
   ...
   interface GameContextProps {
     ...
-    ties: number,
+    ties: number
     ...
   ```
 

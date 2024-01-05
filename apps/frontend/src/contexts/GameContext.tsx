@@ -3,11 +3,11 @@ import { Board, Game, GameResult, Player, PlayerType} from "core"
 import { createContext, useState } from "react"
 
 interface GameContextProps {
-  player1: Player,
-  player2: Player,
-  ties: number,
-  board: Board,
-  result: GameResult,
+  player1: Player
+  player2: Player
+  ties: number
+  board: Board
+  result: GameResult
   addMove: (row: number, col: number) => void
 }
 
