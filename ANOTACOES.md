@@ -62,6 +62,9 @@ ___
     - [Renderizando a Pontuação dos Jogadores](#renderizando-a-pontuação-dos-jogadores)
     - [Renderizando a Pontuação e o Nome dos Jogadores](#renderizando-a-pontuação-e-o-nome-dos-jogadores)
     - [Renderizando os Empates](#renderizando-os-empates)
+- [Componente `<Result>` - Modal Resultado](#componente-result---modal-resultado)
+  - [Estilizando o Modal](#estilizando-o-modal)
+  - [Adicionando os Botões ao Modal Resultado](#adicionando-os-botões-ao-modal-resultado)
 
 ___
 
@@ -4980,3 +4983,308 @@ Agora, precisamos voltar ao Componente `<Scoreboard>` no caminho `.\apps\fronten
 Com isso, temos os Empates sendo renderizados corretamente e sendo guardados na Constante `ties` no Contexto do Jogo.
 
 ![Empate](./imagens/grid-board-area-addMove-empate.png)
+
+[^ Sumário ^](#interface-gráfica---front-end)
+
+### Componente `<Result>` - Modal Resultado
+
+Agora, precisamos definir o Componente `<Result>` que irá renderizar um Modal contendo o Jogador Vencedor e os botões para ***Zerar a Partida*** contendo o Método `clear()` e o botão ***Próxima Rodada*** contendo o Método `nextRound()`.
+
+Então, no caminho `.\apps\frontend\src\components` crie uma nova Pasta/Diretório chamada `\result` e nela, crie um arquivo chamado `Result.tsx`, é nele que iremos definir o Modal.
+
+> ***DICA:***  
+Para criar o arquivo e a pasta ao mesmo tempo, selecione a Pasta/Diretório **`\components`** *(com o botão direito do mouse)* e clique em ***"criar novo arquivo"*** e digite `result/Result.tsx` que quando der ENTER, já irá criar a pasta, o arquivo e irá abri-lo tudo de uma vez.
+
+Continuando, dentro do arquivo `Result.tsx` iremos definir o Componente `<Result>` da seguinte forma:
+
+- `export default function Result(){` Exporte por padrão uma Função chamada Result().
+  - `const { result } = useContext(GameContext)` Defina uma Constante chamada `result` recebendo o Context da Classe GameContext.  
+  Sem se esquecer de importar o ***"useContext"*** `import { useContext } from "react"`.  
+  E o Contexto ***"GameContext"*** `import GameContext from "@/contexts/GameContext"`
+  - `return(` Retorno da Função Result().
+    - `<Modal visible={result.finished}>` O Modal só será exibido quando o Resultado estiver Finalizado.  
+    Sem se esquecer de importar o ***Componente Modal***, `import Modal from "../shared/Modal"`.
+      - `Resultado!!!` Exibe o conteúdo do Modal.
+    - `</Modal>` Feche o Componente Modal.
+  - `)` Feche o escopo do Retorno da Função Result().
+- `}` Feche o escopo da Função Result().
+
+E para que este Componente seja compilado corretamente, precisamos adicionar no início do código `'use cliente'`, pois, estamos utilizando o Contexto.
+
+```tsx
+// Result.tsx
+
+'use client'
+import { useContext } from "react"
+import GameContext from "@/contexts/GameContext"
+import Modal from "../shared/Modal"
+
+export default function Result(){
+
+  const { result } = useContext(GameContext)
+
+  return(
+    <Modal visible={result.finished}>
+      Resultado!!!
+    </Modal>
+  )
+}
+```
+
+Agora precisamos exibir o Modal, para isso, no caminho `apps\frontend\src\app\page.tsx` adicione o Componente `<Result />` "sem corpo", que acabamos de criar, antes do Componente `<CellArea />`, sem esquecer de fazer o import `import Result from '@/components/result/Result'`.
+
+```tsx
+// page.tsx
+
+import BoardArea from '@/components/game/BoardArea'
+import Result from '@/components/result/Result'
+import Scoreboard from '@/components/game/Scoreboad'
+
+export default function Home() {
+  return (
+    // <div className='flex justify-center itens-center text-center mt-6'>
+    <div>
+      <Result />
+      <BoardArea />
+      <Scoreboard />
+    </div>
+  )
+}
+
+```
+
+[^ Sumário ^](#interface-gráfica---front-end)
+
+### Estilizando o Modal
+
+Agora, iremos começar a definir o que irá aparecer no ***Modal*** assim que a Partida se encerrar, com uma ***Vitória*** ou com um ***Empate***.  
+
+Para isso, no caminho `.\apps\frontend\src\components\result\Result.tsx`, no retorno da Função Result(), iremos definir a verificação Se houver um Empate, mostre a mensagem de Empate, Senão, mostre quem Venceu a Partida, veremos como fica isso abaixo:  
+
+- `return(` Retorno da Função Result().
+  - `<Modal visible={result.finished}>` O ***Modal*** estará visível se o ***Resultado*** estiver ***Finalizado***.
+    - `{result.tied` Se o Resultado for um Empate.
+    - `? (` Então, mostre o ***Modal*** com o ***Resultado de Empate***.
+      - `<span className="uppercase font-bold text-light-500 text-3xl">` Formata a mensagem para ficar em letras maiúsculas, em negrito, com a cor clara e com tamanho grande.
+        - `Terminou Empatado!!!` Mensagem que será exibida caso o resultado seja empate.
+      - `</span>` Fecha o bloco do Span.
+    - `)` Fecha o escopo do ***Resultado de Empate***.
+    - `: (` Senão, mostre o ***Modal*** com o ***Resultado de Vitória***.
+      - `<>` Abra um fragmento
+        - `<span className="uppercase font-bold text-light-500">` Formata a mensagem para ficar em letras maiúsculas, em negrito e com a cor clara.
+          - `O Jogador " { result.xWins` Se o Vencedor for o Jogador X
+            - `? PlayerType.X` Então, mostre o ***Tipo do Jogador X*** na Mensagem.
+            - `: PlayerType.O` Senão, mostre o ***Tipo do Jogador O*** na Mensagem.
+          - `} " Ganhou!!!` Fecha a verificação da Mensagem.
+        - `</span>` Fecha o bloco do Span.
+        - ``<div className={`flex items-center gap-4`` Alinhe os itens em linha, centralizados e com espaço de 16px.
+        - `${ result.xWins` Se no resultado o X vencer,
+          - `? 'text-primary-500'` Então, define a cor Primaria.
+          - `: 'text-secondary-500'` Senão, define a cor Secundaria.
+        - ``}`}`` Fecha a definição da cor e da "className".
+        - `>` Fecha a Tag de abertura da DIV.
+          - `{ result.xWins` Se no resultado o X vencer,
+            - `? <IconX size={60} stroke={6} />` Então, renderize o ***ícone do X***.
+            - `: <IconCircle size={60} stroke={6} />` Senão, renderize o ***ícone do Circulo***.
+          - `}` Feche a definição do Ícone do Jogador.
+          - `<span className="uppercase font-bold text-4xl">` Formate o texto em letras maiúsculas e tamanho da fonte 46px.
+            - `Venceu a Rodada!!!` Mensagem de Vitória.
+          - `</span>` Feche o Span da Mensagem de Vitória.
+        - `</div>` Fecha a DIV
+      - `</>` Feche o fragmento
+    - `)` Feche o escopo do ***Resultado de Vitória***.
+    - `}` Feche o escopo do retorno do Modal.
+  - `</Modal>` Feche o Componente Modal.
+- `)` Feche o retorno da Função Result().
+
+> ***Sintaxe curta de Fragmentos React:***  
+Existe uma sintaxe nova e mais curta que você pode usar para declarar fragmentos. Parecem tags vazias:
+>
+>  ```react
+>
+>  class Columns extends React.Component {
+>    render() {
+>      return (
+>        <>
+>          <td>Hello</td>
+>          <td>World</td>
+>        </>
+>      );
+>    }
+>  }
+>  ```
+>
+> Você pode usar `<> </>` da mesma forma que você usaria qualquer outro elemento, exceto que ele não suporta chaves ou atributos.
+
+```tsx
+// Result.tsx
+
+/* eslint-disable react/no-unescaped-entities */
+'use client'
+import { IconCircle, IconX } from "@tabler/icons-react"
+import { PlayerType } from "core"
+import { useContext } from "react"
+import GameContext from "@/contexts/GameContext"
+import Modal from "../shared/Modal"
+
+export default function Result(){
+
+  const { result } = useContext(GameContext)
+
+  return(
+    <Modal visible={result.finished}>
+      {result.tied    //* Se o resultado for Empate
+      ? (     //* Então, mostre a mensagem de Empate.
+        <span className="uppercase font-bold text-light-500 text-3xl">
+          Terminou Empatado!!!    //* Mensagem de Empate.
+        </span>
+      ) 
+      : (     //* Senão, mostre a Mensagem com o Tipo do Vencedor
+        <>
+          {/* //* primeira parte da Mensagem do Modal */}
+          <span className="uppercase font-bold text-light-500">
+            O Jogador " { result.xWins    //* Se no resultado o X vencer
+              ? PlayerType.X              //* Então, renderize o Tipo do Jogador X
+              : PlayerType.O              //* Senão, renderize o Tipo do Jogador O
+            } " Ganhou!!!                 {/*//* Restante da Mensagem de de Vitória.*/}
+          </span>
+          {/* //* Segunda parte da Mensagem do Modal */}
+          {/* //* Alinhe os itens em linha, centralizados e com espaço de 16px */}
+          <div className={`flex items-center gap-4 pl-20 pr-20    //* O padding é para ficar centralizado no Smartphone
+          ${ result.xWins             //* Se no resultado o X vencer
+            ? 'text-primary-500'    //* Então, define a cor Primaria
+            : 'text-secondary-500'  //* Senão, define a cor Secundaria
+          }`}
+          >
+            { result.xWins                            //* Se no resultado o X vencer
+              ? <IconX size={60} stroke={6} />        //* Então, renderize o ícone do X
+              : <IconCircle size={60} stroke={6} />   //* Senão, renderize o ícone do Circulo
+            }
+            {/* //* Formate o texto em letras maiúsculas e tamanho da fonte 46px */}
+            <span className="uppercase font-bold text-4xl">   
+              Venceu a Rodada!!!
+            </span>
+          </div>
+        </>
+      )
+      }
+    </Modal>
+  )
+}
+```
+
+[^ Sumário ^](#interface-gráfica---front-end)
+
+### Adicionando os Botões ao Modal Resultado
+
+Para finalizar o Modal de Resultado, ficou faltando definir o ***botão de Zerar*** para dar um reset no Jogo e o ***botão de Próxima Jogada*** para iniciar uma nova Partida logo abaixo das mensagens que acabamos de definir no passo anterior.  
+
+Mas para isso, precisamos definir duas Funções no Contexto, então, no caminho `.\apps\frontend\src\contexts\GameContext.tsx` iremos definir nossas Funções:
+
+#### Função Próxima Rodada
+
+- `function nextRound(){` Defina uma Função que chamará a Próxima Rodada.
+  - `setGame(game.nextRound())` Seta a Função nextRound() do Core.
+- `}` Fecha o escopo da Função.
+
+```tsx
+// GameContext.tsx
+
+...
+function nextRound(){
+    setGame(game.nextRound())
+  }
+...
+```
+
+#### Função que Limpa as Pontuações
+
+- `function clear(){` Defina uma Função que limpará as Pontuações.
+  - `setGame(game.clear())` Seta a Função clear() do Core.
+- `}`
+
+```tsx
+// GameContext.tsx
+
+...
+function clear(){
+    setGame(game.clear())
+  }
+...
+```
+
+Agora precisamo adicionar na Interface `interface GameContextProps{}` as duas Funções que acabamos de definir.
+
+```tsx
+// GameContext.tsx
+
+...
+interface GameContextProps {
+  ...
+  nextRound: () => void
+  clear: () => void
+}
+...
+```
+
+E logo em seguida, precisamo adiciona-las ao retorno da Função GameProvider() no Componente `<GameContext.provider>`
+
+```tsx
+// GameContext.tsx
+
+...
+  return (
+    <GameContext.Provider value={{
+      ...
+      nextRound,
+      clear
+    }}>
+      {props.children}
+    </GameContext.Provider>
+  )
+...
+```
+
+Feito isso, podemos voltar ao Componente Result no caminho `.\apps\frontend\src\components\result\Result.tsx` para pode definir os dois Componentes `<Button>` que já foram criados anteriormente.  
+
+Mas antes de começar-mos a definir os botões, precisamos adicionar as Funções que acabamos de definir, no Contexto do Componente Result:
+
+```tsx
+// Result.tsx
+
+...
+export default function Result(){
+
+  const { result, nextRound, clear } = useContext(GameContext)
+...
+```
+
+Então como dito antes, logo após as do Fechamento do escopo do retorno do Modal, iremos definir nossos botões:
+
+- `<div>` Abre a DIV dos Botões.
+  - `<Button onClick={clear}>` Componente Button com o Evento de Click para Limpar todos os Estados do Jogo.
+    - `<div className="uppercase font-bold text-dark-500">Zerar</div>` Formata o Texto do botão para ficar em letras maiúsculas, em negrito e com cor escura.
+  - `</Button>` Fecha o Componente Button.
+  - `<Button color="secondary" onClick={nextRound}>`
+    - `<div className="uppercase font-bold text-dark-500">Próxima Rodada</div>`
+  - `</Button>`
+- `</div>` Feche a DIV dos Botões.
+
+```tsx
+// Result.tsx
+
+      ...
+      <div>
+        <Button onClick={clear}>
+          <div className="uppercase font-bold text-dark-500">Zerar</div>
+        </Button>
+        <Button color="secondary" onClick={nextRound}>
+          <div className="uppercase font-bold text-dark-500">Próxima Rodada</div>
+        </Button>
+      </div>
+    </Modal>
+  )
+}
+```
+
+Com isso terminamos de definir o Componente Result com todos os itens no Modal.

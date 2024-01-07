@@ -9,6 +9,8 @@ interface GameContextProps {
   board: Board
   result: GameResult
   addMove: (row: number, col: number) => void
+  nextRound: () => void
+  clear: () => void
 }
 
 const GameContext = createContext<GameContextProps>({} as any)
@@ -26,6 +28,14 @@ export function GameProvider(props: any){
     setGame(game.addMove(row, col))
   }
 
+  function nextRound(){
+    setGame(game.nextRound())
+  }
+
+  function clear(){
+    setGame(game.clear())
+  }
+
   return (
     <GameContext.Provider value={{
       player1: game.player1,
@@ -33,7 +43,9 @@ export function GameProvider(props: any){
       ties: game.ties,
       board: game.board,
       result: game.result,
-      addMove
+      addMove,
+      nextRound,
+      clear
     }}>
       {props.children}
     </GameContext.Provider>
