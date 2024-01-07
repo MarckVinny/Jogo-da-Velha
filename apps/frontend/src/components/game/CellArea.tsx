@@ -18,7 +18,7 @@ export default function CellArea(props: CellAreaProps) {
           : 'secondary'                   //* Senão, use a cor Secundária
         }
     >
-      <div className={`flex justify-center items-center w-12 h-12`}>
+      <div className={`flex justify-center items-center w-14 h-14`}>
         {props.type === PlayerType.X && (
           <IconX
             size={70}
