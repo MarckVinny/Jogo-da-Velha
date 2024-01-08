@@ -32,7 +32,7 @@ export default function CellArea(props: CellAreaProps) {
         )}
         {props.type === PlayerType.O && (
           <IconCircle
-            size={70}
+            size={50}
             stroke={6}
             className={
               props.selected
