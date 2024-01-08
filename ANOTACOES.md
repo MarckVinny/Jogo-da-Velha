@@ -65,6 +65,8 @@ ___
 - [Componente `<Result>` - Modal Resultado](#componente-result---modal-resultado)
   - [Estilizando o Modal](#estilizando-o-modal)
   - [Adicionando os Botões ao Modal Resultado](#adicionando-os-botões-ao-modal-resultado)
+- [Componente `<Menu>` - Ícones e Botões Superiores](#componente-menu---ícones-e-botões-superiores)
+- [Considerações Finais](#considerações-finais)
 
 ___
 
@@ -5288,3 +5290,156 @@ Então como dito antes, logo após as do Fechamento do escopo do retorno do Moda
 ```
 
 Com isso terminamos de definir o Componente Result com todos os itens no Modal.
+
+[^ Sumário ^](#interface-gráfica---front-end)
+
+### Componente `<Menu>` - Ícones e Botões Superiores
+
+Para finalizar o projeto só ficou faltando implementar o Menu Superior contendo os ícones dos jogadores, o Placar mostrando o Jogador Atual e o botão de reinício.  
+
+Mas, antes de começar-mos a implementar nosso Componente, vamos adiciona-lo a Página do APP para que possamos acompanhar a implementação do mesmo, então, no caminho `.\apps\frontend\src\app\page.tsx`, adicione o Componente `<Menu />` logo abaixo do Componente `<Result />`.
+
+```tsx
+// page.tsx
+
+...
+export default function Home() {
+  return (
+    <div className='flex flex-col'>
+      <Result />
+      <Menu />
+      <BoardArea />
+      <Scoreboard />
+    </div>
+  )
+}
+...
+```
+
+Outra coisa que precisamos fazer antes de implementar o Componente Menu, é adicionar o Jogador Atual `currentPlayer` no Contexto, então, no caminho `apps\frontend\src\contexts\GameContext.tsx` adicione o atributo `currentPlayer:` que é do Tipo `Player` na Interface `GameContextProps`.
+
+```tsx
+// GameContext.tsx
+
+...
+interface GameContextProps {
+  ...
+  currentPlayer: Player
+  ...
+```
+
+E no retorno da Função GameProvider(), adicione o atributo `currentPlayer:` recebendo o valor `game.currentPlayer` com isso, possibilitando exibir o ícone do Jogador Atual.
+
+```tsx
+// GameContext.tsx
+
+  ...
+  return (
+    <GameContext.Provider value={{
+      ...
+      currentPlayer: game.currentPlayer,
+      ...
+```
+
+Então, no caminho `.\apps\frontend\src\components\menu` crie o arquivo chamado `Menu.tsx` ele será nosso Componente de Menu, dentro defina as propriedades do Componente:
+
+- `'use client'` Como estaremos utilizando o Contexto, precisamos definir esse Componente para rodar do lado do Cliente.
+- `import { IconCircle, IconRefresh, IconX } from '@tabler/icons-react'` Estamos utilizando o Destructuring para importar os ***Ícones*** `<IconCircle />` `<IconRefresh />` e `<IconX />` do pacote Tabler instalado na configuração do Projeto.
+- `import { PlayerType } from 'core'` Estamos utilizando o Destructuring para importar os Tipos **"X"** e **"O"** `<PlayerType>` do pacote Core.
+- `import { useContext } from 'react'` Estamos importando a Função `useContext()` do pacote do React.
+- `import Button from '../shared/Button'` Estamos importando o Componente `<Button>` da pasta Compartilhados.
+- `import Card from '../shared/Card'` Estamos importando o Componente `<Card>` da pasta Compartilhados.
+- `import GameContext from '@/contexts/GameContext'` Estamos importando o Contexto `GameContext` da pasta Contextos.
+- `export default function Menu() {` Exporte por padrão uma Função chamada Menu().
+  - `const { currentPlayer, nextRound } = useContext(GameContext)` Defina o ***Contexto*** criando uma Constante `const` e importe utilizando destructuring `{` o Jogador Atual `currentPlayer` e a Função que inicia a Próxima Rodada `nextRound}` recebendo `=` o Contexto `useContext(GameContext)`.
+  - `return (` Retorno da Função Menu().
+    - `<div className='flex justify-between items-center'>` Formata a DIV Pai, para ser alinhada na Linha, separar os itens com o mesmo espaço e deixar centralizados na horizontal.
+      - `<Card noBorder color='dark'>` Componente que conterá os ícones dos Jogadores, formatado sem borda e na cor escura.
+        - `<div className='flex gap-2 p-1'>` DIV que agrupará os Componentes dos ícones, formatada para alinhar em Linha, espaço entre os ícones de 8px e padding de 4px.
+          - `<IconX stroke={6} className='text-primary-500' />` Componente do ícone "X" com espessura da linha 6 e com a cor primaria.
+          - `<IconCircle stroke={6} className='text-secondary-500' />` Componente do ícone "X" com espessura da linha 6 e com a cor secundária.
+        - `</div>` Feche a DIV de agrupamento de ícone.
+      - `</Card>` Feche o Componente Card.
+      - `<Card noBorder color='dark'>` Componente que conterá a informação do Jogador Atual (mostrando seu ícone), formatado sem borda e na cor escura.
+        - `<div className='flex justify-center items-center uppercase font-bold text-light-500 gap-2 p-1'>` DIV que agrupará os Componentes dos ícones e o texto ***"JOGA"***, formatada para alinhar em Linha, centralizado na vertical e na horizontal, com letras maiúsculas, negrito, cor do texto Clara, espaço entre o ícone e o Texto de 8px e padding de 4px.
+          - `{currentPlayer.type === PlayerType.X && <IconX stroke={6} className='text-primary-500' />}` Se o ***Jogador Atual*** for igual ao Tipo do ***"Jogador X"***, renderize o ícone X na cor primária.
+          - `{currentPlayer.type === PlayerType.O && <IconCircle stroke={6} className='text-secondary-500' />}` Se o ***Jogador Atual*** for igual ao Tipo do ***"Jogador O"***, renderize o ícone ***"Circulo"*** na cor secundária.
+          - `<span>Joga</span>` Renderize o texto ***"JOGA"***.
+        - `</div>` Feche a DIV de agrupamento do ícone e o texto.
+      - `</Card>` Feche o Componente de Informação do Jogador Atual.
+      - `<Button onClick={nextRound}>` Componente do botão Proxima Rodada.
+        - `<div className='text-dark-500'>` DIV do botão Próxima Rodada, formatado com o texto escuro.
+          - `<IconRefresh stroke={2} />` Ícone de atualização com espessura de 2.
+        - `</div>` Feche a DIV do botão Próxima Rodada.
+      - `</Button>` Feche o Componente Button
+    - `</div>` Feche a DIV Pai.
+  - `)` Feche o escopo do retorno da Função Menu()
+- `}` Feche o escopo da Função Menu()
+
+```tsx
+// Menu.tsx
+
+'use client'
+
+import { IconCircle, IconRefresh, IconX } from '@tabler/icons-react'
+import { PlayerType } from 'core'
+import { useContext } from 'react'
+import Button from '../shared/Button'
+import Card from '../shared/Card'
+import GameContext from '@/contexts/GameContext'
+
+export default function Menu() {
+
+  const { currentPlayer, nextRound } = useContext(GameContext)
+
+  return (
+    <div className='flex justify-between items-center'>
+      <Card noBorder color='dark'>
+        <div className='flex gap-2 p-1'>
+          <IconX stroke={6} className='text-primary-500' />
+          <IconCircle stroke={6} className='text-secondary-500' />
+        </div>
+      </Card>
+      <Card noBorder color='dark'>
+        <div className='flex justify-center items-center uppercase font-bold text-light-500 gap-2 p-1'>
+          {currentPlayer.type === PlayerType.X && <IconX stroke={6} className='text-primary-500' />}
+          {currentPlayer.type === PlayerType.O && <IconCircle stroke={6} className='text-secondary-500' />}
+          <span>Joga</span>
+        </div>
+      </Card>
+      <Button onClick={nextRound}>
+        <div className='text-dark-500'>
+          <IconRefresh stroke={2} />
+        </div>
+      </Button>
+    </div>
+  )
+}
+```
+
+[^ Sumário ^](#interface-gráfica---front-end)
+
+### Considerações Finais
+
+Com isso finalizamos o Projeto do Jogo da Velha, onde foi feito toda a Regra de Negócio *(lógica pura em Typescript)* totalmente separada da Interface Gráfica *(que acabamos de implementar)*.  
+
+Pois, a conexão que existe tente a Interface Gráfica e a Lógica, acontece dentro do Contexto "GameContext" que é o local com a Lógica é compartilhada "chamada", pois, no Contexto não existe nenhuma lógica sendo executada.  
+
+Com isso, podemos evoluir a Aplicação, criando coisas mais complexas, evoluindo o nosso Modelo salvando em Banco de Dados, persistindo as informações de alguma forma, fazer um jogo remoto, colocar outras características no Jogo, etc. separando essas duas partes bem distintas da Aplicação.  
+
+Que é o Jogo em si (lógica), podendo ser exibido no terminal, em uma aplicação desktop, etc. e não estar misturado com a parte do Frontend.  
+
+Lógico, é uma aplicação simples, que trás uma ideia que não justifica separar, pois, poderia ser feito de uma forma muito mais simples se fosse tudo misturado em um único arquivo, mas quando se vai para uma aplicação grande, você tendo esse valor da separação da Regra de Negócio (lógica), é extraordinário, pois, se consegue ter algo que irá durar pra muito além de um framework.  
+Pois, não irá sofrer as mudanças impostas por uma mudança de tecnologia.  
+
+***Por exemplo:***  
+O Nextjs passou por uma mudança em sua estrutura de pastas, passou da pasta PAGES para a pasta APP.  
+
+Se você tivesse dentro da pasta PAGES apenas coisa referentes a frontend e nada relacionado a Regra de Negócio, nenhum Caso de Uso implementado, seria muito mais fácil fazer a migração e ir para novas versões do Framework.  
+
+Pois, todos os Casos de Uso, Regra de Negócio, etc. são separados ficando muito distinto uma coisa da outra.
+
+Espero que se chegou até aqui é porquê gostou do Projeto, e caso seja de seu agrado, deixe alguma mensagem sobre o que achou.  
+Mas não acabou por aqui, vou continuar modificando alguma coisa aqui ali e implementar novas funcionalidades, fique a vontade em ajudar com qualquer coisa.  
+
+Fique na Paz de Deus!!!!
