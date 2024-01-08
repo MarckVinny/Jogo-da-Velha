@@ -14,7 +14,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang='pt-BR'>
       <body className={outfit.className}>
-        <div className='flex justify-center items-center h-screen'>
+        <div className='flex justify-center items-center h-screen bg-dark-400'>
           <GameProvider>
             {children}
           </GameProvider>
