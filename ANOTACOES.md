@@ -1,5 +1,5 @@
 # JOGO DA VELHA
-
+***COM MODELO DE NEGÓCIO***
 ___
 
 ## Sumário
@@ -67,6 +67,7 @@ ___
   - [Adicionando os Botões ao Modal Resultado](#adicionando-os-botões-ao-modal-resultado)
 - [Componente `<Menu>` - Ícones e Botões Superiores](#componente-menu---ícones-e-botões-superiores)
 - [Considerações Finais](#considerações-finais)
+- [BÔNUS - Componente `<Titulo>`](#bônus---componente-titulo)
 
 ___
 
@@ -5443,3 +5444,69 @@ Espero que se chegou até aqui é porquê gostou do Projeto, e caso seja de seu 
 Mas não acabou por aqui, vou continuar modificando alguma coisa aqui ali e implementar novas funcionalidades, fique a vontade em ajudar com qualquer coisa.  
 
 Fique na Paz de Deus!!!!
+
+[^ Sumário ^](#interface-gráfica---front-end)
+
+### BÔNUS - Componente `<Titulo>`
+
+Como bônus, vou criar mais um Componente Compartilhado que será encarregado de Estilizar o Título com o nome do Jogo.  
+
+Então, no caminho `.\apps\frontend\src\components\shared` crie um arquivo chamado `Title.tsx` e dentro dele iremos definir nosso componente:
+
+- `export default function Title() {` Exporte por padrão uma Função chamada Title.
+  - `return (` Retorno da Função Title.
+    - `<>` Abra um Fragmento HTML.
+      - `<div className="flex justify-center text-3xl font-extrabold uppercase text-primary-400">` Formata o Título para que fique centralizado, tenha o tamanho da fonte 30px, tenha o peso da fonte 800, fique em letras maiúsculas, tenha a cor Azul Claro.
+        - `<p>Jogo da Velha</p>` Texto do Título.
+      - `</div>` Feche a DIV do Título.
+      - `<div className="flex justify-center text-lg font-extrabold uppercase text-secondary-400">` Formata o Subtítulo para que fique centralizado, tenha o tamanho da fonte 18px, tenha o peso da fonte 800, fique em letras maiúsculas, tenha a cor Amarelo Claro.
+        - `<p>com Modelo de Negócio</p>` Texto do Subtítulo
+      - `</div>` Feche a DIV do Subtítulo.
+    - `</>` Feche o Fragmento HTML.
+  - `)` Feche o escopo do Retorno da Função Title.
+- `}` Feche o escopo da Função Título.
+
+```tsx
+// Titulo.tsx
+
+export default function Title(){
+  return (
+    <>
+      <div className="flex justify-center text-3xl font-extrabold uppercase text-primary-400">
+        <p>Jogo da Velha</p>
+      </div>
+      <div className="flex justify-center text-lg font-extrabold uppercase text-secondary-400">
+        <p>com Modelo de Negócio</p>
+      </div>
+    </>
+  )
+}
+```
+
+Depois isso, precisamos editar o arquivo `Page.tsx` que se encontra no caminho `.\apps\frontend\src\app\page.tsx` adicionando o novo Componente criado `<Title />` abaixo do Componente `<Result />`.  
+
+Sem esquecer de fazer o import do Componente `import Title from '@/components/shared/Title'`.
+
+```tsx
+// Page.tsx
+
+import BoardArea from '@/components/game/BoardArea'
+import Menu from '@/components/menu/Menu'
+import Result from '@/components/result/Result'
+import Scoreboard from '@/components/game/Scoreboad'
+import Title from '@/components/shared/Title'
+
+export default function Home() {
+  return (
+    // <div className='flex justify-center itens-center text-center mt-6'>
+    <div className='flex flex-col'>
+      <Result />
+      <Title />
+      <Menu />
+      <BoardArea />
+      <Scoreboard />
+    </div>
+  )
+}
+
+```

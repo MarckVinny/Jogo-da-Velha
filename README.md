@@ -21,6 +21,10 @@ Tendei transcrever o pensamento lógico nas anotações, se tiver algo escrito e
 ## Projeto Final (realidade)
 
 ![00](./imagens/projeto-final.png)
+![03](./imagens/projeto-final-3.png)
 ![01](./imagens/projeto-final-1.png)
 ![02](./imagens/projeto-final-2.png)
-![03](./imagens/projeto-final-3.png)
+
+## BÔNUS - Componente Título
+
+![Bônus](./imagens/bonus.png)
