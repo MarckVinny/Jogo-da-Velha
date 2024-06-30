@@ -1,4 +1,5 @@
 # JOGO DA VELHA
+
 ***COM MODELO DE NEGÓCIO***
 ___
 
@@ -84,7 +85,7 @@ Foram utilizados diversos Elementos que poderiam ser simplificados, mas que, fac
 
 > ***Pensamento:***  
 *"Sempre que vamos aplicar um padrão de Projeto, se tem um problema recorrente e uma solução proposta, mas essa solução possui um padrão que será adaptado para a aplicação real"*  
->  
+>
 > ***Cristopher Alexander*** foi um arquiteto, matemático e urbanista austríaco. Era professor emérito da Universidade da Califórnia em Berkeley. Foi um dos críticos da arquitetura moderna apontando a desagregação social causada por ela.  
 E foi escrito do livro ***A Pattern Language - Uma Linguagem de Padrões***, neste livro, Christopher Alexander propõe uma catalogação dos tipos de problemas *(ou desafios de projeto)* e analisa o que está por trás de cada situação.  
 
@@ -5103,19 +5104,19 @@ Para isso, no caminho `.\apps\frontend\src\components\result\Result.tsx`, no ret
 > ***Sintaxe curta de Fragmentos React:***  
 Existe uma sintaxe nova e mais curta que você pode usar para declarar fragmentos. Parecem tags vazias:
 >
->  ```react
+> ```react
 >
->  class Columns extends React.Component {
->    render() {
->      return (
->        <>
->          <td>Hello</td>
->          <td>World</td>
->        </>
->      );
->    }
->  }
->  ```
+> class Columns extends React.Component {
+>   render() {
+>     return (
+>       <>
+>         <td>Hello</td>
+>         <td>World</td>
+>       </>
+>     );
+>   }
+> }
+> ```
 >
 > Você pode usar `<> </>` da mesma forma que você usaria qualquer outro elemento, exceto que ele não suporta chaves ou atributos.
 
